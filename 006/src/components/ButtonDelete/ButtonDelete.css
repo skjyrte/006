@@ -1,0 +1,16 @@
+.button-delete-container {
+  width: 20px;
+  padding: 0 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: filter 0.3s;
+}
+
+.button-delete {
+  background-color: transparent;
+  border: 40px;
+}
+.button-delete:hover {
+  filter: drop-shadow(0 0 5px var(--bright-blue));
+}

@@ -1,0 +1,16 @@
+.entry-box {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  height: 60px;
+  width: 100%;
+  background-color: var(--very-dark-desaturated-blue);
+  /* font */
+  font-size: 20px;
+  color: var(--light-grayish-blue);
+  font-weight: 300;
+}
+
+.entry-box .entry-space {
+  flex: 1;
+}

@@ -1,0 +1,13 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: Josefin Sans;
+}
+
+body {
+  margin: 0;
+}

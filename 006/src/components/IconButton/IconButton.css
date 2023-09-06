@@ -1,0 +1,14 @@
+.icon-button-container {
+  height: 30px;
+  width: 30px;
+  transition: filter 0.3s;
+}
+
+.icon-button {
+  height: 100%;
+  width: 100%;
+}
+
+.icon-button:hover {
+  filter: drop-shadow(0 0 5px var(--bright-blue));
+}

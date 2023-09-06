@@ -1,0 +1,20 @@
+body {
+  margin: 0;
+  background-color: var(--very-dark-blue);
+}
+
+.cover-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.image-box {
+  height: 300px;
+  margin: 0;
+  background: linear-gradient(
+    90deg,
+    var(--linear-gradient-1),
+    var(--linear-gradient-2) 50%
+  );
+}
