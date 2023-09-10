@@ -7,7 +7,7 @@ export default function ButtonDelete() {
   return (
     <div className="button-delete-container">
       <button className="button-delete" onClick={clickedLog}>
-        <img src="icon-cross.svg" />
+        <img src="icon-cross.svg" alt="(delete)" />
       </button>
     </div>
   );
