@@ -8,22 +8,22 @@ function App() {
   return (
     <>
       <Background />
-      <Container taskObj={taskList} />
+      <Container />
     </>
   );
 }
 
 export default App;
 
-const taskList = [
+/* const taskList = [
   "Jog around the park 3x",
-  "Complete online JavaScript course",
+  "Complete online JavaScript course",  
   "10 minute meditation",
   "Read for 1 hour",
   "Pick up groceries",
   "Complete Todo App on Frontend Mentor",
-];
-
+]; */
+/* 
 const respObj = {
   toDos: [
     {
@@ -64,3 +64,4 @@ const respObj = {
     },
   ],
 };
+ */
