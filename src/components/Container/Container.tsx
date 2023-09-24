@@ -2,7 +2,8 @@ import "./Container.css";
 import Entry from "../Entry/Entry";
 import InputBar from "../InputBar/InputBar";
 import Footer from "../Footer/Footer";
-import IconButton from "../IconButton/IconButton";
+import IconButton from "../ButtonIcon/IconButton";
+import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
 import { useEffect } from "react";
 import { useState } from "react";
 
@@ -33,8 +34,20 @@ export default function Container() {
     const response = await fetch("http://localhost:4000/todos", {
       mode: "cors",
     });
-    const zmienna = await response.json();
-    setToDos(zmienna.toDos);
+    const responseBody = await response.json();
+
+    (async function () {
+      await responseBody;
+      if (responseStatus(responseBody)) {
+        console.log(responseBody.success);
+        console.log(responseBody.message);
+        if (typeof responseBody.data === "object") {
+          setToDos(responseBody.data);
+        }
+      } else {
+        throw new Error("GET: error getting response");
+      }
+    })();
   }
 
   async function handleDeleteEntry(id: string) {
@@ -42,14 +55,52 @@ export default function Container() {
       mode: "cors",
       method: "delete",
     });
-    const updateEntries = await handleGetEntries();
+    const responseBody = await response.json();
+
+    (async function () {
+      await responseBody;
+      console.log(responseBody);
+      console.log("responseStatus Delete");
+      console.log(responseStatus(responseBody));
+      if (responseStatus(responseBody)) {
+        console.log(responseBody.success);
+        console.log(responseBody.message);
+        console.log(responseBody.data);
+        if (typeof responseBody.data !== "undefined") {
+          throw new Error("DELETE: data recieved after delete method called");
+        }
+      } else {
+        throw new Error("DELETE: error getting response");
+      }
+    })();
+
+    await handleGetEntries();
   }
+
+  const responseStatus = (obj: any): obj is validResponse => {
+    return (
+      typeof obj === "object" &&
+      obj !== null &&
+      "success" in obj &&
+      typeof obj.success === "boolean" &&
+      "message" in obj &&
+      typeof obj.message === "string" &&
+      "data" in obj &&
+      (typeof obj.data === "undefined" || typeof obj.data === "object")
+    );
+  };
+  type validResponse = {
+    success: boolean;
+    message: string;
+    data: undefined | any[];
+  };
 
   return (
     <>
       <div className="outer-box">
         <header className="main-header">
           <h1>TODO</h1>
+          <ButtonRefresh onClick={handleGetEntries}></ButtonRefresh>
           <span></span>
           <IconButton></IconButton>
         </header>
@@ -61,16 +112,3 @@ export default function Container() {
     </>
   );
 }
-
-/* 
-
-const respObj = {
-  toDos: [
-    {
-      _id: "64fcb1042f258d9163d3181a",
-      task: "editedtodo",
-      completed: false,
-      __v: 0,
-    },
-
-*/

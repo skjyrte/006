@@ -1,0 +1,17 @@
+.button-refresh {
+  height: 30px;
+  width: 30px;
+  transition: filter 0.3s;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.button-refresh > image {
+  height: 100%;
+  width: 100%;
+}
+
+.button-refresh:hover {
+  filter: drop-shadow(0 0 5px var(--bright-blue));
+}

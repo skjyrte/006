@@ -7,7 +7,11 @@ export default function IconButton() {
   return (
     // <div className="icon-button-container">
     <button className="icon-button" onClick={clickedLog}>
-      <img className="icon-button" src="/icon-sun.svg" alt="icon"></img>
+      <img
+        className="icon-button"
+        src="/icon-sun.svg"
+        alt="day/night theme"
+      ></img>
     </button>
     // </div>
   );
