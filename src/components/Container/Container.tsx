@@ -67,10 +67,9 @@ export default function Container() {
       if (responseStatus(responseBody)) {
         console.log(responseBody.success);
         console.log(responseBody.message);
-        console.log(responseBody.data);
-        if (typeof responseBody.data !== "undefined") {
+        /*         if (typeof responseBody.data !== "undefined") {
           throw new Error("DELETE: data recieved after delete method called");
-        }
+        } */
       } else {
         throw new Error("DELETE: error getting response");
       }
@@ -80,6 +79,8 @@ export default function Container() {
   }
 
   const responseStatus = (obj: any): obj is validResponse => {
+    console.log("data in object:");
+    console.log("data" in obj);
     return (
       typeof obj === "object" &&
       obj !== null &&
@@ -87,14 +88,12 @@ export default function Container() {
       typeof obj.success === "boolean" &&
       "message" in obj &&
       typeof obj.message === "string" &&
-      "data" in obj &&
-      (typeof obj.data === "undefined" || typeof obj.data === "object")
+      (("data" in obj && typeof obj.data === "object") || !("data" in obj))
     );
   };
   type validResponse = {
     success: boolean;
     message: string;
-    //data: undefined | any[];
     data?: unknown[];
   };
 
