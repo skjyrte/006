@@ -56,6 +56,8 @@ export default function Container() {
       method: "delete",
     });
     const responseBody = await response.json();
+    console.log("responseBody");
+    console.log(responseBody);
 
     (async function () {
       await responseBody;
@@ -92,7 +94,8 @@ export default function Container() {
   type validResponse = {
     success: boolean;
     message: string;
-    data: undefined | any[];
+    //data: undefined | any[];
+    data?: unknown[];
   };
 
   return (

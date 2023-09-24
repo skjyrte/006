@@ -1,5 +1,5 @@
 import "./Footer.css";
-import StateButton from "../StateButton/StateButton";
+import StateButton from "../ButtonState/StateButton";
 
 export default function Footer() {
   return (
