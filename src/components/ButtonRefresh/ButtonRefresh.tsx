@@ -7,7 +7,7 @@ export default function ButtonRefresh(props: any) {
       <button className="button-refresh" onClick={onClick}>
         <img
           className="button-refresh"
-          src="/icon-reload.svg"
+          src="./icon-reload.svg"
           alt="icon reload"
         ></img>
       </button>

@@ -7,7 +7,7 @@ export default function ButtonAdd(props: any) {
     <>
       <div className="button-delete-container">
         <button className="button-add" onClick={onClick}>
-          <img className="button-add" src="/icon-add.svg" alt="icon add"></img>
+          <img className="button-add" src="./icon-add.svg" alt="icon add"></img>
         </button>
       </div>
     </>

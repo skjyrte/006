@@ -33,7 +33,7 @@ export default function Container() {
   async function handleGetEntries() {
     setToDos([]);
     try {
-      const response = await fetch("http://localhost:4000/todos", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/todos`, {
         mode: "cors",
       });
       const responseBody = await response.json();
@@ -67,7 +67,7 @@ export default function Container() {
       }
       console.log("input:");
       console.log(input);
-      const response = await fetch(`http://localhost:4000/todos/`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/todos/`, {
         mode: "cors",
         method: "post",
         body: JSON.stringify({ task: input }),
@@ -95,7 +95,7 @@ export default function Container() {
 
   async function handleDeleteEntry(id: string) {
     try {
-      const response = await fetch(`http://localhost:4000/todos/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/${id}`, {
         mode: "cors",
         method: "delete",
       });

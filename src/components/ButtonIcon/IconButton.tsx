@@ -9,7 +9,7 @@ export default function IconButton() {
     <button className="icon-button" onClick={clickedLog}>
       <img
         className="icon-button"
-        src="/icon-sun.svg"
+        src="./icon-sun.svg"
         alt="day/night theme"
       ></img>
     </button>

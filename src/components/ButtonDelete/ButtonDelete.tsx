@@ -5,7 +5,7 @@ export default function ButtonDelete(props: any) {
   return (
     <div className="button-delete-container">
       <button className="button-delete" onClick={() => onClick(id)}>
-        <img src="/icon-cross.svg" alt="delete" />
+        <img src="./icon-cross.svg" alt="delete" />
       </button>
     </div>
   );
