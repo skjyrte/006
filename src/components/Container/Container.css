@@ -23,7 +23,7 @@
   position: absolute;
   top: 80px;
   left: 50%;
-  height: 680px;
+  min-height: 225px;
   width: 540px;
   transform: translate(-50%, 0);
   background-color: transparent;

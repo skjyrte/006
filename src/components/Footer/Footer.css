@@ -8,6 +8,7 @@
   height: 50px;
   background-color: var(--very-dark-desaturated-blue);
   align-items: center;
+  margin-bottom: 50px;
 }
 
 .footer-container span {

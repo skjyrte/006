@@ -1,10 +1,10 @@
 import "./InputBar.css";
-import Checkbox from "../Checkbox/Checkbox";
+import ButtonAdd from "../ButtonAdd/ButtonAdd";
 
-export default function InputBar() {
+export default function InputBar(props: any) {
+  const { onChange, onClick } = props;
   return (
     <div className="input-bar">
-      <Checkbox />
       <input
         type="text"
         id="task"
@@ -13,7 +13,9 @@ export default function InputBar() {
         className="search-input"
         required
         minLength={1}
+        onChange={onChange}
       />
+      <ButtonAdd onClick={onClick} />
     </div>
   );
 }

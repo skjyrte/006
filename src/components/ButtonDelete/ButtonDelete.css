@@ -1,16 +1,18 @@
-.button-delete-container {
-  width: 20px;
-  padding: 0 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.button-delete {
+  height: 30px;
+  width: 30px;
   transition: filter 0.3s;
+  padding: 0;
+  border: none;
+  margin: 15px;
+  background: none;
 }
 
-.button-delete {
-  background-color: transparent;
-  border: 40px;
+.button-delete > image {
+  height: 100%;
+  width: 100%;
 }
+
 .button-delete:hover {
   filter: drop-shadow(0 0 5px var(--bright-blue));
 }

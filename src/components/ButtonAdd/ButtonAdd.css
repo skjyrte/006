@@ -1,0 +1,20 @@
+.button-add {
+  height: 30px;
+  width: 30px;
+  transition: filter 0.3s;
+  margin: 15px;
+  border: none;
+  background: transparent;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.button-add > image {
+  height: 100%;
+  width: 100%;
+}
+
+.button-add:hover {
+  filter: drop-shadow(0 0 5px var(--bright-blue));
+}

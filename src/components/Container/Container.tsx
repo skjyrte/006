@@ -9,6 +9,7 @@ import { useState } from "react";
 
 export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
+  const [input, setInput] = useState<string>("777");
 
   useEffect(() => {
     handleGetEntries();
@@ -31,56 +32,125 @@ export default function Container() {
 
   async function handleGetEntries() {
     setToDos([]);
-    const response = await fetch("http://localhost:4000/todos", {
-      mode: "cors",
-    });
-    const responseBody = await response.json();
+    try {
+      const response = await fetch("http://localhost:4000/todos", {
+        mode: "cors",
+      });
+      const responseBody = await response.json();
 
-    (async function () {
-      await responseBody;
       if (responseStatus(responseBody)) {
-        console.log(responseBody.success);
-        console.log(responseBody.message);
-        if (typeof responseBody.data === "object") {
+        if (
+          typeof responseBody.data === "object" &&
+          responseBody.success === true
+        ) {
           setToDos(responseBody.data);
+        } else {
+          throw new Error(responseBody.message);
         }
       } else {
         throw new Error("GET: error getting response");
       }
-    })();
+    } catch (e) {
+      console.error(e);
+    }
   }
 
-  async function handleDeleteEntry(id: string) {
-    const response = await fetch(`http://localhost:4000/todos/${id}`, {
-      mode: "cors",
-      method: "delete",
-    });
-    const responseBody = await response.json();
-    console.log("responseBody");
-    console.log(responseBody);
+  function handleTextChange(e: any) {
+    setInput(e.target.value);
+    console.log(e.target.value);
+  }
 
-    (async function () {
-      await responseBody;
-      console.log(responseBody);
-      console.log("responseStatus Delete");
-      console.log(responseStatus(responseBody));
-      if (responseStatus(responseBody)) {
-        console.log(responseBody.success);
-        console.log(responseBody.message);
-        /*         if (typeof responseBody.data !== "undefined") {
-          throw new Error("DELETE: data recieved after delete method called");
-        } */
-      } else {
-        throw new Error("DELETE: error getting response");
+  async function handleAddEntry() {
+    try {
+      if (input === "") {
+        throw new Error("Todo cannot be empy");
       }
-    })();
+      console.log("input:");
+      console.log(input);
+      const response = await fetch(`http://localhost:4000/todos/`, {
+        mode: "cors",
+        method: "post",
+        body: JSON.stringify({ task: input }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const responseBody = await response.json();
 
+      if (responseStatus(responseBody)) {
+        if (
+          typeof responseBody.data !== "undefined" ||
+          responseBody.success !== true
+        ) {
+          throw new Error(responseBody.message);
+        }
+      } else {
+        throw new Error("POST: error getting response");
+      }
+    } catch (e) {
+      console.error(e);
+    }
     await handleGetEntries();
   }
 
+  async function handleDeleteEntry(id: string) {
+    try {
+      const response = await fetch(`http://localhost:4000/todos/${id}`, {
+        mode: "cors",
+        method: "delete",
+      });
+      const responseBody = await response.json();
+
+      if (responseStatus(responseBody)) {
+        if (
+          typeof responseBody.data !== "undefined" ||
+          responseBody.success !== true
+        ) {
+          throw new Error(responseBody.message);
+        }
+      } else {
+        throw new Error("DELETE: error getting response");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    await handleGetEntries();
+  }
+  /* 
+  async function handleEditEntry(id: string) {
+    try {
+      if (input === "") {
+        throw new Error("Todo cannot be empy");
+      }
+
+      const response = await fetch(`http://localhost:4000/todos/${id}`, {
+        mode: "cors",
+        method: "put",
+        body: JSON.stringify({ task: input }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const responseBody = await response.json();
+
+      if (responseStatus(responseBody)) {
+        if (
+          typeof responseBody.data !== "undefined" ||
+          responseBody.success !== true
+        ) {
+          throw new Error(responseBody.message);
+        }
+      } else {
+        throw new Error("POST: error getting response");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    await handleGetEntries();
+  } */
+
   const responseStatus = (obj: any): obj is validResponse => {
-    console.log("data in object:");
-    console.log("data" in obj);
     return (
       typeof obj === "object" &&
       obj !== null &&
@@ -106,7 +176,10 @@ export default function Container() {
           <span></span>
           <IconButton></IconButton>
         </header>
-        <InputBar></InputBar>
+        <InputBar
+          onChange={handleTextChange}
+          onClick={handleAddEntry}
+        ></InputBar>
         <div className="line-break-container"></div>
         <>{toDosList}</>
         <Footer></Footer>
