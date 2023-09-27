@@ -95,10 +95,13 @@ export default function Container() {
 
   async function handleDeleteEntry(id: string) {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/${id}`, {
-        mode: "cors",
-        method: "delete",
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/todos/${id}`,
+        {
+          mode: "cors",
+          method: "delete",
+        }
+      );
       const responseBody = await response.json();
 
       if (responseStatus(responseBody)) {
