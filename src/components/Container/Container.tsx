@@ -31,7 +31,6 @@ export default function Container() {
   }
 
   async function handleGetEntries() {
-    setToDos([]);
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/todos`, {
         mode: "cors",
@@ -51,6 +50,7 @@ export default function Container() {
         throw new Error("GET: error getting response");
       }
     } catch (e) {
+      setToDos([]);
       console.error(e);
     }
   }
@@ -95,10 +95,13 @@ export default function Container() {
 
   async function handleDeleteEntry(id: string) {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/${id}`, {
-        mode: "cors",
-        method: "delete",
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/todos/${id}`,
+        {
+          mode: "cors",
+          method: "delete",
+        }
+      );
       const responseBody = await response.json();
 
       if (responseStatus(responseBody)) {
