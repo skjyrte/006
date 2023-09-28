@@ -9,7 +9,7 @@ import { useState } from "react";
 
 export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
-  const [input, setInput] = useState<string>("777");
+  const [input, setInput] = useState<string>("");
 
   useEffect(() => {
     handleGetEntries();
@@ -24,7 +24,8 @@ export default function Container() {
           key={toDo._id}
           id={toDo._id}
           toDo={toDo.task}
-          onClick={handleDeleteEntry}
+          onDelete={handleDeleteEntry}
+          onSaveEdited={handleSaveEditedEntry}
         />
       );
     });
@@ -57,7 +58,6 @@ export default function Container() {
 
   function handleTextChange(e: any) {
     setInput(e.target.value);
-    console.log(e.target.value);
   }
 
   async function handleAddEntry() {
@@ -87,6 +87,7 @@ export default function Container() {
       } else {
         throw new Error("POST: error getting response");
       }
+      setInput("");
     } catch (e) {
       console.error(e);
     }
@@ -120,17 +121,17 @@ export default function Container() {
 
     await handleGetEntries();
   }
-  /* 
-  async function handleEditEntry(id: string) {
+
+  async function handleSaveEditedEntry(id: string, editedTodo: string) {
     try {
-      if (input === "") {
+      if (editedTodo === "") {
         throw new Error("Todo cannot be empy");
       }
 
       const response = await fetch(`http://localhost:4000/todos/${id}`, {
         mode: "cors",
         method: "put",
-        body: JSON.stringify({ task: input }),
+        body: JSON.stringify({ task: editedTodo }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -151,7 +152,7 @@ export default function Container() {
       console.error(e);
     }
     await handleGetEntries();
-  } */
+  }
 
   const responseStatus = (obj: any): obj is validResponse => {
     return (
@@ -182,6 +183,7 @@ export default function Container() {
         <InputBar
           onChange={handleTextChange}
           onClick={handleAddEntry}
+          inputValue={input}
         ></InputBar>
         <div className="line-break-container"></div>
         <>{toDosList}</>

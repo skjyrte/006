@@ -14,3 +14,7 @@
 .entry-box .entry-space {
   flex: 1;
 }
+
+.todo-box > input {
+  padding: 0;
+}

@@ -13,7 +13,8 @@
   font-size: 20px;
   font-family: inherit;
   /* container */
-  width: 450px;
+  flex: 1;
+  padding-left: 35px;
   height: 24px;
   background-color: transparent;
   margin: 0px;

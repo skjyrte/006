@@ -1,0 +1,20 @@
+.button-edit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  width: 30px;
+  transition: filter 0.3s;
+  padding: 0;
+  border: none;
+  margin: 15px;
+  background: none;
+  letter-spacing: 2px;
+  font-size: 14px;
+  color: var(--dark-grayish-blue);
+  font-weight: 300;
+}
+
+.button-edit:hover {
+  filter: drop-shadow(0 0 5px var(--bright-blue));
+}

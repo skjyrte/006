@@ -2,7 +2,7 @@ import "./InputBar.css";
 import ButtonAdd from "../ButtonAdd/ButtonAdd";
 
 export default function InputBar(props: any) {
-  const { onChange, onClick } = props;
+  const { onChange, onClick, inputValue } = props;
   return (
     <div className="input-bar">
       <input
@@ -14,6 +14,7 @@ export default function InputBar(props: any) {
         required
         minLength={1}
         onChange={onChange}
+        value={inputValue}
       />
       <ButtonAdd onClick={onClick} />
     </div>
