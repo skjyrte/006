@@ -128,14 +128,17 @@ export default function Container() {
         throw new Error("Todo cannot be empy");
       }
 
-      const response = await fetch(`http://localhost:4000/todos/${id}`, {
-        mode: "cors",
-        method: "put",
-        body: JSON.stringify({ task: editedTodo }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/todos/${id}`,
+        {
+          mode: "cors",
+          method: "put",
+          body: JSON.stringify({ task: editedTodo }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const responseBody = await response.json();
 
       if (responseStatus(responseBody)) {
