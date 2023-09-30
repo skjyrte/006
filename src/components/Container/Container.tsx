@@ -70,7 +70,7 @@ export default function Container() {
       }
       const response = await fetch(`${process.env.REACT_APP_API_URL}/todos/`, {
         mode: "cors",
-        method: "post",
+        method: "POST",
         body: JSON.stringify({ task: input }),
         headers: {
           "Content-Type": "application/json",
@@ -101,7 +101,7 @@ export default function Container() {
         `${process.env.REACT_APP_API_URL}/todos/${id}`,
         {
           mode: "cors",
-          method: "delete",
+          method: "DELETE",
         }
       );
       const responseBody = await response.json();
@@ -151,7 +151,7 @@ export default function Container() {
         `${process.env.REACT_APP_API_URL}/todos/${id}`,
         {
           mode: "cors",
-          method: "put",
+          method: "PATCH",
           body: JSON.stringify(sentObj),
           headers: {
             "Content-Type": "application/json",
