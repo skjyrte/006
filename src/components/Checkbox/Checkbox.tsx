@@ -1,12 +1,11 @@
 import "./Checkbox.css";
 
-export default function Checkbox() {
-  const handleCheckbox = () => {
-    console.log("Checkbox");
-  };
+export default function Checkbox(props: any) {
+  const { onChange, checked } = props;
+
   return (
     <label className="container">
-      <input type="checkbox" onClick={handleCheckbox} />
+      <input type="checkbox" checked={checked} onChange={onChange} />
       <span className="checkmark"></span>
     </label>
   );

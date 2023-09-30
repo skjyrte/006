@@ -24,8 +24,9 @@ export default function Container() {
           key={toDo._id}
           id={toDo._id}
           toDo={toDo.task}
+          completed={toDo.completed}
+          onSave={handleSaveEditedEntry}
           onDelete={handleDeleteEntry}
-          onSaveEdited={handleSaveEditedEntry}
         />
       );
     });
@@ -37,6 +38,8 @@ export default function Container() {
         mode: "cors",
       });
       const responseBody = await response.json();
+      console.log("response body:");
+      console.log(responseBody);
 
       if (responseStatus(responseBody)) {
         if (
@@ -65,8 +68,6 @@ export default function Container() {
       if (input === "") {
         throw new Error("Todo cannot be empy");
       }
-      console.log("input:");
-      console.log(input);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/todos/`, {
         mode: "cors",
         method: "post",
@@ -122,25 +123,42 @@ export default function Container() {
     await handleGetEntries();
   }
 
-  async function handleSaveEditedEntry(id: string, editedTodo: string) {
+  async function handleSaveEditedEntry(
+    id: string,
+    editedTodo: string | undefined = undefined,
+    editedCompleted: boolean | undefined = undefined
+  ) {
+    console.log("editedCompleted");
+    console.log(editedCompleted);
     try {
       if (editedTodo === "") {
         throw new Error("Todo cannot be empy");
       }
+      console.log(
+        `id ${id} editedTodo: ${editedTodo} editedCompleted: ${editedCompleted}`
+      );
+      let sentObj;
 
-      const response = await fetch(
+      if (editedTodo !== undefined && editedCompleted === undefined) {
+        sentObj = { task: editedTodo };
+      } else if (editedTodo === undefined && editedCompleted !== undefined) {
+        sentObj = { completed: editedCompleted };
+      } else {
+        throw new Error("POST: error with input data");
+      }
+
+      const response: any = await fetch(
         `${process.env.REACT_APP_API_URL}/todos/${id}`,
         {
           mode: "cors",
           method: "put",
-          body: JSON.stringify({ task: editedTodo }),
+          body: JSON.stringify(sentObj),
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
       const responseBody = await response.json();
-
       if (responseStatus(responseBody)) {
         if (
           typeof responseBody.data !== "undefined" ||
