@@ -1,10 +1,12 @@
 .button-refresh {
-  height: 30px;
-  width: 30px;
-  transition: filter 0.3s;
-  padding: 0;
-  border: none;
-  background: none;
+  /* font */
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: 10px;
+  color: var(--pearl-white);
+  background-color: transparent;
+  border: 0;
+  border-radius: 5px;
 }
 
 .button-refresh > image {
@@ -14,4 +16,8 @@
 
 .button-refresh:hover {
   filter: drop-shadow(0 0 5px var(--bright-blue));
+}
+
+.button-refresh:active {
+  backdrop-filter: invert(30%);
 }

@@ -10,6 +10,7 @@ import { useState } from "react";
 export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
   const [input, setInput] = useState<string>("");
+  const [filterState, setFilterState] = useState<string>("All");
 
   useEffect(() => {
     handleGetEntries();
@@ -18,7 +19,18 @@ export default function Container() {
   let toDosList: any;
 
   if (toDos.length !== 0) {
-    toDosList = toDos.map((toDo) => {
+    const filteredToDos = toDos.filter((todo) => {
+      if (filterState === "All") {
+        return true;
+      }
+      if (filterState === "Active") {
+        return todo.completed === false;
+      }
+      if (filterState === "Completed") {
+        return todo.completed === true;
+      }
+    });
+    toDosList = filteredToDos.map((toDo) => {
       return (
         <Entry
           key={toDo._id}
@@ -192,11 +204,24 @@ export default function Container() {
     data?: unknown[];
   };
 
+  function handleShowState(showState: string) {
+    setFilterState(showState);
+  }
+
+  function countActiveToDos(toDos: any) {
+    return toDos.filter((todo: any) => todo.completed === false).length;
+  }
+
+  function handleDeleteCompleted() {
+    const completedTodos = toDos.filter((todo: any) => todo.completed === true);
+    completedTodos.forEach((todo: any) => {
+      handleDeleteEntry(todo._id);
+    });
+  }
   return (
     <>
       <div className="outer-box">
         <header className="main-header">
-          <h1>TODO</h1>
           <ButtonRefresh onClick={handleGetEntries}></ButtonRefresh>
           <span></span>
           <IconButton></IconButton>
@@ -208,7 +233,12 @@ export default function Container() {
         ></InputBar>
         <div className="line-break-container"></div>
         <>{toDosList}</>
-        <Footer></Footer>
+        <Footer
+          onClick={handleShowState}
+          countActiveToDos={countActiveToDos(toDos)}
+          onDeleteCompleted={handleDeleteCompleted}
+          filterState={filterState}
+        />
       </div>
     </>
   );
