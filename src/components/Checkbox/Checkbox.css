@@ -3,7 +3,7 @@
   display: block;
   position: relative;
   cursor: pointer;
-  padding: 20px 35px;
+  padding: 1rem 1.75rem;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -36,7 +36,11 @@
 
 /* When the checkbox is checked, add a blue background */
 .container input:checked ~ .checkmark {
-  background-color: #2196f3;
+  background: linear-gradient(
+    90deg,
+    var(--linear-gradient-1),
+    var(--linear-gradient-2) 50%
+  );
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */

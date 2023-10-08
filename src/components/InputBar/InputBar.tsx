@@ -10,6 +10,7 @@ export default function InputBar(props: any) {
         id="task"
         placeholder="Type new task..."
         name="task"
+        autoComplete="off"
         className="input-field"
         required
         minLength={1}

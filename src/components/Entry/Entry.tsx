@@ -51,7 +51,11 @@ export default function Entry(props: any) {
           value={editInput}
         />
       ) : (
-        <div className="todo-content">{toDo}</div>
+        <div
+          className={isCompleted ? "todo-content completed" : "todo-content"}
+        >
+          {toDo}
+        </div> //className="todo-content"
       )}
 
       <div className="button-edit-container">

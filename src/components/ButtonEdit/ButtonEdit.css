@@ -13,8 +13,8 @@
   transition: filter 0.3s;
   padding: 0;
   border: none;
-  padding: 5px;
-  margin: 5px;
+  padding: 0.25rem;
+  margin: 0.25rem;
   background: none;
 
   border-radius: 3px;
