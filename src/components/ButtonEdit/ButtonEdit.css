@@ -1,8 +1,14 @@
 .button-edit {
+  /* font */
+  letter-spacing: 0.1rem;
+  font-size: 0.7rem;
+  color: var(--dark-grayish-blue);
+  font-weight: 300;
+  /* box */
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 30px;
+  height: 1.5rem;
 
   transition: filter 0.3s;
   padding: 0;
@@ -10,10 +16,7 @@
   padding: 5px;
   margin: 5px;
   background: none;
-  letter-spacing: 2px;
-  font-size: 14px;
-  color: var(--dark-grayish-blue);
-  font-weight: 300;
+
   border-radius: 3px;
 }
 
@@ -24,4 +27,10 @@
 
 .button-edit:active {
   background-color: var(--very-dark-grayish-blue);
+}
+
+@media (max-width: 660px) {
+  .button-edit {
+    height: 1rem;
+  }
 }

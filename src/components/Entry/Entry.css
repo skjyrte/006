@@ -1,20 +1,50 @@
 .entry-box {
+  /* font */
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--light-grayish-blue);
+  /* box */
   display: flex;
   justify-content: left;
   align-items: center;
-  height: 60px;
+  min-height: 3rem;
   width: 100%;
   background-color: var(--very-dark-desaturated-blue);
-  /* font */
-  font-size: 20px;
-  color: var(--light-grayish-blue);
-  font-weight: 300;
 }
 
-.entry-box .entry-space {
+.todo-content {
   flex: 1;
+  min-height: 1rem;
+  overflow-wrap: anywhere;
 }
 
-.todo-box > input {
+.edit-input-field {
+  /* font */
+  font-size: 1rem;
+  font-weight: 300;
+  font-family: inherit;
+  color: var(--light-grayish-blue);
+  /* container */
   padding: 0;
+  /*   min-height: 1rem; */
+  background-color: transparent;
+  margin: 0px;
+  border: none;
+  outline: none;
+  flex: 1;
+  overflow: auto;
+  resize: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.button-edit-container {
+  display: flex;
+  flex-direction: row;
+}
+
+@media (max-width: 660px) {
+  .button-edit-container {
+    flex-direction: column;
+  }
 }

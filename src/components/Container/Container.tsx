@@ -2,7 +2,7 @@ import "./Container.css";
 import Entry from "../Entry/Entry";
 import InputBar from "../InputBar/InputBar";
 import Footer from "../Footer/Footer";
-import IconButton from "../ButtonIcon/IconButton";
+import IconButton from "../ButtonTheme/ButtonTheme";
 import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -28,7 +28,7 @@ export default function Container() {
       }
       if (filterState === "Completed") {
         return todo.completed === true;
-      }
+      } else throw new Error("Invalid filterState");
     });
     toDosList = filteredToDos.map((toDo) => {
       return (
@@ -231,7 +231,6 @@ export default function Container() {
           onClick={handleAddEntry}
           inputValue={input}
         ></InputBar>
-        <div className="line-break-container"></div>
         <>{toDosList}</>
         <Footer
           onClick={handleShowState}

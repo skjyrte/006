@@ -1,8 +1,9 @@
 .footer-container {
   /* font */
-  font-size: 14px;
+  font-size: 0.7rem;
   font-weight: 400;
   color: var(--dark-grayish-blue);
+  /* box */
   display: flex;
   width: 100%;
   height: 50px;
@@ -17,11 +18,24 @@
 
 .footer-container .counter-container {
   display: flex;
-  padding-left: 20px;
+  padding: 10px;
+  width: 140px;
 }
 
 .footer-container .clear-container {
   display: flex;
   justify-content: right;
-  padding-right: 20px;
+  padding: 10px;
+  width: 140px;
+}
+
+.manage-state-container {
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 400px) {
+  .manage-state-container {
+    flex-direction: column;
+  }
 }

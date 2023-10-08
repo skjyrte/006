@@ -5,9 +5,16 @@
 }
 
 :root {
-  font-family: Josefin Sans;
+  font-family: "Josefin Sans";
+  font-size: 20px;
 }
 
 body {
   margin: 0;
+}
+
+@media (max-width: 400px) {
+  :root {
+    font-size: 16px;
+  }
 }

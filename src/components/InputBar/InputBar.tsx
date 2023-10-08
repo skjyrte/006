@@ -10,9 +10,10 @@ export default function InputBar(props: any) {
         id="task"
         placeholder="Type new task..."
         name="task"
-        className="search-input"
+        className="input-field"
         required
         minLength={1}
+        maxLength={70}
         onChange={onChange}
         value={inputValue}
       />

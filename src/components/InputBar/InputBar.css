@@ -2,24 +2,25 @@
   display: flex;
   align-items: center;
   justify-content: right;
-  height: 60px;
+  height: 3rem;
   width: 100%;
   background-color: var(--very-dark-desaturated-blue);
   display: flex;
+  margin-bottom: 25px;
 }
 
-.search-input {
+.input-field {
   /* font */
-  font-size: 20px;
+  font-size: 1rem;
+  font-weight: 300;
   font-family: inherit;
+  color: var(--light-grayish-blue);
   /* container */
   flex: 1;
   padding-left: 35px;
-  height: 24px;
+  height: 1rem;
   background-color: transparent;
   margin: 0px;
   border: none;
   outline: none;
-  color: var(--light-grayish-blue);
-  font-weight: 300;
 }

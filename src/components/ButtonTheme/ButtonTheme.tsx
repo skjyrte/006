@@ -1,8 +1,8 @@
-import "./IconButton.css";
+import "./ButtonTheme.css";
 
 export default function IconButton() {
   const clickedLog = () => {
-    console.log("Icon button");
+    console.log("Button theme");
   };
   return (
     // <div className="icon-button-container">

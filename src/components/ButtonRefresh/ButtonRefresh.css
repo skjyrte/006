@@ -1,17 +1,15 @@
 .button-refresh {
   /* font */
-  font-size: 40px;
+  font-size: inherit;
   font-weight: 700;
-  letter-spacing: 10px;
+  font-family: inherit;
+  letter-spacing: 0.5rem;
   color: var(--pearl-white);
+  /* box */
   background-color: transparent;
-  border: 0;
+  border: 1px solid;
   border-radius: 5px;
-}
-
-.button-refresh > image {
   height: 100%;
-  width: 100%;
 }
 
 .button-refresh:hover {
