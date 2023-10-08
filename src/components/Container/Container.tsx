@@ -11,6 +11,19 @@ export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
   const [input, setInput] = useState<string>("");
   const [filterState, setFilterState] = useState<string>("All");
+  const [nowEdited, setNowEdited] = useState<string>("");
+
+  function handleToggleEdit(id: string) {
+    if (nowEdited === id) {
+      setNowEdited("");
+    } else {
+      setNowEdited(id);
+    }
+  }
+
+  function shutTheEdit() {
+    setNowEdited("");
+  }
 
   useEffect(() => {
     handleGetEntries();
@@ -39,12 +52,16 @@ export default function Container() {
           completed={toDo.completed}
           onSave={handleSaveEditedEntry}
           onDelete={handleDeleteEntry}
+          nowEdited={nowEdited}
+          handleToggleEdit={handleToggleEdit}
+          shutTheEdit={shutTheEdit}
         />
       );
     });
   }
 
   async function handleGetEntries() {
+    shutTheEdit();
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/todos`, {
         mode: "cors",
@@ -76,6 +93,7 @@ export default function Container() {
   }
 
   async function handleAddEntry() {
+    shutTheEdit();
     try {
       if (input === "") {
         throw new Error("Todo cannot be empy");
@@ -108,6 +126,7 @@ export default function Container() {
   }
 
   async function handleDeleteEntry(id: string) {
+    shutTheEdit();
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/todos/${id}`,
@@ -205,6 +224,7 @@ export default function Container() {
   };
 
   function handleShowState(showState: string) {
+    shutTheEdit();
     setFilterState(showState);
   }
 

@@ -7,20 +7,22 @@ import { useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
 export default function Entry(props: any) {
-  const { id, toDo, completed, onSave, onDelete } = props;
-  const [editMode, setEditMode] = useState<boolean>(false);
+  const {
+    id,
+    toDo,
+    completed,
+    onSave,
+    onDelete,
+    nowEdited,
+    handleToggleEdit,
+    shutTheEdit,
+  } = props;
+
   const [editInput, setEditInput] = useState<string>(toDo);
   const [isCompleted, setIsCompleted] = useState<boolean>(completed);
 
-  const toggleEdit = () => {
-    if (editMode === true) {
-      setEditMode(false);
-    } else {
-      setEditInput(toDo); //synchronize edited value with database value
-      setEditMode(true);
-    }
-  };
   async function handleCheckbox() {
+    shutTheEdit();
     setIsCompleted((prevState) => !prevState);
     //onSave(id, undefined, isCompleted);
   }
@@ -31,7 +33,7 @@ export default function Entry(props: any) {
   return (
     <div className="entry-box">
       <Checkbox onChange={handleCheckbox} checked={isCompleted} />
-      {editMode ? (
+      {nowEdited === id ? (
         <TextareaAutosize
           id="task"
           placeholder="Type edited task..."
@@ -53,20 +55,33 @@ export default function Entry(props: any) {
       )}
 
       <div className="button-edit-container">
-        {editMode ? (
+        {nowEdited === id ? (
           <>
             <ButtonEdit
               onClick={() => {
-                toggleEdit();
+                handleToggleEdit(id);
                 onSave(id, editInput, undefined);
               }}
             >
               Save
             </ButtonEdit>
-            <ButtonEdit onClick={toggleEdit}>Discard</ButtonEdit>
+            <ButtonEdit
+              onClick={() => {
+                handleToggleEdit(id);
+              }}
+            >
+              Discard
+            </ButtonEdit>
           </>
         ) : (
-          <ButtonEdit onClick={toggleEdit}>Edit</ButtonEdit>
+          <ButtonEdit
+            onClick={() => {
+              setEditInput(toDo); //synchronize edited value with database value
+              handleToggleEdit(id);
+            }}
+          >
+            Edit
+          </ButtonEdit>
         )}
       </div>
       <ButtonDelete onClick={onDelete} id={id} />
