@@ -3,9 +3,10 @@
   flex-direction: column;
   align-items: center;
   position: absolute;
-  top: 80px;
+  top: 50px;
   left: 50%;
-  min-height: 225px;
+  /*   min-height: 225px; */
+  height: 85vh;
   width: 600px;
   transform: translate(-50%, 0);
   background-color: transparent;
@@ -33,4 +34,54 @@
   .outer-box {
     width: 90%;
   }
+  .main-header {
+    margin-bottom: 20px;
+  }
+}
+
+.todos-container {
+  overflow: scroll;
+  overflow-x: hidden;
+  width: 100%;
+  flex: 1;
+  background-color: var(--very-dark-desaturated-blue);
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* SCROLL */
+.todos-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--very-dark-desaturated-blue)
+    var(--very-dark-desaturated-blue);
+}
+
+/* SCROLL */
+/* Chrome, Edge, and Safari */
+.todos-container::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* SCROLL */
+.todos-container::-webkit-scrollbar-track {
+  background: var(--very-dark-desaturated-blue);
+}
+
+/* SCROLL */
+.todos-container::-webkit-scrollbar-thumb {
+  background-color: var(--very-dark-desaturated-blue);
+  border-radius: 8px;
+  border: 3px solid #ffffff;
+}
+
+.no-entry {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
 }

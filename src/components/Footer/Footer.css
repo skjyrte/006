@@ -9,7 +9,8 @@
   height: 50px;
   background-color: var(--very-dark-desaturated-blue);
   align-items: center;
-  margin-bottom: 50px;
+  /*   margin-bottom: 50px; */
+  border-top: 1px solid;
 }
 
 .footer-container span {

@@ -59,6 +59,8 @@ export default function Container() {
       );
     });
   }
+  console.log("toDosList:");
+  console.log(toDosList);
 
   async function handleGetEntries() {
     shutTheEdit();
@@ -251,7 +253,20 @@ export default function Container() {
           onClick={handleAddEntry}
           inputValue={input}
         ></InputBar>
-        <>{toDosList}</>
+
+        <div className="todos-container">
+          <>
+            {typeof toDosList === "object" && "length" in toDosList ? (
+              toDosList.length !== 0 ? (
+                toDosList
+              ) : (
+                <div className="no-entry">No entry to show</div>
+              )
+            ) : (
+              <div className="no-entry">ERROR OR LOADING?</div>
+            )}
+          </>
+        </div>
         <Footer
           onClick={handleShowState}
           countActiveToDos={countActiveToDos(toDos)}

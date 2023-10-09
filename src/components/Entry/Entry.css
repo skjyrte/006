@@ -53,4 +53,7 @@
   .button-edit-container {
     flex-direction: column;
   }
+  .entry-box {
+    min-height: 2rem;
+  }
 }
