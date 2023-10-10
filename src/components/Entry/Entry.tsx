@@ -5,6 +5,7 @@ import ButtonEdit from "../ButtonEdit/ButtonEdit";
 import { useState } from "react";
 import { useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
+import CharCounter from "../CharCounter/CharCounter";
 
 export default function Entry(props: any) {
   const {
@@ -21,6 +22,11 @@ export default function Entry(props: any) {
   const [editInput, setEditInput] = useState<string>(toDo);
   const [isCompleted, setIsCompleted] = useState<boolean>(completed);
 
+  console.log("editInput:");
+  console.log(editInput.length);
+
+  const currentInputLength = editInput.length;
+
   async function handleCheckbox() {
     shutTheEdit();
     setIsCompleted((prevState) => !prevState);
@@ -34,28 +40,37 @@ export default function Entry(props: any) {
     <div className="entry-box">
       <Checkbox onChange={handleCheckbox} checked={isCompleted} />
       {nowEdited === id ? (
-        <TextareaAutosize
-          id="task"
-          placeholder="Type edited task..."
-          name="task"
-          className="edit-input-field"
-          maxLength={50}
-          minRows={1}
-          onChange={(e) => {
-            const singleLineInput = e.target.value
-              .split("")
-              .filter((char) => char !== "\n")
-              .join("");
-            return setEditInput(singleLineInput);
-          }}
-          value={editInput}
-        />
+        <>
+          <CharCounter
+            charCount={currentInputLength}
+            maxCharCount={70}
+            counter_type="char-counter-edit"
+          />
+          <TextareaAutosize
+            id="task"
+            placeholder="Type edited task..."
+            name="task"
+            className="edit-input-field"
+            maxLength={70}
+            minRows={1}
+            onChange={(e) => {
+              const singleLineInput = e.target.value
+                .split("")
+                .filter((char) => char !== "\n")
+                .join("");
+              return setEditInput(singleLineInput);
+            }}
+            value={editInput}
+          />
+        </>
       ) : (
-        <div
-          className={isCompleted ? "todo-content completed" : "todo-content"}
-        >
-          {toDo}
-        </div> //className="todo-content"
+        <>
+          <div
+            className={isCompleted ? "todo-content completed" : "todo-content"}
+          >
+            {toDo}
+          </div>{" "}
+        </>
       )}
 
       <div className="button-edit-container">

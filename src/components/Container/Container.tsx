@@ -31,7 +31,8 @@ export default function Container() {
 
   let toDosList: any;
 
-  if (toDos.length !== 0) {
+  //here we need to stop the rendering of todos if todo fetch is pending
+  if (typeof toDos === "object" && "length" in toDos) {
     const filteredToDos = toDos.filter((todo) => {
       if (filterState === "All") {
         return true;
@@ -244,7 +245,9 @@ export default function Container() {
     <>
       <div className="outer-box">
         <header className="main-header">
-          <ButtonRefresh onClick={handleGetEntries}></ButtonRefresh>
+          <ButtonRefresh
+            onClick={() => window.location.reload()}
+          ></ButtonRefresh>
           <span></span>
           <IconButton></IconButton>
         </header>

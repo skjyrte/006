@@ -10,6 +10,7 @@
   min-height: 3rem;
   width: 100%;
   background-color: var(--very-dark-desaturated-blue);
+  position: relative;
 }
 
 .todo-content {

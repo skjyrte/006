@@ -1,0 +1,24 @@
+.char-counter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+  background-color: var(--very-dark-desaturated-blue);
+  border: 0;
+}
+
+.char-counter-edit {
+  width: 3rem;
+  height: 2rem;
+  position: absolute;
+}
+
+.char-counter-input {
+  position: unset;
+  width: 50px;
+  border-right: 2px solid;
+}
+
+.char-counter-warning {
+  color: yellow;
+}
