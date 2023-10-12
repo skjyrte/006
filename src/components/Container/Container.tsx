@@ -60,8 +60,6 @@ export default function Container() {
       );
     });
   }
-  console.log("toDosList:");
-  console.log(toDosList);
 
   async function handleGetEntries() {
     shutTheEdit();
@@ -70,8 +68,6 @@ export default function Container() {
         mode: "cors",
       });
       const responseBody = await response.json();
-      console.log("response body:");
-      console.log(responseBody);
 
       if (responseStatus(responseBody)) {
         if (
@@ -113,9 +109,12 @@ export default function Container() {
 
       if (responseStatus(responseBody)) {
         if (
-          typeof responseBody.data !== "undefined" ||
-          responseBody.success !== true
+          typeof responseBody.data === "object" &&
+          responseBody.success === true
         ) {
+          //pushing todo to an array
+          setToDos([...toDos, responseBody.data]);
+        } else {
           throw new Error(responseBody.message);
         }
       } else {
@@ -125,7 +124,6 @@ export default function Container() {
     } catch (e) {
       console.error(e);
     }
-    await handleGetEntries();
   }
 
   async function handleDeleteEntry(id: string) {
@@ -142,9 +140,16 @@ export default function Container() {
 
       if (responseStatus(responseBody)) {
         if (
-          typeof responseBody.data !== "undefined" ||
-          responseBody.success !== true
+          typeof responseBody.data !== "object" && //DELETE route do not return response
+          responseBody.success === true
         ) {
+          //removing todo out of an array
+          setToDos(
+            toDos.filter((todo: any) => {
+              return todo._id !== id;
+            })
+          );
+        } else {
           throw new Error(responseBody.message);
         }
       } else {
@@ -153,8 +158,6 @@ export default function Container() {
     } catch (e) {
       console.error(e);
     }
-
-    await handleGetEntries();
   }
 
   async function handleSaveEditedEntry(
@@ -162,15 +165,11 @@ export default function Container() {
     editedTodo: string | undefined = undefined,
     editedCompleted: boolean | undefined = undefined
   ) {
-    console.log("editedCompleted");
-    console.log(editedCompleted);
     try {
       if (editedTodo === "") {
         throw new Error("Todo cannot be empy");
       }
-      console.log(
-        `id ${id} editedTodo: ${editedTodo} editedCompleted: ${editedCompleted}`
-      );
+
       let sentObj;
 
       if (editedTodo !== undefined && editedCompleted === undefined) {
@@ -195,18 +194,28 @@ export default function Container() {
       const responseBody = await response.json();
       if (responseStatus(responseBody)) {
         if (
-          typeof responseBody.data !== "undefined" ||
-          responseBody.success !== true
+          typeof responseBody.data === "object" &&
+          responseBody.success === true
         ) {
+          //replacing todo in an array
+          setToDos(
+            toDos.map((todo) => {
+              if (todo._id !== id) {
+                return todo;
+              } else {
+                return responseBody.data;
+              }
+            })
+          );
+        } else {
           throw new Error(responseBody.message);
         }
       } else {
-        throw new Error("POST: error getting response");
+        throw new Error("PATCH: error getting response");
       }
     } catch (e) {
       console.error(e);
     }
-    await handleGetEntries();
   }
 
   const responseStatus = (obj: any): obj is validResponse => {

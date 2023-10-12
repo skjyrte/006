@@ -22,9 +22,6 @@ export default function Entry(props: any) {
   const [editInput, setEditInput] = useState<string>(toDo);
   const [isCompleted, setIsCompleted] = useState<boolean>(completed);
 
-  console.log("editInput:");
-  console.log(editInput.length);
-
   const currentInputLength = editInput.length;
 
   async function handleCheckbox() {
