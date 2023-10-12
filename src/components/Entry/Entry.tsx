@@ -26,12 +26,18 @@ export default function Entry(props: any) {
 
   async function handleCheckbox() {
     shutTheEdit();
-    setIsCompleted((prevState) => !prevState);
-    //onSave(id, undefined, isCompleted);
+    setIsCompleted((prevState) => {
+      try {
+        onSave(id, undefined, !prevState);
+        return !prevState;
+      } catch {
+        throw new Error("error changing todo");
+      }
+    });
   }
-  useEffect(() => {
+  /*   useEffect(() => {
     onSave(id, undefined, isCompleted);
-  }, [isCompleted]);
+  }, [isCompleted]); */
 
   return (
     <div className="entry-box">
