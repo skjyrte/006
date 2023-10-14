@@ -13,6 +13,7 @@ export default function Container() {
   const [filterState, setFilterState] = useState<string>("All");
   const [nowEdited, setNowEdited] = useState<string>("");
 
+  console.log(toDos);
   function handleToggleEdit(id: string) {
     if (nowEdited === id) {
       setNowEdited("");
@@ -112,8 +113,8 @@ export default function Container() {
           typeof responseBody.data === "object" &&
           responseBody.success === true
         ) {
-          //pushing todo to an array
-          setToDos([...toDos, responseBody.data]);
+          //pushing todo to an array, prevent batching
+          setToDos((toDos) => [...toDos, responseBody.data]);
         } else {
           throw new Error(responseBody.message);
         }
@@ -143,8 +144,8 @@ export default function Container() {
           typeof responseBody.data !== "object" && //DELETE route do not return response
           responseBody.success === true
         ) {
-          //removing todo out of an array
-          setToDos(
+          //removing todo out of an array, prevent batching
+          setToDos((toDos) =>
             toDos.filter((todo: any) => {
               return todo._id !== id;
             })
@@ -197,16 +198,16 @@ export default function Container() {
           typeof responseBody.data === "object" &&
           responseBody.success === true
         ) {
-          //replacing todo in an array
-          setToDos(
-            toDos.map((todo) => {
+          //replacing todo in an array, prevent batching
+          setToDos((toDos) => {
+            return toDos.map((todo) => {
               if (todo._id !== id) {
                 return todo;
               } else {
                 return responseBody.data;
               }
-            })
-          );
+            });
+          });
         } else {
           throw new Error(responseBody.message);
         }
@@ -254,9 +255,7 @@ export default function Container() {
     <>
       <div className="outer-box">
         <header className="main-header">
-          <ButtonRefresh
-            onClick={() => window.location.reload()}
-          ></ButtonRefresh>
+          <ButtonRefresh onClick={() => console.log(toDos)}></ButtonRefresh>
           <span></span>
           <IconButton></IconButton>
         </header>

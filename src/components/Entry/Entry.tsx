@@ -3,7 +3,6 @@ import Checkbox from "../Checkbox/Checkbox";
 import ButtonDelete from "../ButtonDelete/ButtonDelete";
 import ButtonEdit from "../ButtonEdit/ButtonEdit";
 import { useState } from "react";
-import { useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import CharCounter from "../CharCounter/CharCounter";
 
@@ -20,28 +19,29 @@ export default function Entry(props: any) {
   } = props;
 
   const [editInput, setEditInput] = useState<string>(toDo);
-  const [isCompleted, setIsCompleted] = useState<boolean>(completed);
+  const [isCheckboxLoading, setIsCheckboxLoading] = useState<boolean>(false);
 
   const currentInputLength = editInput.length;
 
   async function handleCheckbox() {
     shutTheEdit();
-    setIsCompleted((prevState) => {
-      try {
-        onSave(id, undefined, !prevState);
-        return !prevState;
-      } catch {
-        throw new Error("error changing todo");
-      }
-    });
+    try {
+      setIsCheckboxLoading(() => true);
+      await onSave(id, undefined, !completed);
+    } catch {
+      throw new Error("error updating checkbox");
+    } finally {
+      setIsCheckboxLoading(() => false);
+    }
   }
-  /*   useEffect(() => {
-    onSave(id, undefined, isCompleted);
-  }, [isCompleted]); */
 
   return (
     <div className="entry-box">
-      <Checkbox onChange={handleCheckbox} checked={isCompleted} />
+      <Checkbox
+        onChange={handleCheckbox}
+        checked={completed}
+        isLoading={isCheckboxLoading}
+      />
       {nowEdited === id ? (
         <>
           <CharCounter
@@ -69,7 +69,7 @@ export default function Entry(props: any) {
       ) : (
         <>
           <div
-            className={isCompleted ? "todo-content completed" : "todo-content"}
+            className={completed ? "todo-content completed" : "todo-content"}
           >
             {toDo}
           </div>{" "}
