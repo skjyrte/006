@@ -5,6 +5,8 @@ import ButtonEdit from "../ButtonEdit/ButtonEdit";
 import { useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import CharCounter from "../CharCounter/CharCounter";
+import BarLoader from "react-spinners/BarLoader";
+import { CSSProperties } from "react";
 
 export default function Entry(props: any) {
   const {
@@ -20,6 +22,7 @@ export default function Entry(props: any) {
 
   const [editInput, setEditInput] = useState<string>(toDo);
   const [isCheckboxLoading, setIsCheckboxLoading] = useState<boolean>(false);
+  const [isEntryLoading, setIsEntryLoading] = useState<boolean>(false);
 
   const currentInputLength = editInput.length;
 
@@ -35,8 +38,57 @@ export default function Entry(props: any) {
     }
   }
 
+  async function handleChangeTodo() {
+    try {
+      setIsEntryLoading(() => true);
+      handleToggleEdit(id);
+      await onSave(id, editInput, undefined);
+    } catch {
+      throw new Error("error updating todo");
+    } finally {
+      setIsEntryLoading(() => false);
+    }
+  }
+  async function handleDeleteTodo() {
+    try {
+      setIsEntryLoading(() => true);
+      await onDelete(id);
+    } catch {
+      throw new Error("error deleting todo");
+    } finally {
+      setIsEntryLoading(() => false);
+    }
+  }
+
+  const override: CSSProperties = {
+    display: "block",
+    //margin: "0 auto",
+    borderColor: "red",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50px, -50%)",
+  };
+  const color = "yellow";
+
   return (
     <div className="entry-box">
+      {isEntryLoading ? (
+        <div className="todo-loader-box">
+          <BarLoader
+            color={color}
+            cssOverride={override}
+            loading={isEntryLoading}
+            height={4}
+            width={100}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          ></BarLoader>
+        </div>
+      ) : (
+        <></>
+      )}
+
       <Checkbox
         onChange={handleCheckbox}
         checked={completed}
@@ -79,14 +131,7 @@ export default function Entry(props: any) {
       <div className="button-edit-container">
         {nowEdited === id ? (
           <>
-            <ButtonEdit
-              onClick={() => {
-                handleToggleEdit(id);
-                onSave(id, editInput, undefined);
-              }}
-            >
-              Save
-            </ButtonEdit>
+            <ButtonEdit onClick={handleChangeTodo}>Save</ButtonEdit>
             <ButtonEdit
               onClick={() => {
                 handleToggleEdit(id);
@@ -106,7 +151,7 @@ export default function Entry(props: any) {
           </ButtonEdit>
         )}
       </div>
-      <ButtonDelete onClick={onDelete} id={id} />
+      <ButtonDelete onClick={handleDeleteTodo} />
     </div>
   );
 }

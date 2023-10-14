@@ -10,6 +10,7 @@ export default function Checkbox(props: any) {
     margin: "0 auto",
     borderColor: "red",
     position: "absolute",
+    zIndex: 10,
   };
   const color = "yellow";
 
