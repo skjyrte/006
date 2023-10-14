@@ -10,7 +10,9 @@
 .char-counter-edit {
   width: 3rem;
   height: 2rem;
+  display: "block";
   position: absolute;
+  /*   transform: translate(-50%, -50%); */
 }
 
 .char-counter-input {

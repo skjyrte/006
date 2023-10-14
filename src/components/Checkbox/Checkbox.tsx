@@ -23,7 +23,7 @@ export default function Checkbox(props: any) {
         color={color}
         cssOverride={override}
         loading={isLoading}
-        size={45}
+        size={40}
         aria-label="Loading Spinner"
         data-testid="loader"
       ></PuffLoader>
