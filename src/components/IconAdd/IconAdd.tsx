@@ -6,29 +6,11 @@ export default function IconAdd(props: any) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="100%"
-      height="1000"
-      viewBox="0 0 1000 1000"
+      height="100%"
+      fill={color}
+      viewBox="0 0 256 256"
     >
-      <rect x="0" y="0" width="100%" height="100%" fill="rgba(255,255,255,0)" />
-      <g
-        transform="matrix(25.0276 25.2275 -25.2275 25.0276 500.0001 499.9994)"
-        id="926890"
-      >
-        <path
-          style={{
-            strokeWidth: 1,
-            strokeLinejoin: "miter",
-            strokeMiterlimit: 4,
-            fill: color,
-            fillRule: "evenodd",
-            opacity: 1,
-          }}
-          vector-effect="non-scaling-stroke"
-          transform=" translate(-8.839, -8.8395)"
-          d="M 16.97 0 l 0.708 0.707 L 9.546 8.84 l 8.132 8.132 l -0.707 0.707 l -8.132 -8.132 l -8.132 8.132 L 0 16.97 l 8.132 -8.132 L 0 0.707 L 0.707 0 L 8.84 8.132 L 16.971 0 z"
-          stroke-linecap="round"
-        />
-      </g>
+      <path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path>
     </svg>
   );
 }
