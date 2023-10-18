@@ -87,7 +87,7 @@ export default function Container() {
     } catch (e: any) {
       setToDos([]);
       console.error(e);
-      toast.error(e.message, {
+      toast.error("Unable to get the entries.", {
         position: toast.POSITION.TOP_CENTER,
       });
     }
@@ -131,11 +131,10 @@ export default function Container() {
       }
       setInput("");
     } catch (e: any) {
-      toast.error(e.message, {
+      toast.error("Unable to add the entry.", {
         position: toast.POSITION.TOP_CENTER,
       });
       console.error(e);
-      console.log("catch part");
     }
   }
 
@@ -168,7 +167,10 @@ export default function Container() {
       } else {
         throw new Error("DELETE: error getting response");
       }
-    } catch (e) {
+    } catch (e: any) {
+      toast.error("Unable to delete the entry.", {
+        position: toast.POSITION.TOP_CENTER,
+      });
       console.error(e);
     }
   }
@@ -227,6 +229,9 @@ export default function Container() {
         throw new Error("PATCH: error getting response");
       }
     } catch (e) {
+      toast.error("Unable to save the edit.", {
+        position: toast.POSITION.TOP_CENTER,
+      });
       console.error(e);
     }
   }

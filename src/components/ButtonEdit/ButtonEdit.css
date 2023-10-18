@@ -2,7 +2,7 @@
   /* font */
   letter-spacing: 0.1rem;
   font-size: 0.7rem;
-  color: var(--dark-grayish-blue);
+  color: var(--button-enabled);
   font-weight: 300;
   /* box */
   display: flex;
@@ -16,21 +16,29 @@
   padding: 0.25rem;
   margin: 0.25rem;
   background: none;
-
   border-radius: 3px;
 }
 
-.button-edit:hover {
-  color: var(--light-grayish-blue);
-  filter: drop-shadow(0 0 5px var(--pearl-white));
+.disabled {
+  color: var(--button-disabled);
+}
+
+.button-edit:hover:hover {
+  color: var(--button-hover);
+  filter: drop-shadow(0 0 5px var(--button-drop-shadow));
 }
 
 .button-edit:active {
-  background-color: var(--very-dark-grayish-blue);
+  background-color: var(--button-active-background);
 }
 
 @media (max-width: 660px) {
   .button-edit {
     height: 1rem;
   }
+}
+
+.disabled:hover:hover {
+  filter: unset;
+  color: var(--button-disabled);
 }

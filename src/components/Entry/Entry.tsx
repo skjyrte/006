@@ -25,6 +25,7 @@ export default function Entry(props: any) {
   const [isEntryLoading, setIsEntryLoading] = useState<boolean>(false);
 
   const currentInputLength = editInput.length;
+  const buttonDisabled = currentInputLength === 0 ? true : false;
 
   async function handleCheckbox() {
     shutTheEdit();
@@ -131,11 +132,17 @@ export default function Entry(props: any) {
       <div className="button-edit-container">
         {nowEdited === id ? (
           <>
-            <ButtonEdit onClick={handleChangeTodo}>Save</ButtonEdit>
+            <ButtonEdit
+              onClick={handleChangeTodo}
+              buttonDisabled={buttonDisabled}
+            >
+              Save
+            </ButtonEdit>
             <ButtonEdit
               onClick={() => {
                 handleToggleEdit(id);
               }}
+              buttonDisabled={false}
             >
               Discard
             </ButtonEdit>
@@ -146,6 +153,7 @@ export default function Entry(props: any) {
               setEditInput(toDo); //synchronize edited value with database value
               handleToggleEdit(id);
             }}
+            buttonDisabled={false}
           >
             Edit
           </ButtonEdit>

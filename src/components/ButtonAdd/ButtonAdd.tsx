@@ -2,7 +2,6 @@ import React from "react";
 import "./ButtonAdd.css";
 import MoonLoader from "react-spinners/MoonLoader";
 import { CSSProperties } from "react";
-import "../IconAdd/IconAdd";
 import IconAdd from "../IconAdd/IconAdd";
 
 export default function ButtonAdd(props: any) {
@@ -24,7 +23,7 @@ export default function ButtonAdd(props: any) {
           onClick={onClick}
           disabled={buttonDisabled}
         >
-          <IconAdd color="rgb(110, 141, 0)" />
+          <IconAdd />
         </button>
         <MoonLoader
           color={color}

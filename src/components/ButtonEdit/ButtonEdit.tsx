@@ -1,9 +1,14 @@
 import "./ButtonEdit.css";
 
 export default function ButtonEdit(props: any) {
-  const { onClick, children } = props;
+  const { onClick, buttonDisabled, children } = props;
+
   return (
-    <button className="button-edit" onClick={onClick}>
+    <button
+      className={buttonDisabled ? "button-edit disabled" : "button-edit"}
+      onClick={onClick}
+      disabled={buttonDisabled}
+    >
       {children}
     </button>
   );

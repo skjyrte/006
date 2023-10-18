@@ -4,6 +4,15 @@
   --linear-gradient-1: hsl(192, 100%, 67%);
   --linear-gradient-2: hsl(280, 87%, 65%);
   --pearl-white: hsl(300, 100%, 100%);
+  /* buttons */
+  --button-enabled: hsl(236, 9%, 61%);
+  --button-disabled: hsl(236, 9%, 20%);
+  --button-drop-shadow: var(--pearl-white);
+  --button-active-background: var(--very-dark-grayish-blue);
+  --button-hover: var(--light-grayish-blue);
+  --checkbox-background: var(--pearl-white);
+  --checkbox-gradient-1: var(--linear-gradient-1);
+  --checkbox-gradient-2: var(--linear-gradient-2);
 
   /* light theme */
   --very-light-gray: hsl(0, 0%, 98%);
