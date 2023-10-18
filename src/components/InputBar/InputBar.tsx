@@ -19,6 +19,8 @@ export default function InputBar(props: any) {
   }
 
   const currentInputLength = inputValue.length;
+  const buttonDisabled = currentInputLength === 0 ? true : false;
+
   return (
     <div className="input-bar">
       <CharCounter
@@ -26,7 +28,6 @@ export default function InputBar(props: any) {
         maxCharCount={70}
         counter_type="char-counter-input"
       />
-
       <input
         type="text"
         id="task"
@@ -40,7 +41,11 @@ export default function InputBar(props: any) {
         onChange={onChange}
         value={inputValue}
       />
-      <ButtonAdd onClick={handleEntryAdd} isEntryAdding={isEntryAdding} />
+      <ButtonAdd
+        onClick={handleEntryAdd}
+        isEntryAdding={isEntryAdding}
+        buttonDisabled={buttonDisabled}
+      />
     </div>
   );
 }

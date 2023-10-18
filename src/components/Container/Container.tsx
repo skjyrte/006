@@ -6,6 +6,8 @@ import IconButton from "../ButtonTheme/ButtonTheme";
 import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
 import { useEffect } from "react";
 import { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
@@ -82,9 +84,12 @@ export default function Container() {
       } else {
         throw new Error("GET: error getting response");
       }
-    } catch (e) {
+    } catch (e: any) {
       setToDos([]);
       console.error(e);
+      toast.error(e.message, {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
   }
 
@@ -115,6 +120,9 @@ export default function Container() {
         ) {
           //pushing todo to an array, prevent batching
           setToDos((toDos) => [...toDos, responseBody.data]);
+          toast.success("Added successfully.", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
         } else {
           throw new Error(responseBody.message);
         }
@@ -122,8 +130,12 @@ export default function Container() {
         throw new Error("POST: error getting response");
       }
       setInput("");
-    } catch (e) {
+    } catch (e: any) {
+      toast.error(e.message, {
+        position: toast.POSITION.TOP_CENTER,
+      });
       console.error(e);
+      console.log("catch part");
     }
   }
 
@@ -251,20 +263,67 @@ export default function Container() {
       handleDeleteEntry(todo._id);
     });
   }
+
+  /*   const notify = () => {
+        toast("Default Notification !");
+     
+    toast.success("Success Notification !", {
+      position: toast.POSITION.TOP_CENTER,
+    });
+    
+    toast.error("Error Notification !", {
+      position: toast.POSITION.TOP_LEFT,
+    });
+
+    toast.warn("Warning Notification !", {
+      position: toast.POSITION.BOTTOM_LEFT,
+    });
+
+    toast.info("Info Notification !", {
+      position: toast.POSITION.BOTTOM_CENTER,
+    });
+
+    toast("Custom Style Notification with css class!", {
+      position: toast.POSITION.BOTTOM_RIGHT,
+      className: "foo-bar",
+    });
+  };
+ */
+
   return (
     <>
+      <img
+        className="button-add disabled"
+        src="./icon-add.svg"
+        alt="icon add"
+      ></img>
+      ;
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        limit={0}
+      />
+      ;
       <div className="outer-box">
         <header className="main-header">
           <ButtonRefresh onClick={() => console.log(toDos)}></ButtonRefresh>
           <span></span>
           <IconButton></IconButton>
         </header>
+
         <InputBar
           onChange={handleTextChange}
           onClick={handleAddEntry}
           inputValue={input}
         ></InputBar>
-
         <div className="todos-container">
           <>
             {typeof toDosList === "object" && "length" in toDosList ? (

@@ -2,24 +2,29 @@ import React from "react";
 import "./ButtonAdd.css";
 import MoonLoader from "react-spinners/MoonLoader";
 import { CSSProperties } from "react";
+import "../IconAdd/IconAdd";
+import IconAdd from "../IconAdd/IconAdd";
 
 export default function ButtonAdd(props: any) {
-  const { onClick, isEntryAdding } = props;
+  const { onClick, isEntryAdding, buttonDisabled } = props;
 
   const override: CSSProperties = {
     display: "block",
     borderColor: "red",
     position: "absolute",
-    /*     transform: "translate(-50%, -50%)", */
     zIndex: "10",
   };
   const color = "yellow";
 
   return (
     <>
-      <div className="button-add-container">
-        <button className="button-add" onClick={onClick}>
-          <img className="button-add" src="./icon-add.svg" alt="icon add"></img>
+      <div className={"button-add-container"}>
+        <button
+          className={buttonDisabled ? "button-add disabled" : "button-add"}
+          onClick={onClick}
+          disabled={buttonDisabled}
+        >
+          <IconAdd color="rgb(110, 141, 0)" />
         </button>
         <MoonLoader
           color={color}

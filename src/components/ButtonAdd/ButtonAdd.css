@@ -10,6 +10,10 @@
   display: flex;
 }
 
+.disabled {
+  /*   filter: grayscale(100%); */
+}
+
 .button-add-container {
   display: flex;
   padding: 0 0;
