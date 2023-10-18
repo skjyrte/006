@@ -297,12 +297,6 @@ export default function Container() {
 
   return (
     <>
-      <img
-        className="button-add disabled"
-        src="./icon-add.svg"
-        alt="icon add"
-      ></img>
-      ;
       <ToastContainer
         position="top-right"
         autoClose={2000}
