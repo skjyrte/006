@@ -1,6 +1,7 @@
 body {
   margin: 0;
   background-color: var(--very-dark-blue);
+  position: relative;
 }
 
 .cover-image {

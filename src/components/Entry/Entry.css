@@ -11,6 +11,9 @@
   width: 100%;
   background-color: var(--very-dark-desaturated-blue);
   position: relative;
+  /* below necessary to fix the rbdnd position of entry */
+  /*   left: auto !important;
+  top: auto !important; */
 }
 
 .todo-loader-box {

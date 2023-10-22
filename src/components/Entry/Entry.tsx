@@ -7,6 +7,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import CharCounter from "../CharCounter/CharCounter";
 import BarLoader from "react-spinners/BarLoader";
 import { CSSProperties } from "react";
+import { Draggable } from "react-beautiful-dnd";
 
 export default function Entry(props: any) {
   const {
@@ -18,6 +19,7 @@ export default function Entry(props: any) {
     nowEdited,
     handleToggleEdit,
     shutTheEdit,
+    index,
   } = props;
 
   const [editInput, setEditInput] = useState<string>(toDo);
@@ -73,93 +75,107 @@ export default function Entry(props: any) {
   const color = "yellow";
 
   return (
-    <div className="entry-box">
-      {isEntryLoading ? (
-        <div className="todo-loader-box">
-          <BarLoader
-            color={color}
-            cssOverride={override}
-            loading={isEntryLoading}
-            height={4}
-            width={100}
-            aria-label="Loading Spinner"
-            data-testid="loader"
-          ></BarLoader>
-        </div>
-      ) : (
-        <></>
-      )}
-
-      <Checkbox
-        onChange={handleCheckbox}
-        checked={completed}
-        isLoading={isCheckboxLoading}
-      />
-      {nowEdited === id ? (
-        <>
-          <CharCounter
-            charCount={currentInputLength}
-            maxCharCount={70}
-            counter_type="char-counter-edit"
-          />
-          <TextareaAutosize
-            id="task"
-            placeholder="Type edited task..."
-            name="task"
-            className="edit-input-field"
-            maxLength={70}
-            minRows={1}
-            onChange={(e) => {
-              const singleLineInput = e.target.value
-                .split("")
-                .filter((char) => char !== "\n")
-                .join("");
-              return setEditInput(singleLineInput);
-            }}
-            value={editInput}
-          />
-        </>
-      ) : (
-        <>
+    <Draggable draggableId={id} index={index}>
+      {(provided) => {
+        return (
           <div
-            className={completed ? "todo-content completed" : "todo-content"}
+            className="entry-box"
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
           >
-            {toDo}
-          </div>{" "}
-        </>
-      )}
+            {isEntryLoading ? (
+              <div className="todo-loader-box">
+                <BarLoader
+                  color={color}
+                  cssOverride={override}
+                  loading={isEntryLoading}
+                  height={4}
+                  width={100}
+                  aria-label="Loading Spinner"
+                  data-testid="loader"
+                ></BarLoader>
+              </div>
+            ) : (
+              <></>
+            )}
 
-      <div className="button-edit-container">
-        {nowEdited === id ? (
-          <>
-            <ButtonEdit
-              onClick={handleChangeTodo}
-              buttonDisabled={buttonDisabled}
-            >
-              Save
-            </ButtonEdit>
-            <ButtonEdit
-              onClick={() => {
-                handleToggleEdit(id);
-              }}
-              buttonDisabled={false}
-            >
-              Discard
-            </ButtonEdit>
-          </>
-        ) : (
-          <ButtonEdit
-            onClick={() => {
-              setEditInput(toDo); //synchronize edited value with database value
-              handleToggleEdit(id);
-            }}
-            buttonDisabled={false}
-          >
-            Edit
-          </ButtonEdit>
-        )}
-      </div>
-      <ButtonDelete onClick={handleDeleteTodo} />
-    </div>
+            <Checkbox
+              onChange={handleCheckbox}
+              checked={completed}
+              isLoading={isCheckboxLoading}
+            />
+            {nowEdited === id ? (
+              <>
+                <CharCounter
+                  charCount={currentInputLength}
+                  maxCharCount={70}
+                  counter_type="char-counter-edit"
+                />
+                <TextareaAutosize
+                  id="task"
+                  placeholder="Type edited task..."
+                  name="task"
+                  className="edit-input-field"
+                  maxLength={70}
+                  minRows={1}
+                  onChange={(e) => {
+                    const singleLineInput = e.target.value
+                      .split("")
+                      .filter((char) => char !== "\n")
+                      .join("");
+                    return setEditInput(singleLineInput);
+                  }}
+                  value={editInput}
+                />
+              </>
+            ) : (
+              <>
+                <div
+                  className={
+                    completed ? "todo-content completed" : "todo-content"
+                  }
+                >
+                  {toDo}
+                </div>{" "}
+              </>
+            )}
+
+            <div className="button-edit-container">
+              {nowEdited === id ? (
+                <>
+                  <ButtonEdit
+                    onClick={handleChangeTodo}
+                    buttonDisabled={buttonDisabled}
+                  >
+                    Save
+                  </ButtonEdit>
+                  <ButtonEdit
+                    onClick={() => {
+                      handleToggleEdit(id);
+                    }}
+                    buttonDisabled={false}
+                  >
+                    Discard
+                  </ButtonEdit>
+                </>
+              ) : (
+                <ButtonEdit
+                  onClick={() => {
+                    setEditInput(toDo); //synchronize edited value with database value
+                    handleToggleEdit(id);
+                  }}
+                  buttonDisabled={false}
+                >
+                  Edit
+                </ButtonEdit>
+              )}
+            </div>
+            <ButtonDelete onClick={handleDeleteTodo} />
+            {/*           {provided.placeholder} */}
+          </div>
+        );
+      }}
+    </Draggable>
   );
 }

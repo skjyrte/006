@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
@@ -47,7 +48,7 @@ export default function Container() {
         return todo.completed === true;
       } else throw new Error("Invalid filterState");
     });
-    toDosList = filteredToDos.map((toDo) => {
+    toDosList = filteredToDos.map((toDo, index: number) => {
       return (
         <Entry
           key={toDo._id}
@@ -59,6 +60,7 @@ export default function Container() {
           nowEdited={nowEdited}
           handleToggleEdit={handleToggleEdit}
           shutTheEdit={shutTheEdit}
+          index={index}
         />
       );
     });
@@ -269,31 +271,35 @@ export default function Container() {
     });
   }
 
-  /*   const notify = () => {
-        toast("Default Notification !");
-     
-    toast.success("Success Notification !", {
-      position: toast.POSITION.TOP_CENTER,
-    });
-    
-    toast.error("Error Notification !", {
-      position: toast.POSITION.TOP_LEFT,
-    });
+  //react bnd start
 
-    toast.warn("Warning Notification !", {
-      position: toast.POSITION.BOTTOM_LEFT,
-    });
+  function onDragEnd(result: any) {
+    if (!result.destination) {
+      return;
+    }
 
-    toast.info("Info Notification !", {
-      position: toast.POSITION.BOTTOM_CENTER,
-    });
+    if (result.destination.index === result.source.index) {
+      return;
+    }
 
-    toast("Custom Style Notification with css class!", {
-      position: toast.POSITION.BOTTOM_RIGHT,
-      className: "foo-bar",
-    });
+    const quotes = reorder(
+      toDos,
+      result.source.index,
+      result.destination.index
+    );
+
+    setToDos(quotes);
+  }
+
+  const reorder = (list: any, startIndex: any, endIndex: any) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
   };
- */
+
+  //react bnd end
 
   return (
     <>
@@ -323,19 +329,22 @@ export default function Container() {
           onClick={handleAddEntry}
           inputValue={input}
         ></InputBar>
-        <div className="todos-container">
-          <>
-            {typeof toDosList === "object" && "length" in toDosList ? (
-              toDosList.length !== 0 ? (
-                toDosList
-              ) : (
-                <div className="no-entry">No entry to show</div>
-              )
-            ) : (
-              <div className="no-entry">ERROR OR LOADING?</div>
-            )}
-          </>
-        </div>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="list">
+            {(provided: any) => {
+              return (
+                <div
+                  className="todos-container"
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  {toDosList}
+                  {provided.placeholder}
+                </div>
+              );
+            }}
+          </Droppable>
+        </DragDropContext>
         <Footer
           onClick={handleShowState}
           countActiveToDos={countActiveToDos(toDos)}
