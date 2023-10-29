@@ -4,8 +4,7 @@ import InputBar from "../InputBar/InputBar";
 import Footer from "../Footer/Footer";
 import IconButton from "../ButtonTheme/ButtonTheme";
 import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -14,8 +13,30 @@ export default function Container() {
   const [input, setInput] = useState<string>("");
   const [filterState, setFilterState] = useState<string>("All");
   const [nowEdited, setNowEdited] = useState<string>("");
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  console.log(toDos);
+  const observer: any = useRef();
+  const lastElementRef = useCallback(
+    (node: any) => {
+      if (loading) return;
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+      observer.current = new IntersectionObserver(async (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPageNumber((prevPageNumber) => prevPageNumber + 1);
+          console.log("pageNumber");
+          console.log(pageNumber);
+          await handleLoadMore();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
+
   function handleToggleEdit(id: string) {
     if (nowEdited === id) {
       setNowEdited("");
@@ -29,7 +50,12 @@ export default function Container() {
   }
 
   useEffect(() => {
-    handleGetEntries();
+    (async () => {
+      const result = await handleGetEntries();
+      setToDos(result);
+      setHasMore(result.length > 0);
+    })();
+    return;
   }, []);
 
   let toDosList: any;
@@ -47,7 +73,7 @@ export default function Container() {
         return todo.completed === true;
       } else throw new Error("Invalid filterState");
     });
-    toDosList = filteredToDos.map((toDo) => {
+    toDosList = filteredToDos.map((toDo, index) => {
       return (
         <Entry
           key={toDo._id}
@@ -59,6 +85,7 @@ export default function Container() {
           nowEdited={nowEdited}
           handleToggleEdit={handleToggleEdit}
           shutTheEdit={shutTheEdit}
+          refValue={index + 1 === toDos.length ? lastElementRef : undefined}
         />
       );
     });
@@ -66,10 +93,16 @@ export default function Container() {
 
   async function handleGetEntries() {
     shutTheEdit();
+    setLoading(true);
+
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/todos`, {
-        mode: "cors",
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/todos/?page=${pageNumber}`,
+        {
+          mode: "cors",
+          method: "GET",
+        }
+      );
       const responseBody = await response.json();
 
       if (responseStatus(responseBody)) {
@@ -77,7 +110,7 @@ export default function Container() {
           typeof responseBody.data === "object" &&
           responseBody.success === true
         ) {
-          setToDos(responseBody.data);
+          return responseBody.data.currentData;
         } else {
           throw new Error(responseBody.message);
         }
@@ -85,12 +118,19 @@ export default function Container() {
         throw new Error("GET: error getting response");
       }
     } catch (e: any) {
-      setToDos([]);
-      console.error(e);
       toast.error("Unable to get the entries.", {
         position: toast.POSITION.TOP_CENTER,
       });
+      return [];
+    } finally {
+      setLoading(false);
     }
+  }
+
+  async function handleLoadMore() {
+    const result = await handleGetEntries();
+    setHasMore(result.length > 0);
+    setToDos((prevState) => [...prevState, ...result]);
   }
 
   function handleTextChange(e: any) {
@@ -250,7 +290,7 @@ export default function Container() {
   type validResponse = {
     success: boolean;
     message: string;
-    data?: unknown[];
+    data: any; // ? TO FIX LATER!!!
   };
 
   function handleShowState(showState: string) {

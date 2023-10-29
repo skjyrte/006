@@ -18,6 +18,7 @@ export default function Entry(props: any) {
     nowEdited,
     handleToggleEdit,
     shutTheEdit,
+    refValue,
   } = props;
 
   const [editInput, setEditInput] = useState<string>(toDo);
@@ -73,7 +74,7 @@ export default function Entry(props: any) {
   const color = "yellow";
 
   return (
-    <div className="entry-box">
+    <div ref={refValue} className="entry-box">
       {isEntryLoading ? (
         <div className="todo-loader-box">
           <BarLoader
