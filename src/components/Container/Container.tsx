@@ -21,6 +21,7 @@ export default function Container() {
   const observer: any = useRef();
   const lastElementRef = useCallback(
     (node: any) => {
+      console.log(observer.current);
       if (loading) return;
       if (observer.current) {
         observer.current.disconnect();
@@ -28,10 +29,10 @@ export default function Container() {
       observer.current = new IntersectionObserver(
         async (entries) => {
           if (entries[0].isIntersecting && hasMore) {
-            setPageNumber((prevPageNumber) => prevPageNumber + 1);
             console.log("pageNumber");
             console.log(pageNumber);
             await handleLoadMore();
+            setPageNumber((prevPageNumber) => prevPageNumber + 1);
           }
         },
         { root: todosContainerRef.current }
@@ -58,6 +59,9 @@ export default function Container() {
       const result = await handleGetEntries();
       setToDos(result);
       setHasMore(result.length > 0);
+      if (result.length > 0) {
+        setPageNumber((prevPageNumber) => prevPageNumber + 1);
+      }
     })();
     return;
   }, []);
@@ -132,9 +136,11 @@ export default function Container() {
   }
 
   async function handleLoadMore() {
-    const result = await handleGetEntries();
-    setToDos((prevState) => [...prevState, ...result]);
-    setHasMore(result.length > 0);
+    if (hasMore === true) {
+      const result = await handleGetEntries();
+      setToDos((prevState) => [...prevState, ...result]);
+      setHasMore(result.length > 0);
+    }
   }
 
   function handleTextChange(e: any) {
