@@ -17,6 +17,7 @@ export default function Container() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const todosContainerRef: any = useRef();
   const observer: any = useRef();
   const lastElementRef = useCallback(
     (node: any) => {
@@ -24,14 +25,17 @@ export default function Container() {
       if (observer.current) {
         observer.current.disconnect();
       }
-      observer.current = new IntersectionObserver(async (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPageNumber((prevPageNumber) => prevPageNumber + 1);
-          console.log("pageNumber");
-          console.log(pageNumber);
-          await handleLoadMore();
-        }
-      });
+      observer.current = new IntersectionObserver(
+        async (entries) => {
+          if (entries[0].isIntersecting && hasMore) {
+            setPageNumber((prevPageNumber) => prevPageNumber + 1);
+            console.log("pageNumber");
+            console.log(pageNumber);
+            await handleLoadMore();
+          }
+        },
+        { root: todosContainerRef.current }
+      );
       if (node) observer.current.observe(node);
     },
     [loading, hasMore]
@@ -129,8 +133,8 @@ export default function Container() {
 
   async function handleLoadMore() {
     const result = await handleGetEntries();
-    setHasMore(result.length > 0);
     setToDos((prevState) => [...prevState, ...result]);
+    setHasMore(result.length > 0);
   }
 
   function handleTextChange(e: any) {
@@ -363,7 +367,7 @@ export default function Container() {
           onClick={handleAddEntry}
           inputValue={input}
         ></InputBar>
-        <div className="todos-container">
+        <div className="todos-container" ref={todosContainerRef}>
           <>
             {typeof toDosList === "object" && "length" in toDosList ? (
               toDosList.length !== 0 ? (
