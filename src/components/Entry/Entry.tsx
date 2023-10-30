@@ -2,13 +2,13 @@ import "./Entry.css";
 import Checkbox from "../Checkbox/Checkbox";
 import ButtonDelete from "../ButtonDelete/ButtonDelete";
 import ButtonEdit from "../ButtonEdit/ButtonEdit";
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import CharCounter from "../CharCounter/CharCounter";
 import BarLoader from "react-spinners/BarLoader";
 import { CSSProperties } from "react";
 
-export default function Entry(props: any) {
+export default forwardRef(function Entry(props: any, ref: any) {
   const {
     id,
     toDo,
@@ -18,7 +18,6 @@ export default function Entry(props: any) {
     nowEdited,
     handleToggleEdit,
     shutTheEdit,
-    refValue,
   } = props;
 
   const [editInput, setEditInput] = useState<string>(toDo);
@@ -74,7 +73,7 @@ export default function Entry(props: any) {
   const color = "yellow";
 
   return (
-    <div ref={refValue} className="entry-box">
+    <div ref={ref} className="entry-box">
       {isEntryLoading ? (
         <div className="todo-loader-box">
           <BarLoader
@@ -163,4 +162,4 @@ export default function Entry(props: any) {
       <ButtonDelete onClick={handleDeleteTodo} />
     </div>
   );
-}
+});

@@ -4,8 +4,9 @@ import InputBar from "../InputBar/InputBar";
 import Footer from "../Footer/Footer";
 import IconButton from "../ButtonTheme/ButtonTheme";
 import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { toast, ToastContainer } from "react-toastify";
+import useIsInViewport from "../useIsInViewport";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Container() {
@@ -17,7 +18,17 @@ export default function Container() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const lastElement = useRef<HTMLElement>();
+  useIsInViewport(lastElement);
+
+  const setRefElement = (el: HTMLElement) => {
+    if (!el) return;
+    lastElement.current = el;
+    console.log(lastElement.current.textContent);
+  };
+
   const todosContainerRef: any = useRef();
+  /* 
   const observer: any = useRef();
   const lastElementRef = useCallback(
     (node: any) => {
@@ -41,6 +52,38 @@ export default function Container() {
     },
     [loading, hasMore]
   );
+ */
+  /*     const observer: any = useRef();
+    const lastElementRef = useCallback(
+      (node: any) => {
+        console.log(observer.current);
+        if (loading) return;
+        if (observer.current) {
+          observer.current.disconnect();
+        }
+        observer.current = new IntersectionObserver(
+          async (entries) => {
+            if (entries[0].isIntersecting && hasMore) {
+              console.log("pageNumber");
+              console.log(pageNumber);
+              await handleLoadMore();
+              setPageNumber((prevPageNumber) => prevPageNumber + 1);
+            }
+          },
+          { root: todosContainerRef.current }
+        );
+        if (node) observer.current.observe(node);
+      },
+      [loading, hasMore]
+    ); */
+
+  /*      async function Bladaba() {
+    if (loading) return;
+    if (useIsInViewport(lastElement) && hasMore) {
+      await handleLoadMore();
+      setPageNumber((prevPageNumber) => prevPageNumber + 1);
+    }
+  }  */
 
   function handleToggleEdit(id: string) {
     if (nowEdited === id) {
@@ -93,7 +136,9 @@ export default function Container() {
           nowEdited={nowEdited}
           handleToggleEdit={handleToggleEdit}
           shutTheEdit={shutTheEdit}
-          refValue={index + 1 === toDos.length ? lastElementRef : undefined}
+          ref={(ref: any) => {
+            index === toDosList.length - 1 && setRefElement(ref);
+          }}
         />
       );
     });
