@@ -1,11 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, RefObject, useMemo, useEffect } from "react";
 
-interface ExampleProps {
-  ref: React.RefObject<HTMLElement>;
-}
-
-export default function useIsInViewport(props: ExampleProps) {
-  const { ref } = props;
+export default function useIsInViewport(ref: RefObject<HTMLElement>) {
   const [isIntersecting, setIsIntersecting] = useState(false);
 
   const observer = useMemo(

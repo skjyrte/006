@@ -18,12 +18,13 @@ export default function Container() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const lastElement = useRef<HTMLElement>();
-  useIsInViewport(lastElement);
+  const lastElement = useRef<HTMLElement | null>(null);
+  const isInViewport = useIsInViewport(lastElement);
 
   const setRefElement = (el: HTMLElement) => {
     if (!el) return;
     lastElement.current = el;
+    console.log("refelement");
     console.log(lastElement.current.textContent);
   };
 
@@ -77,13 +78,14 @@ export default function Container() {
       [loading, hasMore]
     ); */
 
-  /*      async function Bladaba() {
-    if (loading) return;
-    if (useIsInViewport(lastElement) && hasMore) {
+  async function Bladaba() {
+    /*     if (loading) return; */
+    console.log(isInViewport);
+    if (isInViewport) {
       await handleLoadMore();
       setPageNumber((prevPageNumber) => prevPageNumber + 1);
     }
-  }  */
+  }
 
   function handleToggleEdit(id: string) {
     if (nowEdited === id) {
@@ -102,8 +104,9 @@ export default function Container() {
       const result = await handleGetEntries();
       setToDos(result);
       setHasMore(result.length > 0);
-      if (result.length > 0) {
+      if ((await result.length) > 0) {
         setPageNumber((prevPageNumber) => prevPageNumber + 1);
+        Bladaba();
       }
     })();
     return;
@@ -137,7 +140,7 @@ export default function Container() {
           handleToggleEdit={handleToggleEdit}
           shutTheEdit={shutTheEdit}
           ref={(ref: any) => {
-            index === toDosList.length - 1 && setRefElement(ref);
+            return index === toDosList.length - 1 && setRefElement(ref);
           }}
         />
       );
