@@ -1,13 +1,12 @@
-import "./Container.css";
 import Entry from "../Entry/Entry";
 import InputBar from "../InputBar/InputBar";
 import Footer from "../Footer/Footer";
 import IconButton from "../ButtonTheme/ButtonTheme";
 import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import useIsInViewport from "../useIsInViewport";
-import "react-toastify/dist/ReactToastify.css";
+import "./Container.css";
 
 export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
@@ -19,85 +18,13 @@ export default function Container() {
   const [loading, setLoading] = useState(true);
 
   const lastElement = useRef<HTMLElement | null>(null);
-  const isInViewport = useIsInViewport(lastElement);
+  console.log(lastElement);
 
   const setRefElement = (el: HTMLElement) => {
     if (!el) return;
     lastElement.current = el;
-    console.log("refelement");
-    console.log(lastElement.current.textContent);
+    console.log(lastElement.current);
   };
-
-  const todosContainerRef: any = useRef();
-  /* 
-  const observer: any = useRef();
-  const lastElementRef = useCallback(
-    (node: any) => {
-      console.log(observer.current);
-      if (loading) return;
-      if (observer.current) {
-        observer.current.disconnect();
-      }
-      observer.current = new IntersectionObserver(
-        async (entries) => {
-          if (entries[0].isIntersecting && hasMore) {
-            console.log("pageNumber");
-            console.log(pageNumber);
-            await handleLoadMore();
-            setPageNumber((prevPageNumber) => prevPageNumber + 1);
-          }
-        },
-        { root: todosContainerRef.current }
-      );
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore]
-  );
- */
-  /*     const observer: any = useRef();
-    const lastElementRef = useCallback(
-      (node: any) => {
-        console.log(observer.current);
-        if (loading) return;
-        if (observer.current) {
-          observer.current.disconnect();
-        }
-        observer.current = new IntersectionObserver(
-          async (entries) => {
-            if (entries[0].isIntersecting && hasMore) {
-              console.log("pageNumber");
-              console.log(pageNumber);
-              await handleLoadMore();
-              setPageNumber((prevPageNumber) => prevPageNumber + 1);
-            }
-          },
-          { root: todosContainerRef.current }
-        );
-        if (node) observer.current.observe(node);
-      },
-      [loading, hasMore]
-    ); */
-
-  async function Bladaba() {
-    /*     if (loading) return; */
-    console.log(isInViewport);
-    if (isInViewport) {
-      await handleLoadMore();
-      setPageNumber((prevPageNumber) => prevPageNumber + 1);
-    }
-  }
-
-  function handleToggleEdit(id: string) {
-    if (nowEdited === id) {
-      setNowEdited("");
-    } else {
-      setNowEdited(id);
-    }
-  }
-
-  function shutTheEdit() {
-    setNowEdited("");
-  }
 
   useEffect(() => {
     (async () => {
@@ -106,11 +33,32 @@ export default function Container() {
       setHasMore(result.length > 0);
       if ((await result.length) > 0) {
         setPageNumber((prevPageNumber) => prevPageNumber + 1);
-        Bladaba();
       }
     })();
     return;
   }, []);
+
+  /*
+  useEffect(() => {
+    console.log(isInViewport);
+    if (isInViewport) {
+      (async () => {
+        if (hasMore === true) {
+          const result = await handleGetEntries();
+          setToDos((prevState) => [...prevState, ...result]);
+          setHasMore(result.length > 0);
+          if ((await result.length) > 0) {
+            setPageNumber((prevPageNumber) => prevPageNumber + 1);
+          }
+        }
+      })();
+    }
+  }, [isInViewport, lastElement]);
+ */
+  let isInViewport = useIsInViewport(lastElement);
+  useEffect(() => {
+    console.log(isInViewport);
+  }, [isInViewport]);
 
   let toDosList: any;
 
@@ -140,11 +88,24 @@ export default function Container() {
           handleToggleEdit={handleToggleEdit}
           shutTheEdit={shutTheEdit}
           ref={(ref: any) => {
-            return index === toDosList.length - 1 && setRefElement(ref);
+            console.log(filteredToDos.length);
+            return index === filteredToDos.length - 1 && setRefElement(ref);
           }}
         />
       );
     });
+  }
+
+  function handleToggleEdit(id: string) {
+    if (nowEdited === id) {
+      setNowEdited("");
+    } else {
+      setNowEdited(id);
+    }
+  }
+
+  function shutTheEdit() {
+    setNowEdited("");
   }
 
   async function handleGetEntries() {
@@ -180,14 +141,6 @@ export default function Container() {
       return [];
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function handleLoadMore() {
-    if (hasMore === true) {
-      const result = await handleGetEntries();
-      setToDos((prevState) => [...prevState, ...result]);
-      setHasMore(result.length > 0);
     }
   }
 
@@ -367,32 +320,6 @@ export default function Container() {
     });
   }
 
-  /*   const notify = () => {
-        toast("Default Notification !");
-     
-    toast.success("Success Notification !", {
-      position: toast.POSITION.TOP_CENTER,
-    });
-    
-    toast.error("Error Notification !", {
-      position: toast.POSITION.TOP_LEFT,
-    });
-
-    toast.warn("Warning Notification !", {
-      position: toast.POSITION.BOTTOM_LEFT,
-    });
-
-    toast.info("Info Notification !", {
-      position: toast.POSITION.BOTTOM_CENTER,
-    });
-
-    toast("Custom Style Notification with css class!", {
-      position: toast.POSITION.BOTTOM_RIGHT,
-      className: "foo-bar",
-    });
-  };
- */
-
   return (
     <>
       <ToastContainer
@@ -421,7 +348,7 @@ export default function Container() {
           onClick={handleAddEntry}
           inputValue={input}
         ></InputBar>
-        <div className="todos-container" ref={todosContainerRef}>
+        <div className="todos-container">
           <>
             {typeof toDosList === "object" && "length" in toDosList ? (
               toDosList.length !== 0 ? (

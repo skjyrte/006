@@ -1,12 +1,9 @@
 import "./ButtonTheme.css";
 
 export default function IconButton() {
-  const clickedLog = () => {
-    console.log("Button theme");
-  };
   return (
     // <div className="icon-button-container">
-    <button className="icon-button" onClick={clickedLog}>
+    <button className="icon-button">
       <img
         className="icon-button"
         src="./icon-sun.svg"

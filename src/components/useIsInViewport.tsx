@@ -8,7 +8,7 @@ export default function useIsInViewport(ref: RefObject<HTMLElement>) {
       new IntersectionObserver(([entry]) =>
         setIsIntersecting(entry.isIntersecting)
       ),
-    []
+    [] // will calculate useMemo once, on mount.
   );
 
   useEffect(() => {
@@ -19,7 +19,8 @@ export default function useIsInViewport(ref: RefObject<HTMLElement>) {
     return () => {
       observer.disconnect();
     };
-  }, [ref, observer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ref.current, observer]); //if ref or observer changes, disconnect the observer.
 
   return isIntersecting;
 }
