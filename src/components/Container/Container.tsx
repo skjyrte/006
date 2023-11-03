@@ -18,6 +18,7 @@ export default function Container() {
   const [loading, setLoading] = useState(true);
 
   const lastElement = useRef<HTMLElement | null>(null);
+  const parentRef = useRef(null);
   console.log(lastElement);
 
   const setRefElement = (el: HTMLElement) => {
@@ -28,37 +29,31 @@ export default function Container() {
 
   useEffect(() => {
     (async () => {
-      const result = await handleGetEntries();
-      setToDos(result);
-      setHasMore(result.length > 0);
-      if ((await result.length) > 0) {
-        setPageNumber((prevPageNumber) => prevPageNumber + 1);
-      }
+      await handleLoadMore();
     })();
-    return;
   }, []);
 
-  /*
+  let isInViewport = useIsInViewport(lastElement, parentRef);
+
   useEffect(() => {
     console.log(isInViewport);
-    if (isInViewport) {
+    if (isInViewport === true && loading === false) {
       (async () => {
         if (hasMore === true) {
-          const result = await handleGetEntries();
-          setToDos((prevState) => [...prevState, ...result]);
-          setHasMore(result.length > 0);
-          if ((await result.length) > 0) {
-            setPageNumber((prevPageNumber) => prevPageNumber + 1);
-          }
+          await handleLoadMore();
         }
       })();
     }
-  }, [isInViewport, lastElement]);
- */
-  let isInViewport = useIsInViewport(lastElement);
-  useEffect(() => {
-    console.log(isInViewport);
-  }, [isInViewport]);
+  }, [isInViewport, loading]);
+
+  async function handleLoadMore() {
+    const result = await handleGetEntries();
+    setToDos((prevState) => [...prevState, ...result]);
+    setHasMore(result.length > 0);
+    if ((await result.length) > 0) {
+      setPageNumber((prevPageNumber) => prevPageNumber + 1);
+    }
+  }
 
   let toDosList: any;
 
@@ -75,6 +70,7 @@ export default function Container() {
         return todo.completed === true;
       } else throw new Error("Invalid filterState");
     });
+
     toDosList = filteredToDos.map((toDo, index) => {
       return (
         <Entry
@@ -348,7 +344,7 @@ export default function Container() {
           onClick={handleAddEntry}
           inputValue={input}
         ></InputBar>
-        <div className="todos-container">
+        <div className="todos-container" ref={parentRef}>
           <>
             {typeof toDosList === "object" && "length" in toDosList ? (
               toDosList.length !== 0 ? (

@@ -1,14 +1,20 @@
-import { useState, RefObject, useMemo, useEffect } from "react";
+import { useState, RefObject, useEffect } from "react";
 
-export default function useIsInViewport(ref: RefObject<HTMLElement>) {
+export default function useIsInViewport(
+  ref: RefObject<HTMLElement>,
+  parentRef: any
+) {
   const [isIntersecting, setIsIntersecting] = useState(false);
 
-  const observer = useMemo(
-    () =>
-      new IntersectionObserver(([entry]) =>
-        setIsIntersecting(entry.isIntersecting)
-      ),
-    [] // will calculate useMemo once, on mount.
+  const options = {
+    root: parentRef.current,
+    rootMargin: "0px",
+    threshold: 0.9,
+  };
+
+  const observer = new IntersectionObserver(
+    ([entry]) => setIsIntersecting(entry.isIntersecting),
+    options
   );
 
   useEffect(() => {
@@ -19,8 +25,7 @@ export default function useIsInViewport(ref: RefObject<HTMLElement>) {
     return () => {
       observer.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ref.current, observer]); //if ref or observer changes, disconnect the observer.
+  }, [ref.current, observer]);
 
   return isIntersecting;
 }
