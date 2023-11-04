@@ -18,10 +18,12 @@ export default function Container() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  /*   const lastElement = useRef<HTMLElement | null>(null); */
   const parentElement = useRef(null);
   const ref = useRef();
-  const { ref: inViewRef, inView } = useInView({ root: parentElement.current });
+  const { ref: inViewRef, inView } = useInView({
+    root: parentElement.current,
+    threshold: 0.5,
+  });
 
   useEffect(() => {
     (async () => {
@@ -31,20 +33,18 @@ export default function Container() {
 
   const setRefs = useCallback(
     (node: any) => {
+      if (loading) return;
       // Ref's from useRef needs to have the node assigned to `current`
       ref.current = node;
       console.log(node);
       // Callback refs, like the one from `useInView`, is a function that takes the node as an argument
       inViewRef(node);
     },
-    [inViewRef]
+    [inViewRef, loading]
   );
 
   useEffect(() => {
-    console.log("USE EFFECT LOADING:");
-    console.log("inView === true && loading === false");
-    console.log(inView === true && loading === false);
-    if (inView === true && loading === false) {
+    if (inView === true /*  && loading === false */) {
       (async () => {
         if (hasMore === true) {
           await handleLoadMore();
@@ -55,6 +55,7 @@ export default function Container() {
 
   async function handleLoadMore() {
     const result = await handleGetEntries();
+
     await (() => {
       setToDos((prevState) => [...prevState, ...result]);
       setHasMore(result.length > 0);
