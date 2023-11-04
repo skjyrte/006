@@ -19,11 +19,11 @@ export default function Container() {
 
   const lastElement = useRef<HTMLElement | null>(null);
   const parentRef = useRef(null);
-  console.log(lastElement);
 
   const setRefElement = (el: HTMLElement) => {
     if (!el) return;
     lastElement.current = el;
+    console.log("setting the: lastElement.current");
     console.log(lastElement.current);
   };
 
@@ -36,7 +36,12 @@ export default function Container() {
   let isInViewport = useIsInViewport(lastElement, parentRef);
 
   useEffect(() => {
+    console.log("isInViewport->");
     console.log(isInViewport);
+    console.log("loading->");
+    console.log(loading);
+    console.log("lastElement.current->");
+    console.log(lastElement.current);
     if (isInViewport === true && loading === false) {
       (async () => {
         if (hasMore === true) {
@@ -44,7 +49,7 @@ export default function Container() {
         }
       })();
     }
-  }, [isInViewport, loading]);
+  }, [isInViewport, lastElement.current]);
 
   async function handleLoadMore() {
     const result = await handleGetEntries();
@@ -84,7 +89,6 @@ export default function Container() {
           handleToggleEdit={handleToggleEdit}
           shutTheEdit={shutTheEdit}
           ref={(ref: any) => {
-            console.log(filteredToDos.length);
             return index === filteredToDos.length - 1 && setRefElement(ref);
           }}
         />
@@ -105,8 +109,8 @@ export default function Container() {
   }
 
   async function handleGetEntries() {
+    setLoading(() => true);
     shutTheEdit();
-    setLoading(true);
 
     try {
       const response = await fetch(
@@ -136,7 +140,7 @@ export default function Container() {
       });
       return [];
     } finally {
-      setLoading(false);
+      setLoading(() => false);
     }
   }
 
