@@ -18,6 +18,7 @@ export default forwardRef(function Entry(props: any, ref: any) {
     nowEdited,
     handleToggleEdit,
     shutTheEdit,
+    inView,
   } = props;
 
   const [editInput, setEditInput] = useState<string>(toDo);
@@ -74,6 +75,7 @@ export default forwardRef(function Entry(props: any, ref: any) {
 
   return (
     <div ref={ref} className="entry-box">
+      {String(inView)}
       {isEntryLoading ? (
         <div className="todo-loader-box">
           <BarLoader

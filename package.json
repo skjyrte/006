@@ -13,6 +13,7 @@
     "@types/react-dom": "^18.2.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-intersection-observer": "^9.5.2",
     "react-placeholder-loading": "^0.5.30",
     "react-scripts": "5.0.1",
     "react-spinners": "^0.13.8",

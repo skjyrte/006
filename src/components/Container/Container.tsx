@@ -3,9 +3,10 @@ import InputBar from "../InputBar/InputBar";
 import Footer from "../Footer/Footer";
 import IconButton from "../ButtonTheme/ButtonTheme";
 import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import useIsInViewport from "../useIsInViewport";
+
+import { useInView } from "react-intersection-observer";
 import "./Container.css";
 
 export default function Container() {
@@ -17,15 +18,10 @@ export default function Container() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const lastElement = useRef<HTMLElement | null>(null);
-  const parentRef = useRef(null);
-
-  const setRefElement = (el: HTMLElement) => {
-    if (!el) return;
-    lastElement.current = el;
-    console.log("setting the: lastElement.current");
-    console.log(lastElement.current);
-  };
+  /*   const lastElement = useRef<HTMLElement | null>(null); */
+  const parentElement = useRef(null);
+  const ref = useRef();
+  const { ref: inViewRef, inView } = useInView({ root: parentElement.current });
 
   useEffect(() => {
     (async () => {
@@ -33,31 +29,41 @@ export default function Container() {
     })();
   }, []);
 
-  let isInViewport = useIsInViewport(lastElement, parentRef);
+  const setRefs = useCallback(
+    (node: any) => {
+      // Ref's from useRef needs to have the node assigned to `current`
+      ref.current = node;
+      console.log(node);
+      // Callback refs, like the one from `useInView`, is a function that takes the node as an argument
+      inViewRef(node);
+    },
+    [inViewRef]
+  );
 
   useEffect(() => {
-    console.log("isInViewport->");
-    console.log(isInViewport);
-    console.log("loading->");
-    console.log(loading);
-    console.log("lastElement.current->");
-    console.log(lastElement.current);
-    if (isInViewport === true && loading === false) {
+    console.log("USE EFFECT LOADING:");
+    console.log("inView === true && loading === false");
+    console.log(inView === true && loading === false);
+    if (inView === true && loading === false) {
       (async () => {
         if (hasMore === true) {
           await handleLoadMore();
         }
       })();
     }
-  }, [isInViewport, lastElement.current]);
+  }, [inView, ref.current]);
 
   async function handleLoadMore() {
     const result = await handleGetEntries();
-    setToDos((prevState) => [...prevState, ...result]);
-    setHasMore(result.length > 0);
-    if ((await result.length) > 0) {
-      setPageNumber((prevPageNumber) => prevPageNumber + 1);
-    }
+    await (() => {
+      setToDos((prevState) => [...prevState, ...result]);
+      setHasMore(result.length > 0);
+      if (result.length > 0) {
+        setPageNumber((prevPageNumber) => prevPageNumber + 1);
+      }
+    })();
+    console.log(pageNumber);
+    console.log("done");
   }
 
   let toDosList: any;
@@ -88,9 +94,8 @@ export default function Container() {
           nowEdited={nowEdited}
           handleToggleEdit={handleToggleEdit}
           shutTheEdit={shutTheEdit}
-          ref={(ref: any) => {
-            return index === filteredToDos.length - 1 && setRefElement(ref);
-          }}
+          ref={index === filteredToDos.length - 1 ? setRefs : undefined}
+          inView={inView}
         />
       );
     });
@@ -109,7 +114,7 @@ export default function Container() {
   }
 
   async function handleGetEntries() {
-    setLoading(() => true);
+    setLoading(true);
     shutTheEdit();
 
     try {
@@ -140,7 +145,7 @@ export default function Container() {
       });
       return [];
     } finally {
-      setLoading(() => false);
+      setLoading(false);
     }
   }
 
@@ -348,7 +353,7 @@ export default function Container() {
           onClick={handleAddEntry}
           inputValue={input}
         ></InputBar>
-        <div className="todos-container" ref={parentRef}>
+        <div className="todos-container" ref={parentElement}>
           <>
             {typeof toDosList === "object" && "length" in toDosList ? (
               toDosList.length !== 0 ? (
