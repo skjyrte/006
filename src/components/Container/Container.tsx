@@ -8,6 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import axios, { isCancel, AxiosError } from "axios";
 import { useInView } from "react-intersection-observer";
 import "./Container.css";
+import HandleAxios from "../HandleAxios/HandleAxios";
 
 export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
@@ -16,10 +17,7 @@ export default function Container() {
   const [nowEdited, setNowEdited] = useState<string>("");
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  const controller = new AbortController();
-  const signal = controller.signal;
+  const [loading, setLoading] = useState(false);
 
   const parentElement = useRef(null);
   const ref = useRef();
@@ -27,12 +25,6 @@ export default function Container() {
     root: parentElement.current,
     threshold: 0.5,
   });
-
-  useEffect(() => {
-    (async () => {
-      await handleLoadMore();
-    })();
-  }, [filterState]);
 
   const setRefs = useCallback(
     (node: any) => {
@@ -46,39 +38,7 @@ export default function Container() {
     [inViewRef, loading]
   );
 
-  useEffect(() => {
-    if (inView === true /*  && loading === false */) {
-      (async () => {
-        if (hasMore === true) {
-          await handleLoadMore();
-        }
-      })();
-    }
-  }, [inView, ref.current]);
-
-  async function handleLoadMore() {
-    const result = await handleGetEntries();
-
-    await (() => {
-      setToDos((prevState) => [...prevState, ...result]);
-      setHasMore(result.length > 0);
-      if (result.length > 0) {
-        setPageNumber((prevPageNumber) => prevPageNumber + 1);
-      }
-    })();
-    console.log(pageNumber);
-    console.log("done");
-  }
-
-  let toDosList: any;
-
-  //here we need to stop the rendering of todos if todo fetch is pending
-  /*   if (typeof toDos === "object" && "length" in toDos) {
-    const filteredToDos = toDos.filter((todo) => {
-      return true;
-    }); */
-
-  toDosList = toDos.map((toDo, index) => {
+  let toDosList: any = toDos.map((toDo, index) => {
     return (
       <Entry
         key={toDo._id}
@@ -106,44 +66,6 @@ export default function Container() {
 
   function shutTheEdit() {
     setNowEdited("");
-  }
-
-  async function handleGetEntries() {
-    setLoading(true);
-    shutTheEdit();
-
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/todos/?page=${pageNumber}&filter=${filterState}`,
-
-        {
-          signal,
-          mode: "cors",
-          method: "GET",
-        }
-      );
-      const responseBody = await response.json();
-
-      if (responseStatus(responseBody)) {
-        if (
-          typeof responseBody.data === "object" &&
-          responseBody.success === true
-        ) {
-          return responseBody.data.currentData;
-        } else {
-          throw new Error(responseBody.message);
-        }
-      } else {
-        throw new Error("GET: error getting response");
-      }
-    } catch (e: any) {
-      toast.error("Unable to get the entries.", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      return [];
-    } finally {
-      setLoading(false);
-    }
   }
 
   function handleTextChange(e: any) {
@@ -307,15 +229,8 @@ export default function Container() {
   };
 
   function handleShowState(showState: string) {
-    controller.abort();
     shutTheEdit();
-    setFilterState((prevState) => {
-      if (prevState !== showState) {
-        setToDos([]);
-        setPageNumber(1);
-      }
-      return showState;
-    });
+    setFilterState(showState);
   }
 
   function countActiveToDos(toDos: any) {
@@ -328,6 +243,11 @@ export default function Container() {
       handleDeleteEntry(todo._id);
     });
   }
+
+  const todoshook: any = HandleAxios(filterState, ref, shutTheEdit, inView);
+  useEffect(() => {
+    setToDos(todoshook);
+  }, [todoshook]);
 
   return (
     <>
