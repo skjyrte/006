@@ -5,7 +5,7 @@ import IconButton from "../ButtonTheme/ButtonTheme";
 import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
-
+import axios, { isCancel, AxiosError } from "axios";
 import { useInView } from "react-intersection-observer";
 import "./Container.css";
 
@@ -18,6 +18,9 @@ export default function Container() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const controller = new AbortController();
+  const signal = controller.signal;
+
   const parentElement = useRef(null);
   const ref = useRef();
   const { ref: inViewRef, inView } = useInView({
@@ -29,7 +32,7 @@ export default function Container() {
     (async () => {
       await handleLoadMore();
     })();
-  }, []);
+  }, [filterState]);
 
   const setRefs = useCallback(
     (node: any) => {
@@ -70,37 +73,28 @@ export default function Container() {
   let toDosList: any;
 
   //here we need to stop the rendering of todos if todo fetch is pending
-  if (typeof toDos === "object" && "length" in toDos) {
+  /*   if (typeof toDos === "object" && "length" in toDos) {
     const filteredToDos = toDos.filter((todo) => {
-      if (filterState === "All") {
-        return true;
-      }
-      if (filterState === "Active") {
-        return todo.completed === false;
-      }
-      if (filterState === "Completed") {
-        return todo.completed === true;
-      } else throw new Error("Invalid filterState");
-    });
+      return true;
+    }); */
 
-    toDosList = filteredToDos.map((toDo, index) => {
-      return (
-        <Entry
-          key={toDo._id}
-          id={toDo._id}
-          toDo={toDo.task}
-          completed={toDo.completed}
-          onSave={handleSaveEditedEntry}
-          onDelete={handleDeleteEntry}
-          nowEdited={nowEdited}
-          handleToggleEdit={handleToggleEdit}
-          shutTheEdit={shutTheEdit}
-          ref={index === filteredToDos.length - 1 ? setRefs : undefined}
-          inView={inView}
-        />
-      );
-    });
-  }
+  toDosList = toDos.map((toDo, index) => {
+    return (
+      <Entry
+        key={toDo._id}
+        id={toDo._id}
+        toDo={toDo.task}
+        completed={toDo.completed}
+        onSave={handleSaveEditedEntry}
+        onDelete={handleDeleteEntry}
+        nowEdited={nowEdited}
+        handleToggleEdit={handleToggleEdit}
+        shutTheEdit={shutTheEdit}
+        ref={index === toDos.length - 1 ? setRefs : undefined}
+        inView={inView}
+      />
+    );
+  });
 
   function handleToggleEdit(id: string) {
     if (nowEdited === id) {
@@ -120,8 +114,10 @@ export default function Container() {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/todos/?page=${pageNumber}`,
+        `${process.env.REACT_APP_API_URL}/todos/?page=${pageNumber}&filter=${filterState}`,
+
         {
+          signal,
           mode: "cors",
           method: "GET",
         }
@@ -311,8 +307,15 @@ export default function Container() {
   };
 
   function handleShowState(showState: string) {
+    controller.abort();
     shutTheEdit();
-    setFilterState(showState);
+    setFilterState((prevState) => {
+      if (prevState !== showState) {
+        setToDos([]);
+        setPageNumber(1);
+      }
+      return showState;
+    });
   }
 
   function countActiveToDos(toDos: any) {
