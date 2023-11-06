@@ -8,7 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import axios, { isCancel, AxiosError } from "axios";
 import { useInView } from "react-intersection-observer";
 import "./Container.css";
-import HandleAxios from "../HandleAxios/HandleAxios";
+import useHandleAxios from "../useHandleAxios/useHandleAxios";
 
 export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
@@ -244,7 +244,7 @@ export default function Container() {
     });
   }
 
-  const todoshook: any = HandleAxios(filterState, ref, shutTheEdit, inView);
+  const todoshook: any = useHandleAxios(filterState, ref, shutTheEdit, inView);
   useEffect(() => {
     setToDos(todoshook);
   }, [todoshook]);
