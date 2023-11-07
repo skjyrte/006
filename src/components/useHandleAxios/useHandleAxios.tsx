@@ -13,11 +13,6 @@ export default function HandleAxios(
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  console.log(filterProps);
-
-  /*   let controller = new AbortController(); */
-  /*   const cachedValue = useMemo(() => new AbortController(), [filterProps]); */
-
   const refController = useRef(new AbortController());
 
   async function handleGetEntries() {
@@ -36,7 +31,6 @@ export default function HandleAxios(
     try {
       const response = await axios.request(options);
       const responseBody = await response.data;
-      console.log(responseBody);
 
       if (responseStatus(responseBody)) {
         if (
@@ -87,14 +81,10 @@ export default function HandleAxios(
   }, [filterProps]);
 
   useEffect(() => {
-    if (pageNumber === 1) {
-      (async () => {
-        await handleLoadMore();
-      })();
-    }
-    console.log("pageNumber");
-    console.log(pageNumber);
-    if (inView === true && hasMore === true && loading === false) {
+    if (
+      (inView === true && hasMore === true && loading === false) ||
+      pageNumber === 1
+    ) {
       (async () => {
         await handleLoadMore();
       })();
@@ -111,11 +101,7 @@ export default function HandleAxios(
         setPageNumber((prevPageNumber) => prevPageNumber + 1);
       }
     })();
-    console.log(pageNumber);
-    console.log("done");
   }
-
-  /*   setPreviousFilter(filterProps); */
 
   return toDos;
 }
