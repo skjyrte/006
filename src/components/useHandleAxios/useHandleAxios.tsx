@@ -2,6 +2,35 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import axios, { isCancel, AxiosError } from "axios";
 
+type requestConfig = {
+  url?: string;
+  baseURL?: string;
+  initialIsLoading?: boolean;
+  /*   withCredentials?: boolean; */
+  onSuccess?: Function;
+  onError?: Function;
+  method?: any;
+  data?: any;
+};
+
+type validResponse = {
+  success: boolean;
+  message: string;
+  data: any; // ? TO FIX LATER!!!
+};
+
+type requestFunction = any;
+type requestResult = [validResponse, requestFunction];
+
+const defaultConfig: requestConfig = {
+  url: "",
+  method: "get",
+  initialIsLoading: false,
+  baseURL: process.env.REACT_APP_API_URL,
+  onSuccess: Function.prototype,
+  onError: Function.prototype,
+};
+
 export default function HandleAxios(
   filterProps: any,
   ref: any,
@@ -15,21 +44,28 @@ export default function HandleAxios(
 
   const refController = useRef(new AbortController());
 
+  const instance = axios.create({
+    baseURL: process.env.REACT_APP_API_URL,
+    timeout: 1000,
+    headers: { "Content-Type": "application/json" },
+    url: `${process.env.REACT_APP_API_URL}/todos/`,
+    signal: refController.current.signal,
+    params: { page: pageNumber, filter: filterProps },
+    /*          mode: "cors",  */
+  });
+
   async function handleGetEntries() {
     setLoading(true);
     shutTheEdit();
 
-    const options = {
-      method: "GET",
+    /*     const options = {
       mode: "cors",
-      url: `${process.env.REACT_APP_API_URL}/todos/`,
       params: { page: pageNumber, filter: filterProps },
-      signal: refController.current.signal,
-      headers: { "Content-Type": "application/json" },
-    };
-
+      };
+ */
     try {
-      const response = await axios.request(options);
+      /*       const response = await axios.request(options); */
+      const response = await instance("/todos/");
       const responseBody = await response.data;
 
       if (responseStatus(responseBody)) {
@@ -64,11 +100,6 @@ export default function HandleAxios(
       typeof obj.message === "string" &&
       (("data" in obj && typeof obj.data === "object") || !("data" in obj))
     );
-  };
-  type validResponse = {
-    success: boolean;
-    message: string;
-    data: any; // ? TO FIX LATER!!!
   };
 
   useEffect(() => {
