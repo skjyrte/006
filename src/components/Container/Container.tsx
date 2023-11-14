@@ -16,6 +16,13 @@ import Skeleton from "../Skeleton/Skeleton";
 const axiosInstance = createAxiosInstance();
 const elementsPerPage = 2;
 
+enum LoadingState {
+  ADD_ENTRY = "add_entry",
+  GET_DATA = "get_data",
+}
+
+type Nullable<T> = T | null;
+
 export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
   const [filterState, setFilterState] = useState<string>("All");
@@ -31,17 +38,12 @@ export default function Container() {
     threshold: 0.5,
   });
 
-  enum LoadingState {
-    ADD_ENTRY = "add_entry",
-    GET_DATA = "get_data",
-  }
-
-  type Nullable<T> = T | null;
-
   const refController = useRef(new AbortController());
 
   useEffect(() => {
     refController.current = new AbortController();
+
+    console.log(loader);
     console.log("FIRST LOAD");
     handleRequest(
       axiosInstance.get,
@@ -77,10 +79,13 @@ export default function Container() {
             return;
           },
         });
-      }
+      },
+      LoadingState.GET_DATA
     );
 
-    return () => refController.current.abort();
+    return () => {
+      refController.current.abort();
+    };
   }, [filterState, reloadMarker]);
 
   useEffect(() => {
@@ -89,62 +94,79 @@ export default function Container() {
     }
   }, [ref.current, inView]);
 
-  useEffect(() => {
-    if (pageNumber > 1 && hasMore) {
-      handleRequest(
-        axiosInstance.get,
-        {
-          url: "/todos",
-          config: {
-            params: {
-              page: pageNumber,
-              filter: filterState,
+  useEffect(
+    () => {
+      if (pageNumber > 1 && hasMore) {
+        handleRequest(
+          axiosInstance.get,
+          {
+            url: "/todos",
+            config: {
+              params: {
+                page: pageNumber,
+                filter: filterState,
+              },
+              signal: refController.current.signal,
             },
-            signal: refController.current.signal,
           },
-        },
-        (data) => {
-          // @ts-ignore
-          setToDos((currentTodos) => [
-            ...currentTodos,
+          (data) => {
             // @ts-ignore
-            ...data.data.currentData,
-          ]);
-          // @ts-ignore
-          setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
-          /*           toast.success("Loaded new Entries successfully.", {
+            setToDos((currentTodos) => [
+              ...currentTodos,
+              // @ts-ignore
+              ...data.data.currentData,
+            ]);
+            // @ts-ignore
+            setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
+            /*           toast.success("Loaded new Entries successfully.", {
             position: toast.POSITION.TOP_RIGHT,
           }); */
-        },
-        (error: unknown) => {
-          /*          setToDos([]); */
-          toast.error("No connection to database. Click here to reload", {
-            position: "top-center",
-            autoClose: false,
-            hideProgressBar: false,
-            draggable: false,
-            progress: undefined,
-            onClick: () => {
-              setPageNumber(1);
-              setReloadMarker((prevValue) => prevValue + 1);
-              toast.clearWaitingQueue();
-              toast.dismiss();
-              return;
-            },
-          });
-        }
-      );
-    }
-  }, [pageNumber]);
+          },
+          (error: unknown) => {
+            /*          setToDos([]); */
+            toast.error("No connection to database. Click here to reload", {
+              position: "top-center",
+              autoClose: false,
+              hideProgressBar: false,
+              draggable: false,
+              progress: undefined,
+              onClick: () => {
+                setPageNumber(1);
+                setReloadMarker((prevValue) => prevValue + 1);
+                toast.clearWaitingQueue();
+                toast.dismiss();
+                return;
+              },
+            });
+          } /* ,
+        LoadingState.GET_DATA */
+        );
+      }
+    },
+    [
+      /* pageNumber */
+    ]
+  );
 
   const handleRequest = async (
     // @ts-ignore
     requestPromise,
     requestConfig: { url: string; data?: {}; config?: {} },
     successCallback?: (data: unknown) => void,
-    failureCallback?: (error: unknown) => void
+    failureCallback?: (error: unknown) => void,
+    loaderType?: string
   ) => {
     try {
+      console.log("loaderType");
+      console.log(loaderType);
+      if (loaderType) {
+        if (loader !== null) {
+          /*           throw new Error("Please wait for action to complete"); */
+          setLoader(() => loaderType);
+        } else {
+          setLoader(() => loaderType);
+        }
+      }
       const requestParams = [
         requestConfig.url,
         requestConfig.data,
@@ -156,7 +178,10 @@ export default function Container() {
         successCallback(response.data);
       }
     } catch (err) {
-      if (axios.isCancel(err)) return;
+      console.log(err);
+      if (axios.isCancel(err)) {
+        return;
+      }
 
       if (failureCallback) {
         failureCallback(err);
@@ -166,7 +191,8 @@ export default function Container() {
         position: "top-center",
       });
     } finally {
-      setLoader(null);
+      console.log("finally block");
+      setLoader(() => "abda");
     }
   };
 
@@ -201,7 +227,9 @@ export default function Container() {
         toast.success("Added successfully", {
           position: "top-right",
         });
-      }
+      } /* ,
+      undefined,
+      LoadingState.ADD_ENTRY */
     );
   }
 
@@ -280,7 +308,9 @@ export default function Container() {
         theme="dark"
         limit={3}
       />
+
       <div className="outer-box">
+        <div className="main-header">{String(loader)}</div>
         <header className="main-header">
           <ButtonRefresh onClick={() => console.log(toDos)}></ButtonRefresh>
           <IconButton />
