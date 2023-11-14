@@ -1,3 +1,10 @@
+:root {
+  --toastify-toast-width: 320px;
+
+  --toastify-toast-min-height: 32px;
+  --toastify-toast-max-height: 100px;
+}
+
 .outer-box {
   display: flex;
   flex-direction: column;

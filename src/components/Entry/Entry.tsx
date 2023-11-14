@@ -8,59 +8,54 @@ import CharCounter from "../CharCounter/CharCounter";
 import BarLoader from "react-spinners/BarLoader";
 import { CSSProperties } from "react";
 
-export default forwardRef(function Entry(props: any, ref: any) {
-  const {
-    id,
-    toDo,
-    completed,
-    onSave,
-    onDelete,
-    nowEdited,
-    handleToggleEdit,
-    shutTheEdit,
-    inView,
-  } = props;
+interface Props {
+  onSave: (id: string, edited: { task?: string; completed?: boolean }) => void;
+  todo: {
+    _id: string;
+    completed: boolean;
+    task: string;
+  };
+  inView: boolean;
+  onDelete: (id: string) => void;
+}
 
-  const [editInput, setEditInput] = useState<string>(toDo);
+export default forwardRef(function Entry(
+  { onSave, todo, inView, onDelete }: Props,
+  ref: any
+) {
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [editInput, setEditInput] = useState<string>(todo.task);
   const [isCheckboxLoading, setIsCheckboxLoading] = useState<boolean>(false);
   const [isEntryLoading, setIsEntryLoading] = useState<boolean>(false);
 
   const currentInputLength = editInput.length;
-  const buttonDisabled = currentInputLength === 0 ? true : false;
+  const buttonDisabled = currentInputLength === 0;
 
-  async function handleCheckbox() {
-    shutTheEdit();
-    try {
-      setIsCheckboxLoading(() => true);
-      await onSave(id, undefined, !completed);
-    } catch {
-      throw new Error("error updating checkbox");
-    } finally {
-      setIsCheckboxLoading(() => false);
-    }
-  }
+  const handleClickCheckbox = async () => {
+    setIsCheckboxLoading(() => true);
+    await onSave(todo._id, { completed: !todo.completed });
+    setIsCheckboxLoading(() => false);
+  };
 
-  async function handleChangeTodo() {
-    try {
-      setIsEntryLoading(() => true);
-      handleToggleEdit(id);
-      await onSave(id, editInput, undefined);
-    } catch {
-      throw new Error("error updating todo");
-    } finally {
-      setIsEntryLoading(() => false);
-    }
-  }
-  async function handleDeleteTodo() {
-    try {
-      setIsEntryLoading(() => true);
-      await onDelete(id);
-    } catch {
-      throw new Error("error deleting todo");
-    } finally {
-      setIsEntryLoading(() => false);
-    }
-  }
+  const handleClickSave = async () => {
+    setIsEntryLoading(() => true);
+    await onSave(todo._id, { task: editInput });
+    setIsEntryLoading(() => false);
+    setEditMode(false);
+  };
+
+  const handleDeleteTodo = () => {
+    onDelete(todo._id);
+  };
+
+  const handleClickEdit = () => {
+    setEditMode(true);
+  };
+
+  const handleClickDiscard = () => {
+    setEditMode(false);
+    setEditInput(todo.task);
+  };
 
   const override: CSSProperties = {
     display: "block",
@@ -75,8 +70,7 @@ export default forwardRef(function Entry(props: any, ref: any) {
 
   return (
     <div ref={ref} className="entry-box">
-      {String(inView)}
-      {isEntryLoading ? (
+      {isEntryLoading && (
         <div className="todo-loader-box">
           <BarLoader
             color={color}
@@ -86,18 +80,15 @@ export default forwardRef(function Entry(props: any, ref: any) {
             width={100}
             aria-label="Loading Spinner"
             data-testid="loader"
-          ></BarLoader>
+          />
         </div>
-      ) : (
-        <></>
       )}
-
       <Checkbox
-        onChange={handleCheckbox}
-        checked={completed}
+        onChange={handleClickCheckbox}
+        checked={todo.completed}
         isLoading={isCheckboxLoading}
       />
-      {nowEdited === id ? (
+      {editMode ? (
         <>
           <CharCounter
             charCount={currentInputLength}
@@ -124,39 +115,30 @@ export default forwardRef(function Entry(props: any, ref: any) {
       ) : (
         <>
           <div
-            className={completed ? "todo-content completed" : "todo-content"}
+            className={
+              todo.completed ? "todo-content completed" : "todo-content"
+            }
           >
-            {toDo}
+            {todo.task}
           </div>{" "}
         </>
       )}
 
       <div className="button-edit-container">
-        {nowEdited === id ? (
+        {editMode ? (
           <>
             <ButtonEdit
-              onClick={handleChangeTodo}
+              onClick={handleClickSave}
               buttonDisabled={buttonDisabled}
             >
               Save
             </ButtonEdit>
-            <ButtonEdit
-              onClick={() => {
-                handleToggleEdit(id);
-              }}
-              buttonDisabled={false}
-            >
+            <ButtonEdit onClick={handleClickDiscard} buttonDisabled={false}>
               Discard
             </ButtonEdit>
           </>
         ) : (
-          <ButtonEdit
-            onClick={() => {
-              setEditInput(toDo); //synchronize edited value with database value
-              handleToggleEdit(id);
-            }}
-            buttonDisabled={false}
-          >
+          <ButtonEdit onClick={handleClickEdit} buttonDisabled={false}>
             Edit
           </ButtonEdit>
         )}

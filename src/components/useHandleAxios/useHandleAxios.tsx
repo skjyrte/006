@@ -34,7 +34,6 @@ const defaultConfig: requestConfig = {
 export default function HandleAxios(
   filterProps: any,
   ref: any,
-  shutTheEdit: any,
   inView: any
 ) {
   const [toDos, setToDos] = useState<any[]>([]);
@@ -56,13 +55,7 @@ export default function HandleAxios(
 
   async function handleGetEntries() {
     setLoading(true);
-    shutTheEdit();
 
-    /*     const options = {
-      mode: "cors",
-      params: { page: pageNumber, filter: filterProps },
-      };
- */
     try {
       /*       const response = await axios.request(options); */
       const response = await instance("/todos/");
@@ -113,7 +106,7 @@ export default function HandleAxios(
 
   useEffect(() => {
     if (
-      (inView === true && hasMore === true && loading === false) ||
+      (inView === true && hasMore && !loading) ||
       pageNumber === 1
     ) {
       (async () => {
