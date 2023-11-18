@@ -3,7 +3,7 @@ import InputBar from "../InputBar/InputBar";
 import Footer from "../Footer/Footer";
 import IconButton from "../ButtonTheme/ButtonTheme";
 import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, ReactNode } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useInView } from "react-intersection-observer";
@@ -41,112 +41,111 @@ export default function Container() {
   const refController = useRef(new AbortController());
 
   useEffect(() => {
-    refController.current = new AbortController();
-
-    console.log(loader);
-    console.log("FIRST LOAD");
-    handleRequest(
-      axiosInstance.get,
-      {
-        url: "/todos",
-        config: {
-          params: { page: pageNumber, filter: filterState },
-          signal: refController.current.signal,
+    (async () => {
+      /*       setLoader(null); */
+      inViewRef(null);
+      await refController.current.abort();
+      refController.current = await new AbortController();
+      handleRequest(
+        axiosInstance.get,
+        {
+          url: "/todos",
+          config: {
+            params: { page: pageNumber, filter: filterState },
+            signal: refController.current.signal,
+          },
         },
-      },
-      (data) => {
-        // @ts-ignore
-        setToDos(data.data.currentData);
-        // @ts-ignore
-        setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
-        /*         toast.success("Loaded successfully.", {
+        (data) => {
+          // @ts-ignore
+          setToDos(data.data.currentData);
+          // @ts-ignore
+          setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
+          /*         toast.success("Loaded successfully.", {
           position: toast.POSITION.TOP_RIGHT,
         }); */
-      },
-      (error: unknown) => {
-        /*         setToDos([]); */
-        toast.error("No connection to database. Click here to reload", {
-          position: "top-center",
-          autoClose: false,
-          hideProgressBar: false,
-          draggable: false,
-          progress: undefined,
-          onClick: () => {
-            setPageNumber(1);
-            setReloadMarker((prevValue) => prevValue + 1);
-            toast.clearWaitingQueue();
-            toast.dismiss();
-            return;
-          },
-        });
-      },
-      LoadingState.GET_DATA
-    );
+        },
+        (error: unknown) => {
+          /*         setToDos([]); */
+          toast.error("No connection to database. Click here to reload", {
+            position: "top-center",
+            autoClose: false,
+            hideProgressBar: false,
+            draggable: false,
+            progress: undefined,
+            onClick: () => {
+              setPageNumber(1);
+              setReloadMarker((prevValue) => prevValue + 1);
+              toast.clearWaitingQueue();
+              toast.dismiss();
+              return;
+            },
+          });
+        },
+        LoadingState.GET_DATA
+      );
+    })();
 
     return () => {
-      refController.current.abort();
+      console.log("ABORTUJE");
+      /*       setLoader(() => null); */
+      /*       refController.current.abort(); */
     };
   }, [filterState, reloadMarker]);
 
   useEffect(() => {
-    if (inView) {
+    if (inView && loader === null) {
       setPageNumber((page) => page + 1);
     }
   }, [ref.current, inView]);
 
-  useEffect(
-    () => {
-      if (pageNumber > 1 && hasMore) {
-        handleRequest(
-          axiosInstance.get,
-          {
-            url: "/todos",
-            config: {
-              params: {
-                page: pageNumber,
-                filter: filterState,
-              },
-              signal: refController.current.signal,
+  useEffect(() => {
+    if (pageNumber > 1 && hasMore) {
+      handleRequest(
+        axiosInstance.get,
+        {
+          url: "/todos",
+          config: {
+            params: {
+              page: pageNumber,
+              filter: filterState,
             },
+            signal: refController.current.signal,
           },
-          (data) => {
+        },
+        (data) => {
+          // @ts-ignore
+          setToDos((currentTodos) => [
+            ...currentTodos,
             // @ts-ignore
-            setToDos((currentTodos) => [
-              ...currentTodos,
-              // @ts-ignore
-              ...data.data.currentData,
-            ]);
-            // @ts-ignore
-            setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
-            /*           toast.success("Loaded new Entries successfully.", {
+            ...data.data.currentData,
+          ]);
+          // @ts-ignore
+          setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
+          /*           toast.success("Loaded new Entries successfully.", {
             position: toast.POSITION.TOP_RIGHT,
           }); */
-          },
-          (error: unknown) => {
-            /*          setToDos([]); */
-            toast.error("No connection to database. Click here to reload", {
-              position: "top-center",
-              autoClose: false,
-              hideProgressBar: false,
-              draggable: false,
-              progress: undefined,
-              onClick: () => {
-                setPageNumber(1);
-                setReloadMarker((prevValue) => prevValue + 1);
-                toast.clearWaitingQueue();
-                toast.dismiss();
-                return;
-              },
-            });
-          } /* ,
-        LoadingState.GET_DATA */
-        );
-      }
-    },
-    [
-      /* pageNumber */
-    ]
-  );
+        },
+        (error: unknown) => {
+          /*          setToDos([]); */
+          toast.error("No connection to database. Click here to reload", {
+            position: "top-center",
+            autoClose: false,
+            hideProgressBar: false,
+            draggable: false,
+            progress: undefined,
+            onClick: () => {
+              setPageNumber(1);
+              setReloadMarker((prevValue) => prevValue + 1);
+              toast.clearWaitingQueue();
+              toast.dismiss();
+              return;
+            },
+          });
+        },
+        LoadingState.GET_DATA
+      );
+    }
+  }, [pageNumber]);
 
   const handleRequest = async (
     // @ts-ignore
@@ -157,16 +156,10 @@ export default function Container() {
     loaderType?: string
   ) => {
     try {
-      console.log("loaderType");
-      console.log(loaderType);
       if (loaderType) {
-        if (loader !== null) {
-          /*           throw new Error("Please wait for action to complete"); */
-          setLoader(() => loaderType);
-        } else {
-          setLoader(() => loaderType);
-        }
+        setLoader(loaderType);
       }
+
       const requestParams = [
         requestConfig.url,
         requestConfig.data,
@@ -177,24 +170,29 @@ export default function Container() {
       if (successCallback) {
         successCallback(response.data);
       }
+      setLoader(null);
     } catch (err) {
       console.log(err);
       if (axios.isCancel(err)) {
+        console.log("TU SIE WYWOLUJE");
         return;
+      } else {
+        setLoader(null);
       }
 
       if (failureCallback) {
         failureCallback(err);
-        return;
       }
       toast.error("We have a problem", {
         position: "top-center",
       });
     } finally {
       console.log("finally block");
-      setLoader(() => "abda");
+      /*       setLoader(null); */
     }
   };
+
+  console.log(loader);
 
   const setRefs = useCallback(
     (node: any) => {
@@ -204,18 +202,20 @@ export default function Container() {
     [inViewRef]
   );
 
-  const toDosList: any = toDos.map((toDo, index) => (
-    <Entry
-      key={toDo._id}
-      todo={toDo}
-      onSave={handleSaveEditedEntry}
-      onDelete={handleDeleteEntry}
-      ref={index === toDos.length - 1 ? setRefs : undefined}
-      inView={inView}
-    />
-  ));
+  const toDosList: any = toDos.map((toDo, index) => {
+    return (
+      <Entry
+        key={toDo._id}
+        todo={toDo}
+        onSave={handleSaveEditedEntry}
+        onDelete={handleDeleteEntry}
+        ref={index === toDos.length - 1 ? setRefs : undefined}
+        inView={inView}
+      />
+    );
+  });
 
-  const enriesPlaceholders: any = (i: number) => Array(i).fill(<Skeleton />);
+  const entriesPlaceholders: any = (i: number) => Array(i).fill(<Skeleton />);
 
   async function handleAddEntry(task: string) {
     await handleRequest(
@@ -293,6 +293,24 @@ export default function Container() {
     });
   }
 
+  let entryContent: ReactNode;
+
+  console.log("LENGTH: ", toDosList?.length);
+  console.log("LOADER: ", loader);
+
+  if (toDosList?.length === 0 && !loader) {
+    entryContent = <div className="no-entry">No entry to show</div>;
+  } else if (toDosList?.length > 0 && loader === LoadingState.GET_DATA) {
+    entryContent = (
+      <>
+        {toDosList}
+        <div className="is-loading">{entriesPlaceholders(3)}</div>
+      </>
+    );
+  } else {
+    entryContent = toDosList;
+  }
+
   return (
     <>
       <ToastContainer
@@ -311,6 +329,7 @@ export default function Container() {
 
       <div className="outer-box">
         <div className="main-header">{String(loader)}</div>
+        <div className="main-header">{String(inView)}</div>
         <header className="main-header">
           <ButtonRefresh onClick={() => console.log(toDos)}></ButtonRefresh>
           <IconButton />
@@ -318,14 +337,7 @@ export default function Container() {
 
         <InputBar onClickAddEntry={handleAddEntry} loading={false} />
         <div className="todos-container" ref={parentElement}>
-          <>
-            {toDosList?.length !== 0 ? (
-              toDosList
-            ) : (
-              <div className="no-entry">No entry to show</div>
-            )}
-            <div className="is-loading">{enriesPlaceholders(3)}</div>
-          </>
+          {entryContent}
         </div>
         <Footer
           onClick={handleShowState}
