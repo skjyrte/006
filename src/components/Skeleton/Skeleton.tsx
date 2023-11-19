@@ -15,7 +15,7 @@ export default function Entry() {
             width={30}
             height={30}
             duration={2.25}
-            enableAnimation={true}
+            enableAnimation={false}
           />
         </div>
         <div className="todo-content completed">
@@ -26,7 +26,7 @@ export default function Entry() {
             width={40}
             height={20}
             duration={2.25}
-            enableAnimation={true}
+            enableAnimation={false}
           />
         </div>
         <div className="button-delete-container">
@@ -34,7 +34,7 @@ export default function Entry() {
             width={30}
             height={30}
             duration={2.25}
-            enableAnimation={true}
+            enableAnimation={false}
           />
         </div>
       </SkeletonTheme>

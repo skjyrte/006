@@ -31,6 +31,7 @@ export default function Container() {
   const [loader, setLoader] = useState<Nullable<String>>(null);
   const [reloadMarker, setReloadMarker] = useState(1);
   const [error, setError] = useState("");
+  const [activeToDosCount, setActiveToDosCount] = useState<number>(0);
   const parentElement = useRef(null);
   const ref = useRef(null);
   const { ref: inViewRef, inView } = useInView({
@@ -41,54 +42,53 @@ export default function Container() {
   const refController = useRef(new AbortController());
 
   useEffect(() => {
-    (async () => {
-      /*       setLoader(null); */
-      inViewRef(null);
-      await refController.current.abort();
-      refController.current = await new AbortController();
-      handleRequest(
-        axiosInstance.get,
-        {
-          url: "/todos",
-          config: {
-            params: { page: pageNumber, filter: filterState },
-            signal: refController.current.signal,
-          },
+    setToDos([]);
+    setLoader(null);
+    inViewRef(null);
+
+    refController.current = new AbortController();
+    handleRequest(
+      axiosInstance.get,
+      {
+        url: "/todos",
+        config: {
+          params: { page: pageNumber, filter: filterState },
+          signal: refController.current.signal,
         },
-        (data) => {
-          // @ts-ignore
-          setToDos(data.data.currentData);
-          // @ts-ignore
-          setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
-          /*         toast.success("Loaded successfully.", {
+      },
+      (data) => {
+        // @ts-ignore
+        setToDos(data.data.currentData);
+        // @ts-ignore
+        setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
+        /*         toast.success("Loaded successfully.", {
           position: toast.POSITION.TOP_RIGHT,
         }); */
-        },
-        (error: unknown) => {
-          /*         setToDos([]); */
-          toast.error("No connection to database. Click here to reload", {
-            position: "top-center",
-            autoClose: false,
-            hideProgressBar: false,
-            draggable: false,
-            progress: undefined,
-            onClick: () => {
-              setPageNumber(1);
-              setReloadMarker((prevValue) => prevValue + 1);
-              toast.clearWaitingQueue();
-              toast.dismiss();
-              return;
-            },
-          });
-        },
-        LoadingState.GET_DATA
-      );
-    })();
+        // @ts-ignore
+        setActiveToDosCount(data.data.activeDocumentsCount);
+      },
+      (error: unknown) => {
+        setToDos([]);
+        toast.error("No connection to database. Click here to reload", {
+          position: "top-center",
+          autoClose: false,
+          hideProgressBar: false,
+          draggable: false,
+          progress: undefined,
+          onClick: () => {
+            setPageNumber(1);
+            setReloadMarker((prevValue) => prevValue + 1);
+            toast.clearWaitingQueue();
+            toast.dismiss();
+            return;
+          },
+        });
+      },
+      LoadingState.GET_DATA
+    );
 
     return () => {
-      console.log("ABORTUJE");
-      /*       setLoader(() => null); */
-      /*       refController.current.abort(); */
+      refController.current.abort();
     };
   }, [filterState, reloadMarker]);
 
@@ -124,9 +124,11 @@ export default function Container() {
           /*           toast.success("Loaded new Entries successfully.", {
             position: toast.POSITION.TOP_RIGHT,
           }); */
+          // @ts-ignore
+          setActiveToDosCount(data.data.activeDocumentsCount);
         },
         (error: unknown) => {
-          /*          setToDos([]); */
+          setToDos([]);
           toast.error("No connection to database. Click here to reload", {
             position: "top-center",
             autoClose: false,
@@ -223,10 +225,12 @@ export default function Container() {
       { url: "/todos", data: { task } },
       (data) => {
         // @ts-ignore
-        setToDos((toDos) => [...toDos, data.data]);
+        setToDos((toDos) => [...toDos, data.data.getCreatedTodo]);
         toast.success("Added successfully", {
           position: "top-right",
         });
+        // @ts-ignore
+        setActiveToDosCount(data.data.activeDocumentsCount);
       } /* ,
       undefined,
       LoadingState.ADD_ENTRY */
@@ -234,17 +238,23 @@ export default function Container() {
   }
 
   async function handleDeleteEntry(id: string) {
-    await handleRequest(axiosInstance.delete, { url: `/todos/${id}` }, () => {
-      // @ts-ignore
-      setToDos((toDos) =>
-        toDos.filter((todo: any) => {
-          return todo._id !== id;
-        })
-      );
-      toast.success("Deleted successfully.", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    });
+    await handleRequest(
+      axiosInstance.delete,
+      { url: `/todos/${id}` },
+      (data) => {
+        // @ts-ignore
+        setToDos((toDos) =>
+          toDos.filter((todo: any) => {
+            return todo._id !== id;
+          })
+        );
+        toast.success("Deleted successfully.", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        // @ts-ignore
+        setActiveToDosCount(data.data.activeDocumentsCount);
+      }
+    );
   }
 
   async function handleSaveEditedEntry(
@@ -262,7 +272,7 @@ export default function Container() {
               return todo;
             } else {
               // @ts-ignore
-              return data.data;
+              return data.data.getModifiedTodo;
             }
           });
         });
@@ -270,6 +280,8 @@ export default function Container() {
         toast.success("Edited successfully.", {
           position: toast.POSITION.TOP_RIGHT,
         });
+        // @ts-ignore
+        setActiveToDosCount(data.data.activeDocumentsCount);
       }
     );
   }
@@ -282,15 +294,14 @@ export default function Container() {
     }
   }
 
-  function countActiveToDos(toDos: any) {
-    return toDos.filter((todo: any) => todo.completed === false).length;
-  }
-
-  function handleDeleteCompleted() {
-    const completedTodos = toDos.filter((todo: any) => todo.completed === true);
-    completedTodos.forEach((todo: any) => {
-      handleDeleteEntry(todo._id);
-    });
+  async function handleDeleteCompleted() {
+    const completedTodos = toDos.filter((todo: any) => todo.completed !== true);
+    try {
+      await handleDeleteEntry("");
+      setToDos([...completedTodos]);
+    } catch {
+      setToDos([]);
+    }
   }
 
   let entryContent: ReactNode;
@@ -298,13 +309,15 @@ export default function Container() {
   console.log("LENGTH: ", toDosList?.length);
   console.log("LOADER: ", loader);
 
-  if (toDosList?.length === 0 && !loader) {
+  if (toDosList.length === 0 && !loader) {
     entryContent = <div className="no-entry">No entry to show</div>;
-  } else if (toDosList?.length > 0 && loader === LoadingState.GET_DATA) {
+  } else if (loader === LoadingState.GET_DATA) {
     entryContent = (
       <>
         {toDosList}
-        <div className="is-loading">{entriesPlaceholders(3)}</div>
+        <div className="is-loading">
+          {entriesPlaceholders(toDosList.length === 0 ? 3 : 1)}
+        </div>
       </>
     );
   } else {
@@ -341,7 +354,7 @@ export default function Container() {
         </div>
         <Footer
           onClick={handleShowState}
-          countActiveToDos={countActiveToDos(toDos)}
+          countActiveToDos={activeToDosCount}
           onDeleteCompleted={handleDeleteCompleted}
           filterState={filterState}
         />
