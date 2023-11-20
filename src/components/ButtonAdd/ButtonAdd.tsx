@@ -2,7 +2,7 @@ import React from "react";
 import "./ButtonAdd.css";
 import MoonLoader from "react-spinners/MoonLoader";
 import { CSSProperties } from "react";
-import IconAdd from "../IconAdd/IconAdd";
+import IconAdd from "../Icons/IconAdd/IconAdd";
 
 export default function ButtonAdd(props: any) {
   const { onClick, isEntryAdding, buttonDisabled } = props;

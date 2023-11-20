@@ -1,5 +1,5 @@
 import "./ButtonDelete.css";
-import IconDelete from "../IconDelete/IconDelete";
+import IconDelete from "../Icons/IconDelete/IconDelete";
 
 export default function ButtonDelete(props: any) {
   const { onClick } = props;

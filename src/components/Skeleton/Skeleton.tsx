@@ -4,12 +4,12 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 export default function Entry() {
   return (
-    <div className="entry-box">
+    <div className="skeleton-entry-box">
       <SkeletonTheme
         baseColor="hsl(233, 14%, 35%)"
         highlightColor="hsl(234, 11%, 52%)"
       >
-        <div className="general-container">
+        <div className="skeleton-general-container">
           <Skeleton
             circle={true}
             width={30}
@@ -18,10 +18,10 @@ export default function Entry() {
             enableAnimation={false}
           />
         </div>
-        <div className="todo-content completed">
+        <div className="skeleton-todo-content completed">
           <Skeleton count={2} height={10} duration={2.25} />
         </div>
-        <div className="button-edit-container">
+        <div className="skeleton-button-edit-container">
           <Skeleton
             width={40}
             height={20}
@@ -29,7 +29,7 @@ export default function Entry() {
             enableAnimation={false}
           />
         </div>
-        <div className="button-delete-container">
+        <div className="skeleton-button-delete-container">
           <Skeleton
             width={30}
             height={30}

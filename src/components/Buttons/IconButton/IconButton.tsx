@@ -4,14 +4,15 @@ import MoonLoader from "react-spinners/MoonLoader";
 export default function IconButton(props: any) {
   const { onClick, isLoading, buttonDisabled, IconComponent } = props;
 
+  console.log(isLoading);
   return (
-    <div className={"button-icon-container"}>
+    <div className={"icon-button-container"}>
       <button
-        className={buttonDisabled ? "button-icon disabled" : "button-icon"}
+        className={buttonDisabled ? "icon-button disabled" : "icon-button"}
         onClick={onClick}
         disabled={buttonDisabled}
       >
-        <IconComponent />
+        {<IconComponent />}
       </button>
       <MoonLoader
         color={"yellow"}
@@ -25,7 +26,7 @@ export default function IconButton(props: any) {
         size={40}
         aria-label="Loading Spinner"
         data-testid="loader"
-      ></MoonLoader>
+      />
     </div>
   );
 }

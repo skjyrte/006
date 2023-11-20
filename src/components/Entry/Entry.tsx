@@ -1,12 +1,13 @@
 import "./Entry.css";
 import Checkbox from "../Checkbox/Checkbox";
-import ButtonDelete from "../ButtonDelete/ButtonDelete";
 import ButtonEdit from "../ButtonEdit/ButtonEdit";
 import { useState, forwardRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import CharCounter from "../CharCounter/CharCounter";
 import BarLoader from "react-spinners/BarLoader";
 import { CSSProperties } from "react";
+import IconButton from "../Buttons/IconButton/IconButton";
+import IconDelete from "../Icons/IconDelete/IconDelete";
 
 interface Props {
   onSave: (id: string, edited: { task?: string; completed?: boolean }) => void;
@@ -19,6 +20,11 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
+enum LoadingState {
+  SAVE_EDITED_ENTRY = "save_edited_entry",
+  DELETE_ENTRY = "delete_entry",
+}
+
 export default forwardRef(function Entry(
   { onSave, todo, inView, onDelete }: Props,
   ref: any
@@ -27,6 +33,7 @@ export default forwardRef(function Entry(
   const [editInput, setEditInput] = useState<string>(todo.task);
   const [isCheckboxLoading, setIsCheckboxLoading] = useState<boolean>(false);
   const [isEntryLoading, setIsEntryLoading] = useState<boolean>(false);
+  const [isEntryDeleting, setIsEntryDeleting] = useState<boolean>(false);
 
   const currentInputLength = editInput.length;
   const buttonDisabled = currentInputLength === 0;
@@ -44,8 +51,10 @@ export default forwardRef(function Entry(
     setEditMode(false);
   };
 
-  const handleDeleteTodo = () => {
-    onDelete(todo._id);
+  const handleDeleteTodo = async () => {
+    setIsEntryDeleting(() => true);
+    await onDelete(todo._id);
+    setIsEntryDeleting(() => false);
   };
 
   const handleClickEdit = () => {
@@ -143,7 +152,11 @@ export default forwardRef(function Entry(
           </ButtonEdit>
         )}
       </div>
-      <ButtonDelete onClick={handleDeleteTodo} />
+      <IconButton
+        onClick={handleDeleteTodo}
+        isLoading={isEntryDeleting}
+        IconComponent={IconDelete}
+      />
     </div>
   );
 });

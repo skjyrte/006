@@ -1,3 +1,10 @@
+.icon-button-container {
+  display: flex;
+  padding: 0 0;
+  justify-content: center;
+  align-items: center;
+}
+
 .icon-button {
   height: 30px;
   width: 30px;
@@ -15,13 +22,6 @@
 
 .disabled {
   fill: var(--button-disabled);
-}
-
-.icon-button-container {
-  display: flex;
-  padding: 0 0;
-  justify-content: center;
-  align-items: center;
 }
 
 .icon-button > svg {

@@ -1,7 +1,7 @@
 import Entry from "../Entry/Entry";
 import InputBar from "../InputBar/InputBar";
 import Footer from "../Footer/Footer";
-import IconButton from "../ButtonTheme/ButtonTheme";
+
 import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
 import { useEffect, useState, useRef, useCallback, ReactNode } from "react";
 import { toast, ToastContainer } from "react-toastify";
@@ -10,6 +10,9 @@ import { useInView } from "react-intersection-observer";
 import "./Container.css";
 import createAxiosInstance from "../../api/createAxiosInstance/createAxiosInstance";
 import axios from "axios";
+
+import IconButton from "../Buttons/IconButton/IconButton";
+import IconSun from "../Icons/IconSun/IconSun";
 
 import Skeleton from "../Skeleton/Skeleton";
 
@@ -114,10 +117,18 @@ export default function Container() {
         },
         (data) => {
           // @ts-ignore
+          const removeDuplicates = [...data.data.currentData].filter(
+            (recievedKey) => {
+              return !toDos.find((oldKey) => {
+                return oldKey._id === recievedKey._id;
+              });
+            }
+          );
+          // @ts-ignore
           setToDos((currentTodos) => [
             ...currentTodos,
             // @ts-ignore
-            ...data.data.currentData,
+            ...removeDuplicates,
           ]);
           // @ts-ignore
           setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
@@ -176,7 +187,7 @@ export default function Container() {
     } catch (err) {
       console.log(err);
       if (axios.isCancel(err)) {
-        console.log("TU SIE WYWOLUJE");
+        /*         console.log("TU SIE WYWOLUJE"); */
         return;
       } else {
         setLoader(null);
@@ -189,12 +200,12 @@ export default function Container() {
         position: "top-center",
       });
     } finally {
-      console.log("finally block");
+      /*       console.log("finally block"); */
       /*       setLoader(null); */
     }
   };
 
-  console.log(loader);
+  /*   console.log(loader); */
 
   const setRefs = useCallback(
     (node: any) => {
@@ -231,9 +242,9 @@ export default function Container() {
         });
         // @ts-ignore
         setActiveToDosCount(data.data.activeDocumentsCount);
-      } /* ,
+      },
       undefined,
-      LoadingState.ADD_ENTRY */
+      LoadingState.ADD_ENTRY
     );
   }
 
@@ -305,10 +316,10 @@ export default function Container() {
   }
 
   let entryContent: ReactNode;
-
+  /* 
   console.log("LENGTH: ", toDosList?.length);
   console.log("LOADER: ", loader);
-
+ */
   if (toDosList.length === 0 && !loader) {
     entryContent = <div className="no-entry">No entry to show</div>;
   } else if (loader === LoadingState.GET_DATA) {
@@ -345,10 +356,18 @@ export default function Container() {
         <div className="main-header">{String(inView)}</div>
         <header className="main-header">
           <ButtonRefresh onClick={() => console.log(toDos)}></ButtonRefresh>
-          <IconButton />
+          <IconButton
+            IconComponent={IconSun}
+            /*             onClick={handleEntryAdd}*/
+            isLoading={false}
+            /* buttonDisabled={buttonDisabled} */
+          />
         </header>
 
-        <InputBar onClickAddEntry={handleAddEntry} loading={false} />
+        <InputBar
+          onClickAddEntry={handleAddEntry}
+          loading={loader === LoadingState.ADD_ENTRY ? true : false}
+        />
         <div className="todos-container" ref={parentElement}>
           {entryContent}
         </div>
