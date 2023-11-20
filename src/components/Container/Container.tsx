@@ -1,344 +1,379 @@
-import "./Container.css";
 import Entry from "../Entry/Entry";
 import InputBar from "../InputBar/InputBar";
 import Footer from "../Footer/Footer";
-import IconButton from "../ButtonTheme/ButtonTheme";
+
 import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState, useRef, useCallback, ReactNode } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useInView } from "react-intersection-observer";
+import "./Container.css";
+import createAxiosInstance from "../../api/createAxiosInstance/createAxiosInstance";
+import axios from "axios";
+
+import IconButton from "../Buttons/IconButton/IconButton";
+import IconSun from "../Icons/IconSun/IconSun";
+
+import Skeleton from "../Skeleton/Skeleton";
+
+const axiosInstance = createAxiosInstance();
+const elementsPerPage = 2;
+
+enum LoadingState {
+  ADD_ENTRY = "add_entry",
+  GET_DATA = "get_data",
+}
+
+type Nullable<T> = T | null;
 
 export default function Container() {
   const [toDos, setToDos] = useState<any[]>([]);
-  const [input, setInput] = useState<string>("");
   const [filterState, setFilterState] = useState<string>("All");
-  const [nowEdited, setNowEdited] = useState<string>("");
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loader, setLoader] = useState<Nullable<String>>(null);
+  const [reloadMarker, setReloadMarker] = useState(1);
+  const [error, setError] = useState("");
+  const [activeToDosCount, setActiveToDosCount] = useState<number>(0);
+  const parentElement = useRef(null);
+  const ref = useRef(null);
+  const { ref: inViewRef, inView } = useInView({
+    root: parentElement.current,
+    threshold: 0.5,
+  });
 
-  console.log(toDos);
-  function handleToggleEdit(id: string) {
-    if (nowEdited === id) {
-      setNowEdited("");
-    } else {
-      setNowEdited(id);
-    }
-  }
-
-  function shutTheEdit() {
-    setNowEdited("");
-  }
+  const refController = useRef(new AbortController());
 
   useEffect(() => {
-    handleGetEntries();
-  }, []);
+    setToDos([]);
+    setLoader(null);
+    inViewRef(null);
 
-  let toDosList: any;
-
-  //here we need to stop the rendering of todos if todo fetch is pending
-  if (typeof toDos === "object" && "length" in toDos) {
-    const filteredToDos = toDos.filter((todo) => {
-      if (filterState === "All") {
-        return true;
-      }
-      if (filterState === "Active") {
-        return todo.completed === false;
-      }
-      if (filterState === "Completed") {
-        return todo.completed === true;
-      } else throw new Error("Invalid filterState");
-    });
-    toDosList = filteredToDos.map((toDo) => {
-      return (
-        <Entry
-          key={toDo._id}
-          id={toDo._id}
-          toDo={toDo.task}
-          completed={toDo.completed}
-          onSave={handleSaveEditedEntry}
-          onDelete={handleDeleteEntry}
-          nowEdited={nowEdited}
-          handleToggleEdit={handleToggleEdit}
-          shutTheEdit={shutTheEdit}
-        />
-      );
-    });
-  }
-
-  async function handleGetEntries() {
-    shutTheEdit();
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/todos`, {
-        mode: "cors",
-      });
-      const responseBody = await response.json();
-
-      if (responseStatus(responseBody)) {
-        if (
-          typeof responseBody.data === "object" &&
-          responseBody.success === true
-        ) {
-          setToDos(responseBody.data);
-        } else {
-          throw new Error(responseBody.message);
-        }
-      } else {
-        throw new Error("GET: error getting response");
-      }
-    } catch (e: any) {
-      setToDos([]);
-      console.error(e);
-      toast.error("Unable to get the entries.", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-    }
-  }
-
-  function handleTextChange(e: any) {
-    setInput(e.target.value);
-  }
-
-  async function handleAddEntry() {
-    shutTheEdit();
-    try {
-      if (input === "") {
-        throw new Error("Todo cannot be empy");
-      }
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/todos/`, {
-        mode: "cors",
-        method: "POST",
-        body: JSON.stringify({ task: input }),
-        headers: {
-          "Content-Type": "application/json",
+    refController.current = new AbortController();
+    handleRequest(
+      axiosInstance.get,
+      {
+        url: "/todos",
+        config: {
+          params: { page: pageNumber, filter: filterState },
+          signal: refController.current.signal,
         },
-      });
-      const responseBody = await response.json();
+      },
+      (data) => {
+        // @ts-ignore
+        setToDos(data.data.currentData);
+        // @ts-ignore
+        setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
+        /*         toast.success("Loaded successfully.", {
+          position: toast.POSITION.TOP_RIGHT,
+        }); */
+        // @ts-ignore
+        setActiveToDosCount(data.data.activeDocumentsCount);
+      },
+      (error: unknown) => {
+        setToDos([]);
+        toast.error("No connection to database. Click here to reload", {
+          position: "top-center",
+          autoClose: false,
+          hideProgressBar: false,
+          draggable: false,
+          progress: undefined,
+          onClick: () => {
+            setPageNumber(1);
+            setReloadMarker((prevValue) => prevValue + 1);
+            toast.clearWaitingQueue();
+            toast.dismiss();
+            return;
+          },
+        });
+      },
+      LoadingState.GET_DATA
+    );
 
-      if (responseStatus(responseBody)) {
-        if (
-          typeof responseBody.data === "object" &&
-          responseBody.success === true
-        ) {
-          //pushing todo to an array, prevent batching
-          setToDos((toDos) => [...toDos, responseBody.data]);
-          toast.success("Added successfully.", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        } else {
-          throw new Error(responseBody.message);
-        }
-      } else {
-        throw new Error("POST: error getting response");
-      }
-      setInput("");
-    } catch (e: any) {
-      toast.error("Unable to add the entry.", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      console.error(e);
+    return () => {
+      refController.current.abort();
+    };
+  }, [filterState, reloadMarker]);
+
+  useEffect(() => {
+    if (inView && loader === null) {
+      setPageNumber((page) => page + 1);
     }
+  }, [ref.current, inView]);
+
+  useEffect(() => {
+    if (pageNumber > 1 && hasMore) {
+      handleRequest(
+        axiosInstance.get,
+        {
+          url: "/todos",
+          config: {
+            params: {
+              page: pageNumber,
+              filter: filterState,
+            },
+            signal: refController.current.signal,
+          },
+        },
+        (data) => {
+          // @ts-ignore
+          const removeDuplicates = [...data.data.currentData].filter(
+            (recievedKey) => {
+              return !toDos.find((oldKey) => {
+                return oldKey._id === recievedKey._id;
+              });
+            }
+          );
+          // @ts-ignore
+          setToDos((currentTodos) => [
+            ...currentTodos,
+            // @ts-ignore
+            ...removeDuplicates,
+          ]);
+          // @ts-ignore
+          setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
+          /*           toast.success("Loaded new Entries successfully.", {
+            position: toast.POSITION.TOP_RIGHT,
+          }); */
+          // @ts-ignore
+          setActiveToDosCount(data.data.activeDocumentsCount);
+        },
+        (error: unknown) => {
+          setToDos([]);
+          toast.error("No connection to database. Click here to reload", {
+            position: "top-center",
+            autoClose: false,
+            hideProgressBar: false,
+            draggable: false,
+            progress: undefined,
+            onClick: () => {
+              setPageNumber(1);
+              setReloadMarker((prevValue) => prevValue + 1);
+              toast.clearWaitingQueue();
+              toast.dismiss();
+              return;
+            },
+          });
+        },
+        LoadingState.GET_DATA
+      );
+    }
+  }, [pageNumber]);
+
+  const handleRequest = async (
+    // @ts-ignore
+    requestPromise,
+    requestConfig: { url: string; data?: {}; config?: {} },
+    successCallback?: (data: unknown) => void,
+    failureCallback?: (error: unknown) => void,
+    loaderType?: string
+  ) => {
+    try {
+      if (loaderType) {
+        setLoader(loaderType);
+      }
+
+      const requestParams = [
+        requestConfig.url,
+        requestConfig.data,
+        requestConfig.config,
+      ].filter(Boolean);
+      const response = await requestPromise(...requestParams);
+
+      if (successCallback) {
+        successCallback(response.data);
+      }
+      setLoader(null);
+    } catch (err) {
+      console.log(err);
+      if (axios.isCancel(err)) {
+        /*         console.log("TU SIE WYWOLUJE"); */
+        return;
+      } else {
+        setLoader(null);
+      }
+
+      if (failureCallback) {
+        failureCallback(err);
+      }
+      toast.error("We have a problem", {
+        position: "top-center",
+      });
+    } finally {
+      /*       console.log("finally block"); */
+      /*       setLoader(null); */
+    }
+  };
+
+  /*   console.log(loader); */
+
+  const setRefs = useCallback(
+    (node: any) => {
+      ref.current = node;
+      inViewRef(node);
+    },
+    [inViewRef]
+  );
+
+  const toDosList: any = toDos.map((toDo, index) => {
+    return (
+      <Entry
+        key={toDo._id}
+        todo={toDo}
+        onSave={handleSaveEditedEntry}
+        onDelete={handleDeleteEntry}
+        ref={index === toDos.length - 1 ? setRefs : undefined}
+        inView={inView}
+      />
+    );
+  });
+
+  const entriesPlaceholders: any = (i: number) => Array(i).fill(<Skeleton />);
+
+  async function handleAddEntry(task: string) {
+    await handleRequest(
+      axiosInstance.post,
+      { url: "/todos", data: { task } },
+      (data) => {
+        // @ts-ignore
+        setToDos((toDos) => [...toDos, data.data.getCreatedTodo]);
+        toast.success("Added successfully", {
+          position: "top-right",
+        });
+        // @ts-ignore
+        setActiveToDosCount(data.data.activeDocumentsCount);
+      },
+      undefined,
+      LoadingState.ADD_ENTRY
+    );
   }
 
   async function handleDeleteEntry(id: string) {
-    shutTheEdit();
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/todos/${id}`,
-        {
-          mode: "cors",
-          method: "DELETE",
-        }
-      );
-      const responseBody = await response.json();
-
-      if (responseStatus(responseBody)) {
-        if (
-          typeof responseBody.data !== "object" && //DELETE route do not return response
-          responseBody.success === true
-        ) {
-          //removing todo out of an array, prevent batching
-          setToDos((toDos) =>
-            toDos.filter((todo: any) => {
-              return todo._id !== id;
-            })
-          );
-        } else {
-          throw new Error(responseBody.message);
-        }
-      } else {
-        throw new Error("DELETE: error getting response");
+    await handleRequest(
+      axiosInstance.delete,
+      { url: `/todos/${id}` },
+      (data) => {
+        // @ts-ignore
+        setToDos((toDos) =>
+          toDos.filter((todo: any) => {
+            return todo._id !== id;
+          })
+        );
+        toast.success("Deleted successfully.", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        // @ts-ignore
+        setActiveToDosCount(data.data.activeDocumentsCount);
       }
-    } catch (e: any) {
-      toast.error("Unable to delete the entry.", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      console.error(e);
-    }
+    );
   }
 
   async function handleSaveEditedEntry(
     id: string,
-    editedTodo: string | undefined = undefined,
-    editedCompleted: boolean | undefined = undefined
+    edited: { task?: string; completed?: boolean }
   ) {
-    try {
-      if (editedTodo === "") {
-        throw new Error("Todo cannot be empy");
-      }
-
-      let sentObj;
-
-      if (editedTodo !== undefined && editedCompleted === undefined) {
-        sentObj = { task: editedTodo };
-      } else if (editedTodo === undefined && editedCompleted !== undefined) {
-        sentObj = { completed: editedCompleted };
-      } else {
-        throw new Error("POST: error with input data");
-      }
-
-      const response: any = await fetch(
-        `${process.env.REACT_APP_API_URL}/todos/${id}`,
-        {
-          mode: "cors",
-          method: "PATCH",
-          body: JSON.stringify(sentObj),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const responseBody = await response.json();
-      if (responseStatus(responseBody)) {
-        if (
-          typeof responseBody.data === "object" &&
-          responseBody.success === true
-        ) {
-          //replacing todo in an array, prevent batching
-          setToDos((toDos) => {
-            return toDos.map((todo) => {
-              if (todo._id !== id) {
-                return todo;
-              } else {
-                return responseBody.data;
-              }
-            });
+    await handleRequest(
+      axiosInstance.patch,
+      { url: `/todos/${id}`, data: edited },
+      (data) => {
+        // @ts-ignore
+        setToDos((toDos) => {
+          return toDos.map((todo) => {
+            if (todo._id !== id) {
+              return todo;
+            } else {
+              // @ts-ignore
+              return data.data.getModifiedTodo;
+            }
           });
-        } else {
-          throw new Error(responseBody.message);
-        }
-      } else {
-        throw new Error("PATCH: error getting response");
+        });
+
+        toast.success("Edited successfully.", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        // @ts-ignore
+        setActiveToDosCount(data.data.activeDocumentsCount);
       }
-    } catch (e) {
-      toast.error("Unable to save the edit.", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      console.error(e);
+    );
+  }
+
+  function handleShowState(showState: string) {
+    if (showState !== filterState) {
+      setToDos([]);
+      setPageNumber(1);
+      setFilterState(showState);
     }
   }
 
-  const responseStatus = (obj: any): obj is validResponse => {
-    return (
-      typeof obj === "object" &&
-      obj !== null &&
-      "success" in obj &&
-      typeof obj.success === "boolean" &&
-      "message" in obj &&
-      typeof obj.message === "string" &&
-      (("data" in obj && typeof obj.data === "object") || !("data" in obj))
-    );
-  };
-  type validResponse = {
-    success: boolean;
-    message: string;
-    data?: unknown[];
-  };
-
-  function handleShowState(showState: string) {
-    shutTheEdit();
-    setFilterState(showState);
+  async function handleDeleteCompleted() {
+    const completedTodos = toDos.filter((todo: any) => todo.completed !== true);
+    try {
+      await handleDeleteEntry("");
+      setToDos([...completedTodos]);
+    } catch {
+      setToDos([]);
+    }
   }
 
-  function countActiveToDos(toDos: any) {
-    return toDos.filter((todo: any) => todo.completed === false).length;
-  }
-
-  function handleDeleteCompleted() {
-    const completedTodos = toDos.filter((todo: any) => todo.completed === true);
-    completedTodos.forEach((todo: any) => {
-      handleDeleteEntry(todo._id);
-    });
-  }
-
-  /*   const notify = () => {
-        toast("Default Notification !");
-     
-    toast.success("Success Notification !", {
-      position: toast.POSITION.TOP_CENTER,
-    });
-    
-    toast.error("Error Notification !", {
-      position: toast.POSITION.TOP_LEFT,
-    });
-
-    toast.warn("Warning Notification !", {
-      position: toast.POSITION.BOTTOM_LEFT,
-    });
-
-    toast.info("Info Notification !", {
-      position: toast.POSITION.BOTTOM_CENTER,
-    });
-
-    toast("Custom Style Notification with css class!", {
-      position: toast.POSITION.BOTTOM_RIGHT,
-      className: "foo-bar",
-    });
-  };
+  let entryContent: ReactNode;
+  /* 
+  console.log("LENGTH: ", toDosList?.length);
+  console.log("LOADER: ", loader);
  */
+  if (toDosList.length === 0 && !loader) {
+    entryContent = <div className="no-entry">No entry to show</div>;
+  } else if (loader === LoadingState.GET_DATA) {
+    entryContent = (
+      <>
+        {toDosList}
+        <div className="is-loading">
+          {entriesPlaceholders(toDosList.length === 0 ? 3 : 1)}
+        </div>
+      </>
+    );
+  } else {
+    entryContent = toDosList;
+  }
 
   return (
     <>
       <ToastContainer
         position="top-right"
         autoClose={2000}
-        hideProgressBar={true}
+        hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored"
-        limit={0}
+        theme="dark"
+        limit={3}
       />
-      ;
+
       <div className="outer-box">
+        <div className="main-header">{String(loader)}</div>
+        <div className="main-header">{String(inView)}</div>
         <header className="main-header">
           <ButtonRefresh onClick={() => console.log(toDos)}></ButtonRefresh>
-          <span></span>
-          <IconButton></IconButton>
+          <IconButton
+            IconComponent={IconSun}
+            /*             onClick={handleEntryAdd}*/
+            isLoading={false}
+            /* buttonDisabled={buttonDisabled} */
+          />
         </header>
 
         <InputBar
-          onChange={handleTextChange}
-          onClick={handleAddEntry}
-          inputValue={input}
-        ></InputBar>
-        <div className="todos-container">
-          <>
-            {typeof toDosList === "object" && "length" in toDosList ? (
-              toDosList.length !== 0 ? (
-                toDosList
-              ) : (
-                <div className="no-entry">No entry to show</div>
-              )
-            ) : (
-              <div className="no-entry">ERROR OR LOADING?</div>
-            )}
-          </>
+          onClickAddEntry={handleAddEntry}
+          loading={loader === LoadingState.ADD_ENTRY ? true : false}
+        />
+        <div className="todos-container" ref={parentElement}>
+          {entryContent}
         </div>
         <Footer
           onClick={handleShowState}
-          countActiveToDos={countActiveToDos(toDos)}
+          countActiveToDos={activeToDosCount}
           onDeleteCompleted={handleDeleteCompleted}
           filterState={filterState}
         />

@@ -1,25 +1,29 @@
+import { ChangeEventHandler, FC, useState } from "react";
 import "./InputBar.css";
-import ButtonAdd from "../ButtonAdd/ButtonAdd";
+/* import ButtonAdd from "../ButtonAdd/ButtonAdd"; */
+import IconButton from "../Buttons/IconButton/IconButton";
+import IconAdd from "../Icons/IconAdd/IconAdd";
 import CharCounter from "../CharCounter/CharCounter";
-import { useState } from "react";
 
-export default function InputBar(props: any) {
-  const { onChange, onClick, inputValue } = props;
-  const [isEntryAdding, setIsEntryAdding] = useState<boolean>(false);
+interface Props {
+  onClickAddEntry: (value: string) => void;
+  loading: boolean;
+}
 
-  async function handleEntryAdd() {
-    try {
-      setIsEntryAdding(() => true);
-      await onClick();
-    } catch {
-      throw new Error("error adding todo");
-    } finally {
-      setIsEntryAdding(() => false);
-    }
-  }
+const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
+  const [inputValue, setInputValue] = useState("");
+
+  const handleEntryAdd = async () => {
+    onClickAddEntry(inputValue);
+    setInputValue("");
+  };
+
+  const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setInputValue(event.target.value);
+  };
 
   const currentInputLength = inputValue.length;
-  const buttonDisabled = currentInputLength === 0 ? true : false;
+  const buttonDisabled = currentInputLength === 0 || loading;
 
   return (
     <div className="input-bar">
@@ -38,14 +42,17 @@ export default function InputBar(props: any) {
         required
         minLength={1}
         maxLength={70}
-        onChange={onChange}
+        onChange={handleInputChange}
         value={inputValue}
       />
-      <ButtonAdd
+      <IconButton
         onClick={handleEntryAdd}
-        isEntryAdding={isEntryAdding}
+        isLoading={loading}
         buttonDisabled={buttonDisabled}
+        IconComponent={IconAdd}
       />
     </div>
   );
-}
+};
+
+export default InputBar;
