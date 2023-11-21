@@ -1,20 +1,17 @@
+import { useEffect, useState, useRef, useCallback, ReactNode } from "react";
+import { useInView } from "react-intersection-observer";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+/* custom components */
+import createAxiosInstance from "../../api/createAxiosInstance/createAxiosInstance";
 import Entry from "../Entry/Entry";
 import InputBar from "../InputBar/InputBar";
 import Footer from "../Footer/Footer";
 
-import ButtonRefresh from "../ButtonRefresh/ButtonRefresh";
-import { useEffect, useState, useRef, useCallback, ReactNode } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useInView } from "react-intersection-observer";
-import "./Container.css";
-import createAxiosInstance from "../../api/createAxiosInstance/createAxiosInstance";
-import axios from "axios";
-
-import IconButton from "../Buttons/IconButton/IconButton";
-import IconSun from "../Icons/IconSun/IconSun";
-
 import Skeleton from "../Skeleton/Skeleton";
+import "./Container.css";
+import { Buttons, Icons } from "../index";
 
 const axiosInstance = createAxiosInstance();
 const elementsPerPage = 2;
@@ -35,10 +32,8 @@ export default function Container() {
   const [reloadMarker, setReloadMarker] = useState(1);
   const [error, setError] = useState("");
   const [activeToDosCount, setActiveToDosCount] = useState<number>(0);
-  const parentElement = useRef(null);
   const ref = useRef(null);
   const { ref: inViewRef, inView } = useInView({
-    root: parentElement.current,
     threshold: 0.5,
   });
 
@@ -64,9 +59,6 @@ export default function Container() {
         setToDos(data.data.currentData);
         // @ts-ignore
         setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
-        /*         toast.success("Loaded successfully.", {
-          position: toast.POSITION.TOP_RIGHT,
-        }); */
         // @ts-ignore
         setActiveToDosCount(data.data.activeDocumentsCount);
       },
@@ -132,9 +124,6 @@ export default function Container() {
           ]);
           // @ts-ignore
           setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
-          /*           toast.success("Loaded new Entries successfully.", {
-            position: toast.POSITION.TOP_RIGHT,
-          }); */
           // @ts-ignore
           setActiveToDosCount(data.data.activeDocumentsCount);
         },
@@ -316,10 +305,7 @@ export default function Container() {
   }
 
   let entryContent: ReactNode;
-  /* 
-  console.log("LENGTH: ", toDosList?.length);
-  console.log("LOADER: ", loader);
- */
+
   if (toDosList.length === 0 && !loader) {
     entryContent = <div className="no-entry">No entry to show</div>;
   } else if (loader === LoadingState.GET_DATA) {
@@ -332,7 +318,15 @@ export default function Container() {
       </>
     );
   } else {
-    entryContent = toDosList;
+    /*     entryContent = toDosList; */
+    entryContent = (
+      <>
+        {toDosList}
+        <div className="is-loading">
+          {entriesPlaceholders(toDosList.length === 0 ? 3 : 1)}
+        </div>
+      </>
+    );
   }
 
   return (
@@ -355,22 +349,15 @@ export default function Container() {
         <div className="main-header">{String(loader)}</div>
         <div className="main-header">{String(inView)}</div>
         <header className="main-header">
-          <ButtonRefresh onClick={() => console.log(toDos)}></ButtonRefresh>
-          <IconButton
-            IconComponent={IconSun}
-            /*             onClick={handleEntryAdd}*/
-            isLoading={false}
-            /* buttonDisabled={buttonDisabled} */
-          />
+          TODO
+          <Buttons.IconButton IconComponent={Icons.IconSun} isLoading={false} />
         </header>
 
         <InputBar
           onClickAddEntry={handleAddEntry}
           loading={loader === LoadingState.ADD_ENTRY ? true : false}
         />
-        <div className="todos-container" ref={parentElement}>
-          {entryContent}
-        </div>
+        <div className="todos-container">{entryContent}</div>
         <Footer
           onClick={handleShowState}
           countActiveToDos={activeToDosCount}

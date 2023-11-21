@@ -1,4 +1,4 @@
-export default function IconDelete(props: any) {
+export function IconDelete(props: any) {
   const { className } = props;
   return (
     <svg

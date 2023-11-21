@@ -1,6 +1,6 @@
 import "./TextButton.css";
 
-export default function TextButton(props: any) {
+export function TextButton(props: any) {
   const {
     onClick,
     displayedText,

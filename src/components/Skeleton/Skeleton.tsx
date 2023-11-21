@@ -2,37 +2,37 @@ import "./Skeleton.css";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-export default function Entry() {
+export default function EntryLoader() {
   return (
-    <div className="skeleton-entry-box">
+    <div className="entry-loader entry-loader-box">
       <SkeletonTheme
         baseColor="hsl(233, 14%, 35%)"
         highlightColor="hsl(234, 11%, 52%)"
       >
-        <div className="skeleton-general-container">
+        <div className="entry-loader entry-loader-checkbox">
           <Skeleton
             circle={true}
-            width={30}
-            height={30}
+            width={25}
+            height={25}
             duration={2.25}
             enableAnimation={false}
           />
         </div>
-        <div className="skeleton-todo-content completed">
+        <div className="entry-loader entry-loader-content">
           <Skeleton count={2} height={10} duration={2.25} />
         </div>
-        <div className="skeleton-button-edit-container">
+        <div className="entry-loader entry-loader-edit-button">
           <Skeleton
-            width={40}
+            width={30}
             height={20}
             duration={2.25}
             enableAnimation={false}
           />
         </div>
-        <div className="skeleton-button-delete-container">
+        <div className="entry-loader entry-loader-delete-button">
           <Skeleton
-            width={30}
-            height={30}
+            width={20}
+            height={20}
             duration={2.25}
             enableAnimation={false}
           />

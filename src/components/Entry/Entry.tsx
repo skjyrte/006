@@ -1,15 +1,11 @@
 import "./Entry.css";
 import Checkbox from "../Checkbox/Checkbox";
-import ButtonEdit from "../ButtonEdit/ButtonEdit";
 import { useState, forwardRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import CharCounter from "../CharCounter/CharCounter";
 import BarLoader from "react-spinners/BarLoader";
 import { CSSProperties } from "react";
-import IconButton from "../Buttons/IconButton/IconButton";
-import IconDelete from "../Icons/IconDelete/IconDelete";
-
-import TextButton from "../Buttons/TextButton/TextButton";
+import { Buttons, Icons } from "../index";
 
 interface Props {
   onSave: (id: string, edited: { task?: string; completed?: boolean }) => void;
@@ -138,29 +134,29 @@ export default forwardRef(function Entry(
       <div className="button-edit-container">
         {editMode ? (
           <>
-            <TextButton
+            <Buttons.TextButton
               onClick={handleClickSave}
               displayedText={"Save"}
               isDisabled={buttonDisabled}
             />
-            <TextButton
+            <Buttons.TextButton
               onClick={handleClickDiscard}
               displayedText={"Discard"}
               isDisabled={false}
             />
           </>
         ) : (
-          <TextButton
+          <Buttons.TextButton
             onClick={handleClickEdit}
             displayedText={"Edit"}
             isDisabled={false}
           />
         )}
       </div>
-      <IconButton
+      <Buttons.IconButton
         onClick={handleDeleteTodo}
         isLoading={isEntryDeleting}
-        IconComponent={IconDelete}
+        IconComponent={Icons.IconDelete}
       />
     </div>
   );

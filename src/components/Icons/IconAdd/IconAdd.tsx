@@ -1,4 +1,4 @@
-export default function IconAdd(props: any) {
+export function IconAdd(props: any) {
   const { className } = props;
   return (
     <svg

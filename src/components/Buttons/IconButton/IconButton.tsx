@@ -1,7 +1,7 @@
 import "./IconButton.css";
 import PuffLoader from "react-spinners/PuffLoader";
 
-export default function IconButton(props: any) {
+export function IconButton(props: any) {
   const { onClick, isLoading, buttonDisabled, IconComponent } = props;
   return (
     <div className={"icon-button-container"}>

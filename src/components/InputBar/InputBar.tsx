@@ -1,8 +1,6 @@
 import { ChangeEventHandler, FC, useState } from "react";
 import "./InputBar.css";
-/* import ButtonAdd from "../ButtonAdd/ButtonAdd"; */
-import IconButton from "../Buttons/IconButton/IconButton";
-import IconAdd from "../Icons/IconAdd/IconAdd";
+import { Buttons, Icons } from "../index";
 import CharCounter from "../CharCounter/CharCounter";
 
 interface Props {
@@ -45,11 +43,11 @@ const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
         onChange={handleInputChange}
         value={inputValue}
       />
-      <IconButton
+      <Buttons.IconButton
         onClick={handleEntryAdd}
         isLoading={loading}
         buttonDisabled={buttonDisabled}
-        IconComponent={IconAdd}
+        IconComponent={Icons.IconAdd}
       />
     </div>
   );

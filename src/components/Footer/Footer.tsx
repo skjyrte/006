@@ -1,5 +1,5 @@
 import "./Footer.css";
-import TextButton from "../Buttons/TextButton/TextButton";
+import { Buttons } from "../index";
 
 export default function Footer(props: any) {
   const { onClick, countActiveToDos, onDeleteCompleted, filterState } = props;
@@ -14,19 +14,19 @@ export default function Footer(props: any) {
       <div className="counter-container">{countTextGenerator}</div>
       <span></span>
       <div className="manage-state-container">
-        <TextButton
+        <Buttons.TextButton
           displayedText="All"
           onClick={() => onClick("All")}
           isActive={filterState === "All" ? true : false}
           size="medium"
         />
-        <TextButton
+        <Buttons.TextButton
           displayedText="Active"
           onClick={() => onClick("Active")}
           isActive={filterState === "Active" ? true : false}
           size="medium"
         />
-        <TextButton
+        <Buttons.TextButton
           displayedText="Completed"
           onClick={() => onClick("Completed")}
           isActive={filterState === "Completed" ? true : false}
@@ -35,7 +35,7 @@ export default function Footer(props: any) {
       </div>
       <span></span>
       <div className="clear-container">
-        <TextButton
+        <Buttons.TextButton
           displayedText="Clear Completed"
           onClick={onDeleteCompleted}
         />
