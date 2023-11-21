@@ -1,18 +1,8 @@
 import "./Checkbox.css";
 import PuffLoader from "react-spinners/PuffLoader";
-import { CSSProperties } from "react";
 
 export default function Checkbox(props: any) {
   const { onChange, checked, isLoading } = props;
-
-  const override: CSSProperties = {
-    display: "block",
-    margin: "0 auto",
-    borderColor: "red",
-    position: "absolute",
-    zIndex: 10,
-  };
-  const color = "yellow";
 
   return (
     <div className="general-container">
@@ -21,13 +11,18 @@ export default function Checkbox(props: any) {
         <span className="checkmark"></span>
       </label>
       <PuffLoader
-        color={color}
-        cssOverride={override}
+        color={"yellow"}
+        cssOverride={{
+          display: "block",
+          margin: "0 auto",
+          position: "absolute",
+          zIndex: 10,
+        }}
         loading={isLoading}
         size={40}
         aria-label="Loading Spinner"
         data-testid="loader"
-      ></PuffLoader>
+      />
     </div>
   );
 }

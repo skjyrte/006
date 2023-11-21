@@ -1,10 +1,8 @@
 import "./IconButton.css";
-import MoonLoader from "react-spinners/MoonLoader";
+import PuffLoader from "react-spinners/PuffLoader";
 
 export default function IconButton(props: any) {
   const { onClick, isLoading, buttonDisabled, IconComponent } = props;
-
-  console.log(isLoading);
   return (
     <div className={"icon-button-container"}>
       <button
@@ -14,13 +12,13 @@ export default function IconButton(props: any) {
       >
         {<IconComponent />}
       </button>
-      <MoonLoader
+      <PuffLoader
         color={"yellow"}
         cssOverride={{
           display: "block",
-          borderColor: "red",
+          margin: "0 auto",
           position: "absolute",
-          zIndex: "10",
+          zIndex: 10,
         }}
         loading={isLoading}
         size={40}

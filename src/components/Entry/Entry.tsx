@@ -9,6 +9,8 @@ import { CSSProperties } from "react";
 import IconButton from "../Buttons/IconButton/IconButton";
 import IconDelete from "../Icons/IconDelete/IconDelete";
 
+import TextButton from "../Buttons/TextButton/TextButton";
+
 interface Props {
   onSave: (id: string, edited: { task?: string; completed?: boolean }) => void;
   todo: {
@@ -136,20 +138,23 @@ export default forwardRef(function Entry(
       <div className="button-edit-container">
         {editMode ? (
           <>
-            <ButtonEdit
+            <TextButton
               onClick={handleClickSave}
-              buttonDisabled={buttonDisabled}
-            >
-              Save
-            </ButtonEdit>
-            <ButtonEdit onClick={handleClickDiscard} buttonDisabled={false}>
-              Discard
-            </ButtonEdit>
+              displayedText={"Save"}
+              isDisabled={buttonDisabled}
+            />
+            <TextButton
+              onClick={handleClickDiscard}
+              displayedText={"Discard"}
+              isDisabled={false}
+            />
           </>
         ) : (
-          <ButtonEdit onClick={handleClickEdit} buttonDisabled={false}>
-            Edit
-          </ButtonEdit>
+          <TextButton
+            onClick={handleClickEdit}
+            displayedText={"Edit"}
+            isDisabled={false}
+          />
         )}
       </div>
       <IconButton
