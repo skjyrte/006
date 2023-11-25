@@ -1,7 +1,8 @@
 import { ChangeEventHandler, FC, useState } from "react";
 import "./InputBar.css";
-import { Buttons, Icons } from "../index";
-import CharCounter from "../CharCounter/CharCounter";
+import { IconButton } from "components/Buttons";
+import { IconAdd } from "components/Icons";
+import CharCounter from "components/CharCounter";
 
 interface Props {
   onClickAddEntry: (value: string) => void;
@@ -20,13 +21,10 @@ const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
     setInputValue(event.target.value);
   };
 
-  const currentInputLength = inputValue.length;
-  const buttonDisabled = currentInputLength === 0 || loading;
-
   return (
     <div className="input-bar">
       <CharCounter
-        charCount={currentInputLength}
+        charCount={inputValue.length}
         maxCharCount={70}
         counter_type="char-counter-input"
       />
@@ -43,11 +41,11 @@ const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
         onChange={handleInputChange}
         value={inputValue}
       />
-      <Buttons.IconButton
+      <IconButton
         onClick={handleEntryAdd}
         isLoading={loading}
-        buttonDisabled={buttonDisabled}
-        IconComponent={Icons.IconAdd}
+        isDisabled={inputValue.length === 0 || loading}
+        IconComponent={IconAdd}
       />
     </div>
   );

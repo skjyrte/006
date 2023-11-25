@@ -1,9 +1,14 @@
 import "./Checkbox.css";
 import PuffLoader from "react-spinners/PuffLoader";
+import { FC } from "react";
 
-export default function Checkbox(props: any) {
-  const { onChange, checked, isLoading } = props;
+interface Props {
+  onChange: () => void;
+  checked: boolean;
+  isLoading: boolean;
+}
 
+const Checkbox: FC<Props> = ({ onChange, checked, isLoading }) => {
   return (
     <div className="general-container">
       <label className="container-label">
@@ -25,4 +30,6 @@ export default function Checkbox(props: any) {
       />
     </div>
   );
-}
+};
+
+export default Checkbox;

@@ -1,45 +1,55 @@
 import "./Footer.css";
-import { Buttons } from "../index";
+import { TextButton } from "components/Buttons";
+import { FC } from "react";
 
-export default function Footer(props: any) {
-  const { onClick, countActiveToDos, onDeleteCompleted, filterState } = props;
-  const countTextGenerator = (() => {
-    if (countActiveToDos === 1) {
-      return `${countActiveToDos} item left`;
-    } else return `${countActiveToDos} items left`;
-  })();
+interface Props {
+  onClick: (parameter: string) => void;
+  activeTodosCount: any;
+  onDeleteCompleted: () => void;
+  filterState: string;
+}
 
+const Footer: FC<Props> = ({
+  onClick,
+  activeTodosCount,
+  onDeleteCompleted,
+  filterState,
+}) => {
   return (
     <div className="footer-container">
-      <div className="counter-container">{countTextGenerator}</div>
+      <div className="counter-container">{`${activeTodosCount} item${
+        activeTodosCount === 1 ? "" : "s"
+      } left`}</div>
       <span></span>
       <div className="manage-state-container">
-        <Buttons.TextButton
+        <TextButton
           displayedText="All"
           onClick={() => onClick("All")}
           isActive={filterState === "All" ? true : false}
-          size="medium"
+          size="small"
         />
-        <Buttons.TextButton
+        <TextButton
           displayedText="Active"
           onClick={() => onClick("Active")}
           isActive={filterState === "Active" ? true : false}
-          size="medium"
+          size="small"
         />
-        <Buttons.TextButton
+        <TextButton
           displayedText="Completed"
           onClick={() => onClick("Completed")}
           isActive={filterState === "Completed" ? true : false}
-          size="medium"
+          size="small"
         />
       </div>
       <span></span>
       <div className="clear-container">
-        <Buttons.TextButton
+        <TextButton
           displayedText="Clear Completed"
           onClick={onDeleteCompleted}
         />
       </div>
     </div>
   );
-}
+};
+
+export default Footer;

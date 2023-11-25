@@ -1,8 +1,6 @@
-import React from "react";
 import "./App.css";
-import "./Background/Background";
-import Background from "./Background/Background";
-import Container from "./Container/Container";
+import Background from "components/Background";
+import Container from "components/Container";
 
 function App() {
   return (

@@ -1,17 +1,18 @@
-import { useEffect, useState, useRef, useCallback, ReactNode } from "react";
+import { useEffect, useState, useRef, useCallback, ReactNode, FC } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-/* custom components */
-import createAxiosInstance from "../../api/createAxiosInstance/createAxiosInstance";
-import Entry from "../Entry/Entry";
-import InputBar from "../InputBar/InputBar";
-import Footer from "../Footer/Footer";
 
-import Skeleton from "../Skeleton/Skeleton";
+/* custom components */
+import { default as createAxiosInstance } from "api/createAxiosInstance/createAxiosInstance";
+import { default as Entry } from "components/Entry";
+import { default as InputBar } from "components/InputBar";
+import { default as Footer } from "components/Footer";
+import { default as EntryPlaceholder } from "components/EntryPlaceholder";
+import { IconButton } from "components/Buttons";
+import { IconSun } from "components/Icons";
 import "./Container.css";
-import { Buttons, Icons } from "../index";
 
 const axiosInstance = createAxiosInstance();
 const elementsPerPage = 2;
@@ -23,7 +24,7 @@ enum LoadingState {
 
 type Nullable<T> = T | null;
 
-export default function Container() {
+const Container: FC = () => {
   const [toDos, setToDos] = useState<any[]>([]);
   const [filterState, setFilterState] = useState<string>("All");
   const [pageNumber, setPageNumber] = useState(1);
@@ -31,7 +32,7 @@ export default function Container() {
   const [loader, setLoader] = useState<Nullable<String>>(null);
   const [reloadMarker, setReloadMarker] = useState(1);
   const [error, setError] = useState("");
-  const [activeToDosCount, setActiveToDosCount] = useState<number>(0);
+  const [activeToDosCount, setActiveTodosCount] = useState<number>(0);
   const ref = useRef(null);
   const { ref: inViewRef, inView } = useInView({
     threshold: 0.5,
@@ -60,7 +61,7 @@ export default function Container() {
         // @ts-ignore
         setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
         // @ts-ignore
-        setActiveToDosCount(data.data.activeDocumentsCount);
+        setActiveTodosCount(data.data.activeDocumentsCount);
       },
       (error: unknown) => {
         setToDos([]);
@@ -125,7 +126,7 @@ export default function Container() {
           // @ts-ignore
           setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
           // @ts-ignore
-          setActiveToDosCount(data.data.activeDocumentsCount);
+          setActiveTodosCount(data.data.activeDocumentsCount);
         },
         (error: unknown) => {
           setToDos([]);
@@ -174,11 +175,10 @@ export default function Container() {
       }
       setLoader(null);
     } catch (err) {
-      console.log(err);
       if (axios.isCancel(err)) {
-        /*         console.log("TU SIE WYWOLUJE"); */
         return;
       } else {
+        console.log(err);
         setLoader(null);
       }
 
@@ -188,13 +188,8 @@ export default function Container() {
       toast.error("We have a problem", {
         position: "top-center",
       });
-    } finally {
-      /*       console.log("finally block"); */
-      /*       setLoader(null); */
     }
   };
-
-  /*   console.log(loader); */
 
   const setRefs = useCallback(
     (node: any) => {
@@ -212,12 +207,13 @@ export default function Container() {
         onSave={handleSaveEditedEntry}
         onDelete={handleDeleteEntry}
         ref={index === toDos.length - 1 ? setRefs : undefined}
-        inView={inView}
       />
     );
   });
 
-  const entriesPlaceholders: any = (i: number) => Array(i).fill(<Skeleton />);
+  const entriesPlaceholders: any = (i: number) => {
+    Array(i).fill(<EntryPlaceholder />); // dlaczego tutaj nie działa Array(i).map(() => <EntryPlaceholder />) ???
+  };
 
   async function handleAddEntry(task: string) {
     await handleRequest(
@@ -230,7 +226,7 @@ export default function Container() {
           position: "top-right",
         });
         // @ts-ignore
-        setActiveToDosCount(data.data.activeDocumentsCount);
+        setActiveTodosCount(data.data.activeDocumentsCount);
       },
       undefined,
       LoadingState.ADD_ENTRY
@@ -252,7 +248,7 @@ export default function Container() {
           position: toast.POSITION.TOP_RIGHT,
         });
         // @ts-ignore
-        setActiveToDosCount(data.data.activeDocumentsCount);
+        setActiveTodosCount(data.data.activeDocumentsCount);
       }
     );
   }
@@ -281,7 +277,7 @@ export default function Container() {
           position: toast.POSITION.TOP_RIGHT,
         });
         // @ts-ignore
-        setActiveToDosCount(data.data.activeDocumentsCount);
+        setActiveTodosCount(data.data.activeDocumentsCount);
       }
     );
   }
@@ -318,15 +314,7 @@ export default function Container() {
       </>
     );
   } else {
-    /*     entryContent = toDosList; */
-    entryContent = (
-      <>
-        {toDosList}
-        <div className="is-loading">
-          {entriesPlaceholders(toDosList.length === 0 ? 3 : 1)}
-        </div>
-      </>
-    );
+    entryContent = toDosList;
   }
 
   return (
@@ -350,7 +338,7 @@ export default function Container() {
         <div className="main-header">{String(inView)}</div>
         <header className="main-header">
           TODO
-          <Buttons.IconButton IconComponent={Icons.IconSun} isLoading={false} />
+          {<IconButton IconComponent={IconSun} isLoading={false} />}
         </header>
 
         <InputBar
@@ -360,11 +348,13 @@ export default function Container() {
         <div className="todos-container">{entryContent}</div>
         <Footer
           onClick={handleShowState}
-          countActiveToDos={activeToDosCount}
+          activeTodosCount={activeToDosCount}
           onDeleteCompleted={handleDeleteCompleted}
           filterState={filterState}
         />
       </div>
     </>
   );
-}
+};
+
+export default Container;

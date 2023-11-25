@@ -1,11 +1,13 @@
-import "./Entry.css";
-import Checkbox from "../Checkbox/Checkbox";
 import { useState, forwardRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import CharCounter from "../CharCounter/CharCounter";
 import BarLoader from "react-spinners/BarLoader";
-import { CSSProperties } from "react";
-import { Buttons, Icons } from "../index";
+
+import "./Entry.css";
+import { default as Checkbox } from "components/Checkbox";
+import { default as CharCounter } from "components/CharCounter";
+import { IconButton } from "components/Buttons";
+import { TextButton } from "components/Buttons";
+import { IconDelete } from "components/Icons";
 
 interface Props {
   onSave: (id: string, edited: { task?: string; completed?: boolean }) => void;
@@ -14,7 +16,7 @@ interface Props {
     completed: boolean;
     task: string;
   };
-  inView: boolean;
+
   onDelete: (id: string) => void;
 }
 
@@ -24,7 +26,7 @@ enum LoadingState {
 }
 
 export default forwardRef(function Entry(
-  { onSave, todo, inView, onDelete }: Props,
+  { onSave, todo, onDelete }: Props,
   ref: any
 ) {
   const [editMode, setEditMode] = useState<boolean>(false);
@@ -64,24 +66,20 @@ export default forwardRef(function Entry(
     setEditInput(todo.task);
   };
 
-  const override: CSSProperties = {
-    display: "block",
-    //margin: "0 auto",
-    borderColor: "red",
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50px, -50%)",
-  };
-  const color = "yellow";
-
   return (
     <div ref={ref} className="entry-box">
       {isEntryLoading && (
         <div className="todo-loader-box">
           <BarLoader
-            color={color}
-            cssOverride={override}
+            color={"yellow"}
+            cssOverride={{
+              display: "block",
+              borderColor: "red",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50px, -50%)",
+            }}
             loading={isEntryLoading}
             height={4}
             width={100}
@@ -134,29 +132,30 @@ export default forwardRef(function Entry(
       <div className="button-edit-container">
         {editMode ? (
           <>
-            <Buttons.TextButton
+            <TextButton
               onClick={handleClickSave}
               displayedText={"Save"}
               isDisabled={buttonDisabled}
             />
-            <Buttons.TextButton
+            <TextButton
               onClick={handleClickDiscard}
               displayedText={"Discard"}
               isDisabled={false}
             />
           </>
         ) : (
-          <Buttons.TextButton
+          <TextButton
             onClick={handleClickEdit}
             displayedText={"Edit"}
             isDisabled={false}
           />
         )}
       </div>
-      <Buttons.IconButton
+      <IconButton
         onClick={handleDeleteTodo}
         isLoading={isEntryDeleting}
-        IconComponent={Icons.IconDelete}
+        IconComponent={IconDelete}
+        /*         buttonDisabled={false} */
       />
     </div>
   );

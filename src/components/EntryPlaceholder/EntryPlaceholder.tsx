@@ -1,8 +1,9 @@
-import "./Skeleton.css";
+import "./EntryPlaceholder.css";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { FC } from "react";
 
-export default function EntryLoader() {
+const EntryPlaceholder: FC<{}> = () => {
   return (
     <div className="entry-loader entry-loader-box">
       <SkeletonTheme
@@ -40,4 +41,6 @@ export default function EntryLoader() {
       </SkeletonTheme>
     </div>
   );
-}
+};
+
+export default EntryPlaceholder;

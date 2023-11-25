@@ -1,13 +1,13 @@
 import "./CharCounter.css";
+import { FC } from "react";
 
-export default function CharCounter(props: {
+interface Props {
   charCount: number;
   maxCharCount: number;
   counter_type: string;
-}) {
-  const charCount = props.charCount;
-  const maxCharCount = props.maxCharCount;
-  const counter_type = props.counter_type;
+}
+
+const CharCounter: FC<Props> = ({ charCount, maxCharCount, counter_type }) => {
   return (
     <div
       className={
@@ -19,4 +19,6 @@ export default function CharCounter(props: {
       {charCount}/{maxCharCount}
     </div>
   );
-}
+};
+
+export default CharCounter;

@@ -1,6 +1,9 @@
 import "./Background.css";
+import { FC } from "react";
 
-export default function Background() {
+interface Props {}
+
+const Background: FC<Props> = () => {
   return (
     <div className="image-box">
       <picture>
@@ -10,4 +13,6 @@ export default function Background() {
       </picture>
     </div>
   );
-}
+};
+
+export default Background;
