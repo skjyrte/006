@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { AxiosResponse } from "axios";
+import { AxiosRequestConfig } from "axios";
 /* custom components */
 import { default as createAxiosInstance } from "api/createAxiosInstance/createAxiosInstance";
 import { default as Entry } from "components/Entry";
@@ -94,7 +95,7 @@ const Container: FC = () => {
 
     refController.current = new AbortController();
     handleRequest<Data<GetData>>(
-      axiosInstance.get,
+      axiosInstance.get<GetOptions, APIResponse<Data<GetData>>>,
       {
         url: "/todos",
         config: {
@@ -198,15 +199,8 @@ const Container: FC = () => {
   //(method) Axios.post   <T = any, R = AxiosResponse<T, any>, D = any>(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined): Promise<R>
   //(method) Axios.patch  <T = any, R = AxiosResponse<T, any>, D = any>(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined): Promise<R>
 
-  interface Request {
-    axiosMethod: "get" | "post" | "delete" | "patch";
-    data?: {};
-    config?: {};
-  }
-
   const handleRequest = async <T,>(
-    // @ts-expect-error
-    requestPromise,
+    requestPromise: () => Promise<APIResponse<T>>,
     requestConfig: { url: string; data?: {}; config?: {} },
     successCallback?: (data: T) => void,
     failureCallback?: (error: unknown) => void,
