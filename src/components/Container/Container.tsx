@@ -3,7 +3,7 @@ import { useInView } from "react-intersection-observer";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-
+import { AxiosResponse } from "axios";
 /* custom components */
 import { default as createAxiosInstance } from "api/createAxiosInstance/createAxiosInstance";
 import { default as Entry } from "components/Entry";
@@ -33,12 +33,59 @@ const Container: FC = () => {
   const [reloadMarker, setReloadMarker] = useState(1);
   const [error, setError] = useState("");
   const [activeToDosCount, setActiveTodosCount] = useState<number>(0);
-  const ref = useRef(null);
+  const ref = useRef<Nullable<HTMLDivElement>>(null);
   const { ref: inViewRef, inView } = useInView({
     threshold: 0.5,
   });
 
   const refController = useRef(new AbortController());
+
+  type GetOptions = {
+    url: string;
+    config: {
+      params: { page: number; filter: string };
+      signal: React.MutableRefObject<AbortController>;
+    };
+  };
+
+  type Todo = {
+    _id: string;
+    task: string;
+    completed: boolean;
+    __v: number;
+  };
+
+  type GetData = {
+    currentData: Todo[];
+    documentCount: number;
+    activeDocumentsCount: number;
+  };
+
+  type PostData = {
+    documentCount: number;
+    activeDocumentsCount: number;
+    getCreatedTodo: Todo;
+  };
+
+  type DeleteData = {
+    documentCount: number;
+    activeDocumentsCount: number;
+  };
+
+  type PatchData = {
+    activeDocumentsCount: number;
+    getModifiedTodo: Todo;
+  };
+
+  type Data<T> = {
+    data: T;
+  };
+
+  type APIResponse<T> = {
+    data: T;
+    success: string;
+    message: string;
+  };
 
   useEffect(() => {
     setToDos([]);
@@ -46,7 +93,7 @@ const Container: FC = () => {
     inViewRef(null);
 
     refController.current = new AbortController();
-    handleRequest(
+    handleRequest<Data<GetData>>(
       axiosInstance.get,
       {
         url: "/todos",
@@ -56,14 +103,13 @@ const Container: FC = () => {
         },
       },
       (data) => {
-        // @ts-ignore
         setToDos(data.data.currentData);
-        // @ts-ignore
+
         setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
-        // @ts-ignore
+
         setActiveTodosCount(data.data.activeDocumentsCount);
       },
-      (error: unknown) => {
+      (error) => {
         setToDos([]);
         toast.error("No connection to database. Click here to reload", {
           position: "top-center",
@@ -96,7 +142,7 @@ const Container: FC = () => {
 
   useEffect(() => {
     if (pageNumber > 1 && hasMore) {
-      handleRequest(
+      handleRequest<Data<GetData>>(
         axiosInstance.get,
         {
           url: "/todos",
@@ -109,7 +155,6 @@ const Container: FC = () => {
           },
         },
         (data) => {
-          // @ts-ignore
           const removeDuplicates = [...data.data.currentData].filter(
             (recievedKey) => {
               return !toDos.find((oldKey) => {
@@ -117,15 +162,11 @@ const Container: FC = () => {
               });
             }
           );
-          // @ts-ignore
-          setToDos((currentTodos) => [
-            ...currentTodos,
-            // @ts-ignore
-            ...removeDuplicates,
-          ]);
-          // @ts-ignore
+
+          setToDos((currentTodos) => [...currentTodos, ...removeDuplicates]);
+
           setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
-          // @ts-ignore
+
           setActiveTodosCount(data.data.activeDocumentsCount);
         },
         (error: unknown) => {
@@ -150,11 +191,24 @@ const Container: FC = () => {
     }
   }, [pageNumber]);
 
-  const handleRequest = async (
-    // @ts-ignore
+  //(method) Axios.get    <T = any, R = AxiosResponse<T, any>, D = any>(url: string, config?: AxiosRequestConfig<D> | undefined): Promise<R>
+  //(method) Axios.get    <T = any, R = AxiosResponse<T, any>, D = any>(url: string, config?: AxiosRequestConfig<D> | undefined): Promise<R>
+  //(method) Axios.delete <T = any, R = AxiosResponse<T, any>, D = any>(url: string, config?: AxiosRequestConfig<D> | undefined): Promise<R>
+
+  //(method) Axios.post   <T = any, R = AxiosResponse<T, any>, D = any>(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined): Promise<R>
+  //(method) Axios.patch  <T = any, R = AxiosResponse<T, any>, D = any>(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined): Promise<R>
+
+  interface Request {
+    axiosMethod: "get" | "post" | "delete" | "patch";
+    data?: {};
+    config?: {};
+  }
+
+  const handleRequest = async <T,>(
+    // @ts-expect-error
     requestPromise,
     requestConfig: { url: string; data?: {}; config?: {} },
-    successCallback?: (data: unknown) => void,
+    successCallback?: (data: T) => void,
     failureCallback?: (error: unknown) => void,
     loaderType?: string
   ) => {
@@ -216,16 +270,15 @@ const Container: FC = () => {
   };
 
   async function handleAddEntry(task: string) {
-    await handleRequest(
+    await handleRequest<Data<PostData>>(
       axiosInstance.post,
       { url: "/todos", data: { task } },
       (data) => {
-        // @ts-ignore
         setToDos((toDos) => [...toDos, data.data.getCreatedTodo]);
         toast.success("Added successfully", {
           position: "top-right",
         });
-        // @ts-ignore
+
         setActiveTodosCount(data.data.activeDocumentsCount);
       },
       undefined,
@@ -234,11 +287,10 @@ const Container: FC = () => {
   }
 
   async function handleDeleteEntry(id: string) {
-    await handleRequest(
+    await handleRequest<Data<DeleteData>>(
       axiosInstance.delete,
       { url: `/todos/${id}` },
       (data) => {
-        // @ts-ignore
         setToDos((toDos) =>
           toDos.filter((todo: any) => {
             return todo._id !== id;
@@ -247,7 +299,7 @@ const Container: FC = () => {
         toast.success("Deleted successfully.", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        // @ts-ignore
+
         setActiveTodosCount(data.data.activeDocumentsCount);
       }
     );
@@ -257,17 +309,15 @@ const Container: FC = () => {
     id: string,
     edited: { task?: string; completed?: boolean }
   ) {
-    await handleRequest(
+    await handleRequest<Data<PatchData>>(
       axiosInstance.patch,
       { url: `/todos/${id}`, data: edited },
       (data) => {
-        // @ts-ignore
         setToDos((toDos) => {
           return toDos.map((todo) => {
             if (todo._id !== id) {
               return todo;
             } else {
-              // @ts-ignore
               return data.data.getModifiedTodo;
             }
           });
@@ -276,7 +326,7 @@ const Container: FC = () => {
         toast.success("Edited successfully.", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        // @ts-ignore
+
         setActiveTodosCount(data.data.activeDocumentsCount);
       }
     );
