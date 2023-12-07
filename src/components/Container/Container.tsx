@@ -41,12 +41,23 @@ const Container: FC = () => {
 
   const refController = useRef(new AbortController());
 
-  type GetOptions = {
-    url: string;
-    config: {
-      params: { page: number; filter: string };
-      signal: React.MutableRefObject<AbortController>;
-    };
+  type GetConfig = {
+    params: { page: number; filter: string };
+    signal: React.MutableRefObject<AbortController>;
+  };
+
+  type PostConfig = {
+    task: string;
+  };
+
+  type PatchConfig = {
+    params: { page: number; filter: string };
+    signal: React.MutableRefObject<AbortController>;
+  };
+
+  type DeleteConfig = {
+    params: { page: number; filter: string };
+    signal: React.MutableRefObject<AbortController>;
   };
 
   type Todo = {
@@ -68,6 +79,10 @@ const Container: FC = () => {
     getCreatedTodo: Todo;
   };
 
+  type SendPostData = {
+    task: string;
+  };
+
   type DeleteData = {
     documentCount: number;
     activeDocumentsCount: number;
@@ -82,8 +97,8 @@ const Container: FC = () => {
     data: T;
   };
 
-  type APIResponse<T> = {
-    data: T;
+  type APIResponse<TData> = {
+    data: TData;
     success: string;
     message: string;
   };
@@ -94,8 +109,8 @@ const Container: FC = () => {
     inViewRef(null);
 
     refController.current = new AbortController();
-    handleRequest<Data<GetData>>(
-      axiosInstance.get<GetOptions, APIResponse<Data<GetData>>>,
+    handleRequest<Data<GetData>, GetConfig>(
+      axiosInstance.get<APIResponse<Data<GetData>>>,
       {
         url: "/todos",
         config: {
@@ -143,8 +158,8 @@ const Container: FC = () => {
 
   useEffect(() => {
     if (pageNumber > 1 && hasMore) {
-      handleRequest<Data<GetData>>(
-        axiosInstance.get,
+      handleRequest<Data<GetData>, GetConfig>(
+        axiosInstance.get<APIResponse<Data<GetData>>>,
         {
           url: "/todos",
           config: {
@@ -199,9 +214,16 @@ const Container: FC = () => {
   //(method) Axios.post   <T = any, R = AxiosResponse<T, any>, D = any>(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined): Promise<R>
   //(method) Axios.patch  <T = any, R = AxiosResponse<T, any>, D = any>(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined): Promise<R>
 
-  const handleRequest = async <T,>(
-    requestPromise: () => Promise<APIResponse<T>>,
-    requestConfig: { url: string; data?: {}; config?: {} },
+  /*   [url: string, config?: AxiosRequestConfig<D>]
+[(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined)] */
+
+  const handleRequest = async <T, R = undefined, D = undefined>(
+    requestPromise: (
+      url: string,
+      config?: AxiosRequestConfig<R>,
+      data?: D
+    ) => Promise<AxiosResponse<APIResponse<T>>>,
+    requestConfig: { url: string; config?: {}; data?: D },
     successCallback?: (data: T) => void,
     failureCallback?: (error: unknown) => void,
     loaderType?: string
@@ -213,12 +235,19 @@ const Container: FC = () => {
 
       const requestParams = [
         requestConfig.url,
-        requestConfig.data,
         requestConfig.config,
+        requestConfig.data,
       ].filter(Boolean);
-      const response = await requestPromise(...requestParams);
+
+      const response = await requestPromise(
+        requestConfig.url,
+        requestConfig.config,
+        requestConfig.data
+      );
+      /*       const response = await requestPromise(...requestParams); */
 
       if (successCallback) {
+        //@ts-ignore
         successCallback(response.data);
       }
       setLoader(null);
@@ -264,8 +293,12 @@ const Container: FC = () => {
   };
 
   async function handleAddEntry(task: string) {
-    await handleRequest<Data<PostData>>(
-      axiosInstance.post,
+    await handleRequest<Data<PostData>, Data<PostData>, Data<SendPostData>>(
+      axiosInstance.post<
+        APIResponse<Data<PostData>>,
+        AxiosResponse<APIResponse<Data<PostData>>>,
+        Data<SendPostData>
+      >,
       { url: "/todos", data: { task } },
       (data) => {
         setToDos((toDos) => [...toDos, data.data.getCreatedTodo]);
@@ -282,7 +315,7 @@ const Container: FC = () => {
 
   async function handleDeleteEntry(id: string) {
     await handleRequest<Data<DeleteData>>(
-      axiosInstance.delete,
+      axiosInstance.delete<APIResponse<Data<DeleteData>>>,
       { url: `/todos/${id}` },
       (data) => {
         setToDos((toDos) =>
