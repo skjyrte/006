@@ -41,25 +41,6 @@ const Container: FC = () => {
 
   const refController = useRef(new AbortController());
 
-  type GetConfig = {
-    params: { page: number; filter: string };
-    signal: React.MutableRefObject<AbortController>;
-  };
-
-  type PostConfig = {
-    task: string;
-  };
-
-  type PatchConfig = {
-    params: { page: number; filter: string };
-    signal: React.MutableRefObject<AbortController>;
-  };
-
-  type DeleteConfig = {
-    params: { page: number; filter: string };
-    signal: React.MutableRefObject<AbortController>;
-  };
-
   type Todo = {
     _id: string;
     task: string;
@@ -81,6 +62,11 @@ const Container: FC = () => {
 
   type SendPostData = {
     task: string;
+  };
+
+  type SendPatchData = {
+    task?: string;
+    completed?: boolean;
   };
 
   type DeleteData = {
@@ -109,7 +95,7 @@ const Container: FC = () => {
     inViewRef(null);
 
     refController.current = new AbortController();
-    handleRequest<Data<GetData>, GetConfig>(
+    handleRequest<Data<GetData>>(
       axiosInstance.get<APIResponse<Data<GetData>>>,
       {
         url: "/todos",
@@ -158,7 +144,7 @@ const Container: FC = () => {
 
   useEffect(() => {
     if (pageNumber > 1 && hasMore) {
-      handleRequest<Data<GetData>, GetConfig>(
+      handleRequest<Data<GetData>>(
         axiosInstance.get<APIResponse<Data<GetData>>>,
         {
           url: "/todos",
@@ -217,13 +203,13 @@ const Container: FC = () => {
   /*   [url: string, config?: AxiosRequestConfig<D>]
 [(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined)] */
 
-  const handleRequest = async <T, R = undefined, D = undefined>(
+  const handleRequest = async <T, D = undefined>(
     requestPromise: (
       url: string,
-      config?: AxiosRequestConfig<R>,
-      data?: D
+      data?: D,
+      config?: AxiosRequestConfig<D>
     ) => Promise<AxiosResponse<APIResponse<T>>>,
-    requestConfig: { url: string; config?: {}; data?: D },
+    requestConfig: { url: string; data?: D; config?: AxiosRequestConfig<D> },
     successCallback?: (data: T) => void,
     failureCallback?: (error: unknown) => void,
     loaderType?: string
@@ -235,14 +221,14 @@ const Container: FC = () => {
 
       const requestParams = [
         requestConfig.url,
-        requestConfig.config,
         requestConfig.data,
+        requestConfig.config,
       ].filter(Boolean);
 
       const response = await requestPromise(
         requestConfig.url,
-        requestConfig.config,
-        requestConfig.data
+        requestConfig.data,
+        requestConfig.config
       );
       /*       const response = await requestPromise(...requestParams); */
 
@@ -293,11 +279,11 @@ const Container: FC = () => {
   };
 
   async function handleAddEntry(task: string) {
-    await handleRequest<Data<PostData>, Data<PostData>, Data<SendPostData>>(
+    await handleRequest<Data<PostData>, SendPostData>(
       axiosInstance.post<
         APIResponse<Data<PostData>>,
         AxiosResponse<APIResponse<Data<PostData>>>,
-        Data<SendPostData>
+        SendPostData
       >,
       { url: "/todos", data: { task } },
       (data) => {
@@ -336,7 +322,7 @@ const Container: FC = () => {
     id: string,
     edited: { task?: string; completed?: boolean }
   ) {
-    await handleRequest<Data<PatchData>>(
+    await handleRequest<Data<PatchData>, SendPatchData>(
       axiosInstance.patch,
       { url: `/todos/${id}`, data: edited },
       (data) => {
