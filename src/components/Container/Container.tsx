@@ -143,6 +143,7 @@ const Container: FC = () => {
   }, [ref.current, inView]);
 
   useEffect(() => {
+    console.log(pageNumber);
     if (pageNumber > 1 && hasMore) {
       handleRequest<Data<GetData>>(
         axiosInstance.get<APIResponse<Data<GetData>>>,
@@ -164,6 +165,7 @@ const Container: FC = () => {
               });
             }
           );
+          console.log("GOING");
 
           setToDos((currentTodos) => [...currentTodos, ...removeDuplicates]);
 
@@ -203,7 +205,7 @@ const Container: FC = () => {
   /*   [url: string, config?: AxiosRequestConfig<D>]
 [(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined)] */
 
-  const handleRequest = async <T, D = undefined>(
+  const handleRequest = async <T, D = any>(
     requestPromise: (
       url: string,
       data?: D,
@@ -225,12 +227,14 @@ const Container: FC = () => {
         requestConfig.config,
       ].filter(Boolean);
 
-      const response = await requestPromise(
+      /*       const response = await requestPromise(
         requestConfig.url,
         requestConfig.data,
         requestConfig.config
-      );
-      /*       const response = await requestPromise(...requestParams); */
+      ); */
+
+      //@ts-ignore
+      const response = await requestPromise(...requestParams);
 
       if (successCallback) {
         //@ts-ignore
@@ -270,6 +274,7 @@ const Container: FC = () => {
         onSave={handleSaveEditedEntry}
         onDelete={handleDeleteEntry}
         ref={index === toDos.length - 1 ? setRefs : undefined}
+        inView={inView}
       />
     );
   });
