@@ -8,7 +8,6 @@ import { default as CharCounter } from "components/CharCounter";
 import { IconButton } from "components/Buttons";
 import { TextButton } from "components/Buttons";
 import { IconDelete } from "components/Icons";
-import { InView } from "react-intersection-observer";
 
 interface Props {
   onSave: (id: string, edited: { task?: string; completed?: boolean }) => void;
@@ -17,9 +16,7 @@ interface Props {
     completed: boolean;
     task: string;
   };
-
   onDelete: (id: string) => void;
-  inView: any;
 }
 
 enum LoadingState {
@@ -28,7 +25,7 @@ enum LoadingState {
 }
 
 export default forwardRef(function Entry(
-  { onSave, todo, onDelete, inView }: Props,
+  { onSave, todo, onDelete }: Props,
   ref: any
 ) {
   const [editMode, setEditMode] = useState<boolean>(false);
@@ -70,7 +67,6 @@ export default forwardRef(function Entry(
 
   return (
     <div ref={ref} className="entry-box">
-      {String(inView)}
       {isEntryLoading && (
         <div className="todo-loader-box">
           <BarLoader

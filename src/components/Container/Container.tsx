@@ -89,6 +89,38 @@ const Container: FC = () => {
     message: string;
   };
 
+  function getAxiosWrapper<T, R = AxiosResponse<T>, D = any>(
+    url: string,
+    data: D,
+    config: AxiosRequestConfig<D>
+  ) {
+    return axiosInstance.get<T, R, D>(url, config);
+  }
+
+  function deleteAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    data: D,
+    config: AxiosRequestConfig<D>
+  ) {
+    return axiosInstance.delete<T, R, D>(url, config);
+  }
+
+  function postAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    data: D,
+    config: AxiosRequestConfig<D>
+  ) {
+    return axiosInstance.post<T, R, D>(url, data, config);
+  }
+
+  function patchAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
+    url: string,
+    data: D,
+    config: AxiosRequestConfig<D>
+  ) {
+    return axiosInstance.patch<T, R, D>(url, data, config);
+  }
+
   useEffect(() => {
     setToDos([]);
     setLoader(null);
@@ -96,9 +128,10 @@ const Container: FC = () => {
 
     refController.current = new AbortController();
     handleRequest<Data<GetData>>(
-      axiosInstance.get<APIResponse<Data<GetData>>>,
+      getAxiosWrapper<APIResponse<Data<GetData>>>,
       {
         url: "/todos",
+        data: {},
         config: {
           params: { page: pageNumber, filter: filterState },
           signal: refController.current.signal,
@@ -106,9 +139,7 @@ const Container: FC = () => {
       },
       (data) => {
         setToDos(data.data.currentData);
-
         setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
-
         setActiveTodosCount(data.data.activeDocumentsCount);
       },
       (error) => {
@@ -146,9 +177,10 @@ const Container: FC = () => {
     console.log(pageNumber);
     if (pageNumber > 1 && hasMore) {
       handleRequest<Data<GetData>>(
-        axiosInstance.get<APIResponse<Data<GetData>>>,
+        getAxiosWrapper<APIResponse<Data<GetData>>>,
         {
           url: "/todos",
+          data: {},
           config: {
             params: {
               page: pageNumber,
@@ -168,9 +200,7 @@ const Container: FC = () => {
           console.log("GOING");
 
           setToDos((currentTodos) => [...currentTodos, ...removeDuplicates]);
-
           setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
-
           setActiveTodosCount(data.data.activeDocumentsCount);
         },
         (error: unknown) => {
@@ -195,50 +225,34 @@ const Container: FC = () => {
     }
   }, [pageNumber]);
 
-  //(method) Axios.get    <T = any, R = AxiosResponse<T, any>, D = any>(url: string, config?: AxiosRequestConfig<D> | undefined): Promise<R>
-  //(method) Axios.get    <T = any, R = AxiosResponse<T, any>, D = any>(url: string, config?: AxiosRequestConfig<D> | undefined): Promise<R>
-  //(method) Axios.delete <T = any, R = AxiosResponse<T, any>, D = any>(url: string, config?: AxiosRequestConfig<D> | undefined): Promise<R>
-
-  //(method) Axios.post   <T = any, R = AxiosResponse<T, any>, D = any>(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined): Promise<R>
-  //(method) Axios.patch  <T = any, R = AxiosResponse<T, any>, D = any>(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined): Promise<R>
-
-  /*   [url: string, config?: AxiosRequestConfig<D>]
-[(url: string, data?: D | undefined, config?: AxiosRequestConfig<D> | undefined)] */
-
-  const handleRequest = async <T, D = any>(
+  async function handleRequest<T, D = any>(
     requestPromise: (
       url: string,
-      data?: D,
-      config?: AxiosRequestConfig<D>
+      data: D,
+      config: AxiosRequestConfig<D>
     ) => Promise<AxiosResponse<APIResponse<T>>>,
-    requestConfig: { url: string; data?: D; config?: AxiosRequestConfig<D> },
+    requestConfig: { url: string; data: D; config: AxiosRequestConfig<D> },
     successCallback?: (data: T) => void,
     failureCallback?: (error: unknown) => void,
     loaderType?: string
-  ) => {
+  ): Promise<void> {
     try {
       if (loaderType) {
         setLoader(loaderType);
       }
 
-      const requestParams = [
-        requestConfig.url,
-        requestConfig.data,
-        requestConfig.config,
-      ].filter(Boolean);
-
-      /*       const response = await requestPromise(
+      const response = await requestPromise(
         requestConfig.url,
         requestConfig.data,
         requestConfig.config
-      ); */
-
-      //@ts-ignore
-      const response = await requestPromise(...requestParams);
-
+      );
+      console.log("response");
+      console.log(response);
       if (successCallback) {
-        //@ts-ignore
-        successCallback(response.data);
+        if (typeof response === "object" && "data" in response) {
+          //@ts-ignore
+          successCallback(response.data);
+        }
       }
       setLoader(null);
     } catch (err) {
@@ -256,7 +270,7 @@ const Container: FC = () => {
         position: "top-center",
       });
     }
-  };
+  }
 
   const setRefs = useCallback(
     (node: any) => {
@@ -274,7 +288,6 @@ const Container: FC = () => {
         onSave={handleSaveEditedEntry}
         onDelete={handleDeleteEntry}
         ref={index === toDos.length - 1 ? setRefs : undefined}
-        inView={inView}
       />
     );
   });
@@ -285,12 +298,12 @@ const Container: FC = () => {
 
   async function handleAddEntry(task: string) {
     await handleRequest<Data<PostData>, SendPostData>(
-      axiosInstance.post<
+      postAxiosWrapper<
         APIResponse<Data<PostData>>,
         AxiosResponse<APIResponse<Data<PostData>>>,
         SendPostData
       >,
-      { url: "/todos", data: { task } },
+      { url: "/todos", data: { task }, config: {} },
       (data) => {
         setToDos((toDos) => [...toDos, data.data.getCreatedTodo]);
         toast.success("Added successfully", {
@@ -305,9 +318,9 @@ const Container: FC = () => {
   }
 
   async function handleDeleteEntry(id: string) {
-    await handleRequest<Data<DeleteData>>(
-      axiosInstance.delete<APIResponse<Data<DeleteData>>>,
-      { url: `/todos/${id}` },
+    await handleRequest<Data<DeleteData>, any>(
+      deleteAxiosWrapper<APIResponse<Data<DeleteData>>>,
+      { url: `/todos/${id}`, data: undefined, config: {} },
       (data) => {
         setToDos((toDos) =>
           toDos.filter((todo: any) => {
@@ -328,8 +341,8 @@ const Container: FC = () => {
     edited: { task?: string; completed?: boolean }
   ) {
     await handleRequest<Data<PatchData>, SendPatchData>(
-      axiosInstance.patch,
-      { url: `/todos/${id}`, data: edited },
+      patchAxiosWrapper,
+      { url: `/todos/${id}`, data: edited, config: {} },
       (data) => {
         setToDos((toDos) => {
           return toDos.map((todo) => {
