@@ -1,12 +1,13 @@
 import "./Footer.css";
 import { TextButton } from "components/Buttons";
 import { FC } from "react";
+import { FilterState } from "components/CommonTypes";
 
 interface Props {
-  onClick: (parameter: string) => void;
+  onClick: (parameter: FilterState) => void;
   activeTodosCount: any;
   onDeleteCompleted: () => void;
-  filterState: string;
+  filterState: FilterState;
 }
 
 const Footer: FC<Props> = ({
@@ -23,21 +24,21 @@ const Footer: FC<Props> = ({
       <span></span>
       <div className="manage-state-container">
         <TextButton
-          displayedText="All"
-          onClick={() => onClick("All")}
-          isActive={filterState === "All" ? true : false}
+          displayedText={FilterState.ALL}
+          onClick={() => onClick(FilterState.ALL)}
+          isActive={filterState === FilterState.ALL ? true : false}
           size="small"
         />
         <TextButton
-          displayedText="Active"
-          onClick={() => onClick("Active")}
-          isActive={filterState === "Active" ? true : false}
+          displayedText={FilterState.ACTIVE}
+          onClick={() => onClick(FilterState.ACTIVE)}
+          isActive={filterState === FilterState.ACTIVE ? true : false}
           size="small"
         />
         <TextButton
-          displayedText="Completed"
-          onClick={() => onClick("Completed")}
-          isActive={filterState === "Completed" ? true : false}
+          displayedText={FilterState.COMPLETED}
+          onClick={() => onClick(FilterState.COMPLETED)}
+          isActive={filterState === FilterState.COMPLETED ? true : false}
           size="small"
         />
       </div>

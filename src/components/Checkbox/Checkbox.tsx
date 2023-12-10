@@ -6,13 +6,24 @@ interface Props {
   onChange: () => void;
   checked: boolean;
   isLoading: boolean;
+  disabled: boolean;
 }
 
-const Checkbox: FC<Props> = ({ onChange, checked, isLoading }) => {
+const Checkbox: FC<Props> = ({
+  onChange,
+  checked,
+  isLoading,
+  disabled = false,
+}) => {
   return (
-    <div className="general-container">
+    <div className={`general-container ${disabled ? "disabled" : ""}`}>
       <label className="container-label">
-        <input type="checkbox" checked={checked} onChange={onChange} />
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={onChange}
+          disabled={disabled}
+        />
         <span className="checkmark"></span>
       </label>
       <PuffLoader

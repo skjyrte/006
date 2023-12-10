@@ -14,6 +14,7 @@ import { default as EntryPlaceholder } from "components/EntryPlaceholder";
 import { IconButton } from "components/Buttons";
 import { IconSun } from "components/Icons";
 import "./Container.css";
+import { FilterState, Todo } from "components/CommonTypes";
 
 const axiosInstance = createAxiosInstance();
 const elementsPerPage = 2;
@@ -25,14 +26,83 @@ enum LoadingState {
 
 type Nullable<T> = T | null;
 
+type APIResponse<TData> = {
+  data: TData;
+  success: string;
+  message: string;
+};
+
+type ResponseGetData = {
+  currentData: Todo[];
+  documentCount: number;
+  activeDocumentsCount: number;
+};
+
+type ResponsePostData = {
+  documentCount: number;
+  activeDocumentsCount: number;
+  getCreatedTodo: Todo;
+};
+
+type ResponseDeleteData = {
+  documentCount: number;
+  activeDocumentsCount: number;
+};
+
+type ResponsePatchData = {
+  activeDocumentsCount: number;
+  getModifiedTodo: Todo;
+};
+
+type RequestPostData = {
+  task: string;
+};
+
+type RequestPatchData = {
+  task?: string;
+  completed?: boolean;
+};
+
+function getAxiosWrapper<T, R = AxiosResponse<T>, D = any>(
+  url: string,
+  data: {},
+  config: AxiosRequestConfig<D>
+) {
+  return axiosInstance.get<T, R, D>(url, config);
+}
+
+function deleteAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
+  url: string,
+  data: {},
+  config: AxiosRequestConfig<D>
+) {
+  return axiosInstance.delete<T, R, D>(url, config);
+}
+
+function postAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
+  url: string,
+  data: D,
+  config: AxiosRequestConfig<D>
+) {
+  return axiosInstance.post<T, R, D>(url, data, config);
+}
+
+function patchAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
+  url: string,
+  data: D,
+  config: AxiosRequestConfig<D>
+) {
+  return axiosInstance.patch<T, R, D>(url, data, config);
+}
+
 const Container: FC = () => {
-  const [toDos, setToDos] = useState<any[]>([]);
-  const [filterState, setFilterState] = useState<string>("All");
-  const [pageNumber, setPageNumber] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
+  const [toDos, setToDos] = useState<Todo[]>([]);
+  const [filterState, setFilterState] = useState<FilterState>(FilterState.ALL);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(false);
   const [loader, setLoader] = useState<Nullable<String>>(null);
-  const [reloadMarker, setReloadMarker] = useState(1);
-  const [error, setError] = useState("");
+  const [reloadMarker, setReloadMarker] = useState<number>(1);
+  const [error, setError] = useState<string>("");
   const [activeToDosCount, setActiveTodosCount] = useState<number>(0);
   const ref = useRef<Nullable<HTMLDivElement>>(null);
   const { ref: inViewRef, inView } = useInView({
@@ -41,94 +111,14 @@ const Container: FC = () => {
 
   const refController = useRef(new AbortController());
 
-  type Todo = {
-    _id: string;
-    task: string;
-    completed: boolean;
-    __v: number;
-  };
-
-  type GetData = {
-    currentData: Todo[];
-    documentCount: number;
-    activeDocumentsCount: number;
-  };
-
-  type PostData = {
-    documentCount: number;
-    activeDocumentsCount: number;
-    getCreatedTodo: Todo;
-  };
-
-  type SendPostData = {
-    task: string;
-  };
-
-  type SendPatchData = {
-    task?: string;
-    completed?: boolean;
-  };
-
-  type DeleteData = {
-    documentCount: number;
-    activeDocumentsCount: number;
-  };
-
-  type PatchData = {
-    activeDocumentsCount: number;
-    getModifiedTodo: Todo;
-  };
-
-  type Data<T> = {
-    data: T;
-  };
-
-  type APIResponse<TData> = {
-    data: TData;
-    success: string;
-    message: string;
-  };
-
-  function getAxiosWrapper<T, R = AxiosResponse<T>, D = any>(
-    url: string,
-    data: D,
-    config: AxiosRequestConfig<D>
-  ) {
-    return axiosInstance.get<T, R, D>(url, config);
-  }
-
-  function deleteAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
-    url: string,
-    data: D,
-    config: AxiosRequestConfig<D>
-  ) {
-    return axiosInstance.delete<T, R, D>(url, config);
-  }
-
-  function postAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
-    url: string,
-    data: D,
-    config: AxiosRequestConfig<D>
-  ) {
-    return axiosInstance.post<T, R, D>(url, data, config);
-  }
-
-  function patchAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
-    url: string,
-    data: D,
-    config: AxiosRequestConfig<D>
-  ) {
-    return axiosInstance.patch<T, R, D>(url, data, config);
-  }
-
   useEffect(() => {
     setToDos([]);
     setLoader(null);
     inViewRef(null);
 
     refController.current = new AbortController();
-    handleRequest<Data<GetData>>(
-      getAxiosWrapper<APIResponse<Data<GetData>>>,
+    handleRequest<ResponseGetData>(
+      getAxiosWrapper<APIResponse<ResponseGetData>>,
       {
         url: "/todos",
         data: {},
@@ -174,10 +164,9 @@ const Container: FC = () => {
   }, [ref.current, inView]);
 
   useEffect(() => {
-    console.log(pageNumber);
     if (pageNumber > 1 && hasMore) {
-      handleRequest<Data<GetData>>(
-        getAxiosWrapper<APIResponse<Data<GetData>>>,
+      handleRequest<ResponseGetData>(
+        getAxiosWrapper<APIResponse<ResponseGetData>>,
         {
           url: "/todos",
           data: {},
@@ -197,7 +186,6 @@ const Container: FC = () => {
               });
             }
           );
-          console.log("GOING");
 
           setToDos((currentTodos) => [...currentTodos, ...removeDuplicates]);
           setHasMore(elementsPerPage * pageNumber < data.data.documentCount);
@@ -232,7 +220,7 @@ const Container: FC = () => {
       config: AxiosRequestConfig<D>
     ) => Promise<AxiosResponse<APIResponse<T>>>,
     requestConfig: { url: string; data: D; config: AxiosRequestConfig<D> },
-    successCallback?: (data: T) => void,
+    successCallback?: (data: APIResponse<T>) => void,
     failureCallback?: (error: unknown) => void,
     loaderType?: string
   ): Promise<void> {
@@ -246,11 +234,9 @@ const Container: FC = () => {
         requestConfig.data,
         requestConfig.config
       );
-      console.log("response");
-      console.log(response);
+
       if (successCallback) {
         if (typeof response === "object" && "data" in response) {
-          //@ts-ignore
           successCallback(response.data);
         }
       }
@@ -297,11 +283,11 @@ const Container: FC = () => {
   };
 
   async function handleAddEntry(task: string) {
-    await handleRequest<Data<PostData>, SendPostData>(
+    await handleRequest<ResponsePostData, RequestPostData>(
       postAxiosWrapper<
-        APIResponse<Data<PostData>>,
-        AxiosResponse<APIResponse<Data<PostData>>>,
-        SendPostData
+        APIResponse<ResponsePostData>,
+        AxiosResponse<APIResponse<ResponsePostData>>,
+        RequestPostData
       >,
       { url: "/todos", data: { task }, config: {} },
       (data) => {
@@ -318,8 +304,8 @@ const Container: FC = () => {
   }
 
   async function handleDeleteEntry(id: string) {
-    await handleRequest<Data<DeleteData>, any>(
-      deleteAxiosWrapper<APIResponse<Data<DeleteData>>>,
+    await handleRequest<ResponseDeleteData, any>(
+      deleteAxiosWrapper<APIResponse<ResponseDeleteData>>,
       { url: `/todos/${id}`, data: undefined, config: {} },
       (data) => {
         setToDos((toDos) =>
@@ -340,7 +326,7 @@ const Container: FC = () => {
     id: string,
     edited: { task?: string; completed?: boolean }
   ) {
-    await handleRequest<Data<PatchData>, SendPatchData>(
+    await handleRequest<ResponsePatchData, RequestPatchData>(
       patchAxiosWrapper,
       { url: `/todos/${id}`, data: edited, config: {} },
       (data) => {
@@ -353,17 +339,15 @@ const Container: FC = () => {
             }
           });
         });
-
         toast.success("Edited successfully.", {
           position: toast.POSITION.TOP_RIGHT,
         });
-
         setActiveTodosCount(data.data.activeDocumentsCount);
       }
     );
   }
 
-  function handleShowState(showState: string) {
+  function handleShowState(showState: FilterState) {
     if (showState !== filterState) {
       setToDos([]);
       setPageNumber(1);
@@ -413,7 +397,6 @@ const Container: FC = () => {
         theme="dark"
         limit={3}
       />
-
       <div className="outer-box">
         <div className="main-header">{String(loader)}</div>
         <div className="main-header">{String(inView)}</div>
@@ -421,7 +404,6 @@ const Container: FC = () => {
           TODO
           {<IconButton IconComponent={IconSun} isLoading={false} />}
         </header>
-
         <InputBar
           onClickAddEntry={handleAddEntry}
           loading={loader === LoadingState.ADD_ENTRY ? true : false}

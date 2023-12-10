@@ -8,21 +8,21 @@ import { default as CharCounter } from "components/CharCounter";
 import { IconButton } from "components/Buttons";
 import { TextButton } from "components/Buttons";
 import { IconDelete } from "components/Icons";
+import { Todo } from "components/CommonTypes";
 
 interface Props {
   onSave: (id: string, edited: { task?: string; completed?: boolean }) => void;
-  todo: {
-    _id: string;
-    completed: boolean;
-    task: string;
-  };
+  todo: Todo;
   onDelete: (id: string) => void;
 }
 
 enum LoadingState {
+  SAVE_EDITED_CHECKBOX = "save_edited_checkbox",
   SAVE_EDITED_ENTRY = "save_edited_entry",
   DELETE_ENTRY = "delete_entry",
 }
+
+type Nullable<T> = T | null;
 
 export default forwardRef(function Entry(
   { onSave, todo, onDelete }: Props,
@@ -30,30 +30,28 @@ export default forwardRef(function Entry(
 ) {
   const [editMode, setEditMode] = useState<boolean>(false);
   const [editInput, setEditInput] = useState<string>(todo.task);
-  const [isCheckboxLoading, setIsCheckboxLoading] = useState<boolean>(false);
-  const [isEntryLoading, setIsEntryLoading] = useState<boolean>(false);
-  const [isEntryDeleting, setIsEntryDeleting] = useState<boolean>(false);
+  const [loader, setLoader] = useState<Nullable<LoadingState>>(null);
 
   const currentInputLength = editInput.length;
-  const buttonDisabled = currentInputLength === 0;
+  const isEditEmpty = currentInputLength === 0;
 
   const handleClickCheckbox = async () => {
-    setIsCheckboxLoading(() => true);
+    setLoader(LoadingState.SAVE_EDITED_CHECKBOX);
     await onSave(todo._id, { completed: !todo.completed });
-    setIsCheckboxLoading(() => false);
+    setLoader(null);
   };
 
   const handleClickSave = async () => {
-    setIsEntryLoading(() => true);
+    setLoader(LoadingState.SAVE_EDITED_ENTRY);
     await onSave(todo._id, { task: editInput });
-    setIsEntryLoading(() => false);
     setEditMode(false);
+    setLoader(null);
   };
 
   const handleDeleteTodo = async () => {
-    setIsEntryDeleting(() => true);
+    setLoader(LoadingState.DELETE_ENTRY);
     await onDelete(todo._id);
-    setIsEntryDeleting(() => false);
+    setLoader(null);
   };
 
   const handleClickEdit = () => {
@@ -67,7 +65,7 @@ export default forwardRef(function Entry(
 
   return (
     <div ref={ref} className="entry-box">
-      {isEntryLoading && (
+      {loader === LoadingState.SAVE_EDITED_ENTRY && (
         <div className="todo-loader-box">
           <BarLoader
             color={"yellow"}
@@ -79,7 +77,7 @@ export default forwardRef(function Entry(
               left: "50%",
               transform: "translate(-50px, -50%)",
             }}
-            loading={isEntryLoading}
+            loading={loader === LoadingState.SAVE_EDITED_ENTRY}
             height={4}
             width={100}
             aria-label="Loading Spinner"
@@ -90,7 +88,8 @@ export default forwardRef(function Entry(
       <Checkbox
         onChange={handleClickCheckbox}
         checked={todo.completed}
-        isLoading={isCheckboxLoading}
+        isLoading={loader === LoadingState.SAVE_EDITED_CHECKBOX}
+        disabled={loader !== null}
       />
       {editMode ? (
         <>
@@ -134,27 +133,27 @@ export default forwardRef(function Entry(
             <TextButton
               onClick={handleClickSave}
               displayedText={"Save"}
-              isDisabled={buttonDisabled}
+              isDisabled={isEditEmpty || loader !== null}
             />
             <TextButton
               onClick={handleClickDiscard}
               displayedText={"Discard"}
-              isDisabled={false}
+              isDisabled={loader !== null}
             />
           </>
         ) : (
           <TextButton
             onClick={handleClickEdit}
             displayedText={"Edit"}
-            isDisabled={false}
+            isDisabled={loader !== null}
           />
         )}
       </div>
       <IconButton
         onClick={handleDeleteTodo}
-        isLoading={isEntryDeleting}
+        isLoading={loader === LoadingState.DELETE_ENTRY}
         IconComponent={IconDelete}
-        /*         buttonDisabled={false} */
+        isDisabled={loader !== null}
       />
     </div>
   );

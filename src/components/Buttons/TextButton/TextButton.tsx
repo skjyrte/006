@@ -18,7 +18,7 @@ const TextButton: FC<Props> = ({
   size = "medium",
 }) => (
   <button
-    className={`text-button${isDisabled ? "disabled " : " "}${
+    className={`text-button${isDisabled ? " disabled " : " "}${
       isActive ? "active " : " "
     }${size}`}
     onClick={onClick}
