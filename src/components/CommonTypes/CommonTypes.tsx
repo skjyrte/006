@@ -10,3 +10,5 @@ export type Todo = {
   completed: boolean;
   __v: number;
 };
+
+export type Nullable<T> = T | null;

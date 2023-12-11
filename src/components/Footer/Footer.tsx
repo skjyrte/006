@@ -24,21 +24,21 @@ const Footer: FC<Props> = ({
       <span></span>
       <div className="manage-state-container">
         <TextButton
-          displayedText={FilterState.ALL}
+          displayedText={"All"}
           onClick={() => onClick(FilterState.ALL)}
-          isActive={filterState === FilterState.ALL ? true : false}
+          isNowSelected={filterState === FilterState.ALL ? true : false}
           size="small"
         />
         <TextButton
-          displayedText={FilterState.ACTIVE}
+          displayedText={"Active"}
           onClick={() => onClick(FilterState.ACTIVE)}
-          isActive={filterState === FilterState.ACTIVE ? true : false}
+          isNowSelected={filterState === FilterState.ACTIVE ? true : false}
           size="small"
         />
         <TextButton
-          displayedText={FilterState.COMPLETED}
+          displayedText={"Completed"}
           onClick={() => onClick(FilterState.COMPLETED)}
-          isActive={filterState === FilterState.COMPLETED ? true : false}
+          isNowSelected={filterState === FilterState.COMPLETED ? true : false}
           size="small"
         />
       </div>

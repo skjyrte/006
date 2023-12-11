@@ -1,45 +1,37 @@
-.icon-button-container {
+/* .icon-button*/
+.icon-button {
   display: flex;
-  padding: 0 0;
   justify-content: center;
   align-items: center;
-}
-
-.icon-button {
   height: 30px;
   width: 30px;
-  padding: 0;
   transition: filter 0.3s;
-  margin: 15px 5px;
+  margin: 15px 10px;
   border: none;
+  padding: 0 0;
   background: transparent;
-  justify-content: center;
-  align-items: center;
-  display: flex;
   fill: var(--button-enabled);
   border-radius: 3px;
+  &:hover:hover {
+    color: var(--button-hover);
+    filter: drop-shadow(0 0 5px var(--button-drop-shadow));
+    fill: var(--button-hover);
+  }
+  &:active {
+    background-color: var(--button-active-background);
+  }
 }
-
-.disabled {
+/* .icon-button_disabled*/
+.icon-button_disabled {
   fill: var(--button-disabled);
 }
-
-.icon-button > svg {
+/* .icon-button__icon*/
+/* .icon-button > svg {
   height: 100%;
   width: 100%;
-}
+} */
 
-.icon-button:hover:hover {
-  color: var(--button-hover);
-  filter: drop-shadow(0 0 5px var(--button-drop-shadow));
-  fill: var(--button-hover);
-}
-
-.icon-button:active {
-  background-color: var(--button-active-background);
-}
-
-.disabled:hover:hover {
+.icon-button_disabled:hover:hover {
   filter: unset;
   fill: var(--button-disabled);
 }

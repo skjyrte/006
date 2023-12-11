@@ -3,26 +3,26 @@ import PuffLoader from "react-spinners/PuffLoader";
 import { FC } from "react";
 
 interface Props {
-  onChange: () => void;
-  checked: boolean;
+  onClick: () => void;
+  isChecked: boolean;
   isLoading: boolean;
-  disabled: boolean;
+  isDisabled: boolean;
 }
 
 const Checkbox: FC<Props> = ({
-  onChange,
-  checked,
-  isLoading,
-  disabled = false,
+  onClick,
+  isChecked,
+  isLoading = false,
+  isDisabled = false,
 }) => {
   return (
-    <div className={`general-container ${disabled ? "disabled" : ""}`}>
+    <div className={`general-container ${isDisabled ? "disabled" : ""}`}>
       <label className="container-label">
         <input
           type="checkbox"
-          checked={checked}
-          onChange={onChange}
-          disabled={disabled}
+          checked={isChecked}
+          onClick={onClick}
+          disabled={isDisabled}
         />
         <span className="checkmark"></span>
       </label>

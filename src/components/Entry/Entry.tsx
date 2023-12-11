@@ -8,7 +8,7 @@ import { default as CharCounter } from "components/CharCounter";
 import { IconButton } from "components/Buttons";
 import { TextButton } from "components/Buttons";
 import { IconDelete } from "components/Icons";
-import { Todo } from "components/CommonTypes";
+import { Todo, Nullable } from "components/CommonTypes";
 
 interface Props {
   onSave: (id: string, edited: { task?: string; completed?: boolean }) => void;
@@ -21,8 +21,6 @@ enum LoadingState {
   SAVE_EDITED_ENTRY = "save_edited_entry",
   DELETE_ENTRY = "delete_entry",
 }
-
-type Nullable<T> = T | null;
 
 export default forwardRef(function Entry(
   { onSave, todo, onDelete }: Props,
@@ -86,10 +84,10 @@ export default forwardRef(function Entry(
         </div>
       )}
       <Checkbox
-        onChange={handleClickCheckbox}
-        checked={todo.completed}
+        onClick={handleClickCheckbox}
+        isChecked={todo.completed}
         isLoading={loader === LoadingState.SAVE_EDITED_CHECKBOX}
-        disabled={loader !== null}
+        isDisabled={loader !== null}
       />
       {editMode ? (
         <>

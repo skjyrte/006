@@ -14,7 +14,7 @@ import { default as EntryPlaceholder } from "components/EntryPlaceholder";
 import { IconButton } from "components/Buttons";
 import { IconSun } from "components/Icons";
 import "./Container.css";
-import { FilterState, Todo } from "components/CommonTypes";
+import { FilterState, Todo, Nullable } from "components/CommonTypes";
 
 const axiosInstance = createAxiosInstance();
 const elementsPerPage = 2;
@@ -23,8 +23,6 @@ enum LoadingState {
   ADD_ENTRY = "add_entry",
   GET_DATA = "get_data",
 }
-
-type Nullable<T> = T | null;
 
 type APIResponse<TData> = {
   data: TData;
@@ -402,7 +400,14 @@ const Container: FC = () => {
         <div className="main-header">{String(inView)}</div>
         <header className="main-header">
           TODO
-          {<IconButton IconComponent={IconSun} isLoading={false} />}
+          {
+            <IconButton
+              onClick={() => {}}
+              isLoading={false}
+              isDisabled={false}
+              IconComponent={IconSun}
+            />
+          }
         </header>
         <InputBar
           onClickAddEntry={handleAddEntry}
