@@ -4,12 +4,10 @@ block-name__element-name_modifier-name
 */
 
 .text-button {
-  /* font */
   letter-spacing: 0.1rem;
   font-family: inherit;
   color: var(--button-enabled);
   font-weight: 500;
-  /* box */
   display: flex;
   height: 1.2rem;
   justify-content: center;
@@ -18,13 +16,8 @@ block-name__element-name_modifier-name
   border: none;
   border-radius: 3px;
   background: none;
-
   &:active {
     background-color: var(--button-active-background);
-  }
-  &:hover:hover {
-    color: var(--button-hover);
-    filter: drop-shadow(0 0 5px var(--button-drop-shadow));
   }
 }
 
@@ -42,20 +35,26 @@ block-name__element-name_modifier-name
 
 .text-button_disabled {
   color: var(--button-disabled);
-
-  &:hover:hover {
-    filter: unset;
-    color: var(--button-disabled);
-  }
 }
 
 .text-button_now-selected {
   background-color: var(--very-dark-grayish-blue);
 }
 
+@media (hover: hover) {
+  .text-button:hover {
+    color: var(--button-hover);
+    filter: drop-shadow(0 0 5px var(--button-drop-shadow));
+  }
+  .text-button_disabled:hover {
+    filter: unset;
+    color: var(--button-disabled);
+  }
+}
+
 @media (max-width: 660px) {
   .text-button {
     height: 1rem;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
   }
 }

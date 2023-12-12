@@ -26,7 +26,7 @@ const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
       <CharCounter
         charCount={inputValue.length}
         maxCharCount={70}
-        counter_type="char-counter-input"
+        counter_type="input"
       />
       <input
         type="text"

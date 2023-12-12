@@ -1,4 +1,4 @@
-.general-container {
+.checkbox-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6,8 +6,7 @@
   height: 40px;
 }
 
-/* Customize the label (the container) */
-.container-label {
+.checkbox-wrapper__input-label {
   display: block;
   position: relative;
   cursor: pointer;
@@ -17,13 +16,8 @@
   -ms-user-select: none;
   user-select: none;
 }
-/* .container-loader {
-  position: absolute;
-  z-index: 9;
-} */
 
-/* Hide the browser's default checkbox */
-.container-label input {
+.checkbox-wrapper__input-label input {
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -31,12 +25,11 @@
   width: 0;
 }
 
-.disabled {
+.checkbox-wrapper_disabled {
   filter: invert(30%);
 }
 
-/* Create a custom checkbox */
-.checkmark {
+.checkbox-wrapper__input-label__checkmark {
   position: absolute;
   height: 25px;
   width: 25px;
@@ -45,38 +38,37 @@
   transform: translate(-50%, -50%);
 }
 
-.container-label:hover input ~ .checkmark {
+.checkbox-wrapper__input-label:hover {
   filter: contrast(80%);
 }
-.container-label:hover input ~ .checkmark:active {
-  filter: contrast(120%);
-}
 
-.container-label input:checked ~ .checkmark {
+.checkbox-wrapper__input-label
+  input:checked
+  ~ .checkbox-wrapper__input-label__checkmark {
   background: linear-gradient(
     90deg,
     var(--linear-gradient-1),
     var(--linear-gradient-2) 50%
   );
 }
-.container-label input:checked ~ .checkmark:active {
-  filter: contrast(120%);
+
+.checkbox-wrapper:active {
+  filter: contrast(150%);
 }
 
-/* Create the checkmark/indicator (hidden when not checked) */
-.checkmark:after {
+.checkbox-wrapper__input-label__checkmark:after {
   content: "";
   position: absolute;
   display: none;
 }
 
-/* Show the checkmark when checked */
-.container-label input:checked ~ .checkmark:after {
+.checkbox-wrapper__input-label
+  input:checked
+  ~ .checkbox-wrapper__input-label__checkmark:after {
   display: block;
 }
 
-/* Style the checkmark/indicator */
-.container-label .checkmark:after {
+.checkbox-wrapper__input-label .checkbox-wrapper__input-label__checkmark:after {
   left: 9px;
   top: 5px;
   width: 5px;

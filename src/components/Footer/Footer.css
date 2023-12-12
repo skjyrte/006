@@ -1,15 +1,12 @@
 .footer-container {
-  /* font */
   font-size: 0.7rem;
   font-weight: 400;
   color: var(--dark-grayish-blue);
-  /* box */
   display: flex;
   width: 100%;
   height: 60px;
   background-color: var(--very-dark-desaturated-blue);
   align-items: center;
-  /*   margin-bottom: 50px; */
   border-top: 1px solid;
 }
 
@@ -35,7 +32,7 @@
   justify-content: center;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 460px) {
   .manage-state-container {
     flex-direction: column;
   }

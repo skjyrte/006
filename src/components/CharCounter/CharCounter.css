@@ -7,20 +7,19 @@
   border: 0;
 }
 
-.char-counter-edit {
+.char-counter_edit {
   width: 3rem;
   height: 2rem;
   display: "block";
   position: absolute;
-  /*   transform: translate(-50%, -50%); */
 }
 
-.char-counter-input {
+.char-counter_input {
   position: unset;
   width: 50px;
   border-right: 2px solid;
 }
 
-.char-counter-warning {
+.char-counter_warning {
   color: yellow;
 }

@@ -94,7 +94,7 @@ export default forwardRef(function Entry(
           <CharCounter
             charCount={currentInputLength}
             maxCharCount={70}
-            counter_type="char-counter-edit"
+            counter_type="edit"
           />
           <TextareaAutosize
             id="task"

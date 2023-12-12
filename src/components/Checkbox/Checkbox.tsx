@@ -1,6 +1,7 @@
 import "./Checkbox.css";
 import PuffLoader from "react-spinners/PuffLoader";
 import { FC } from "react";
+import classNames from "classnames";
 
 interface Props {
   onClick: () => void;
@@ -15,16 +16,20 @@ const Checkbox: FC<Props> = ({
   isLoading = false,
   isDisabled = false,
 }) => {
+  const checkboxWrapperClassName = classNames(
+    "checkbox-wrapper",
+    isDisabled && "checkbox-wrapper_disabled"
+  );
   return (
-    <div className={`general-container ${isDisabled ? "disabled" : ""}`}>
-      <label className="container-label">
+    <div className={checkboxWrapperClassName}>
+      <label className="checkbox-wrapper__input-label">
         <input
           type="checkbox"
           checked={isChecked}
           onClick={onClick}
           disabled={isDisabled}
         />
-        <span className="checkmark"></span>
+        <span className="checkbox-wrapper__input-label__checkmark"></span>
       </label>
       <PuffLoader
         color={"yellow"}
