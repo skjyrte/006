@@ -13,8 +13,8 @@ import { default as Footer } from "components/Footer";
 import { default as EntryPlaceholder } from "components/EntryPlaceholder";
 import { IconButton } from "components/Buttons";
 import { IconSun } from "components/Icons";
-import "./Container.css";
-import { FilterState, Todo, Nullable } from "components/CommonTypes";
+import "./AppContainer.css";
+import { FilterState } from "types/common";
 
 const axiosInstance = createAxiosInstance();
 const elementsPerPage = 2;
@@ -30,27 +30,27 @@ type APIResponse<TData> = {
   message: string;
 };
 
+type GeneralResponseData = {
+  activeDocumentsCount: number;
+};
+
 type ResponseGetData = {
   currentData: Todo[];
   documentCount: number;
-  activeDocumentsCount: number;
-};
+} & GeneralResponseData;
 
 type ResponsePostData = {
   documentCount: number;
-  activeDocumentsCount: number;
   getCreatedTodo: Todo;
-};
+} & GeneralResponseData;
 
 type ResponseDeleteData = {
   documentCount: number;
-  activeDocumentsCount: number;
-};
+} & GeneralResponseData;
 
 type ResponsePatchData = {
-  activeDocumentsCount: number;
   getModifiedTodo: Todo;
-};
+} & GeneralResponseData;
 
 type RequestPostData = {
   task: string;
@@ -93,7 +93,7 @@ function patchAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
   return axiosInstance.patch<T, R, D>(url, data, config);
 }
 
-const Container: FC = () => {
+const AppContainer: FC = () => {
   const [toDos, setToDos] = useState<Todo[]>([]);
   const [filterState, setFilterState] = useState<FilterState>(FilterState.ALL);
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -131,21 +131,7 @@ const Container: FC = () => {
         setActiveTodosCount(data.data.activeDocumentsCount);
       },
       (error) => {
-        setToDos([]);
-        toast.error("No connection to database. Click here to reload", {
-          position: "top-center",
-          autoClose: false,
-          hideProgressBar: false,
-          draggable: false,
-          progress: undefined,
-          onClick: () => {
-            setPageNumber(1);
-            setReloadMarker((prevValue) => prevValue + 1);
-            toast.clearWaitingQueue();
-            toast.dismiss();
-            return;
-          },
-        });
+        handleGetDataAxiosError(error);
       },
       LoadingState.GET_DATA
     );
@@ -178,9 +164,9 @@ const Container: FC = () => {
         },
         (data) => {
           const removeDuplicates = [...data.data.currentData].filter(
-            (recievedKey) => {
+            (receivedKey) => {
               return !toDos.find((oldKey) => {
-                return oldKey._id === recievedKey._id;
+                return oldKey._id === receivedKey._id;
               });
             }
           );
@@ -190,26 +176,30 @@ const Container: FC = () => {
           setActiveTodosCount(data.data.activeDocumentsCount);
         },
         (error: unknown) => {
-          setToDos([]);
-          toast.error("No connection to database. Click here to reload", {
-            position: "top-center",
-            autoClose: false,
-            hideProgressBar: false,
-            draggable: false,
-            progress: undefined,
-            onClick: () => {
-              setPageNumber(1);
-              setReloadMarker((prevValue) => prevValue + 1);
-              toast.clearWaitingQueue();
-              toast.dismiss();
-              return;
-            },
-          });
+          handleGetDataAxiosError(error);
         },
         LoadingState.GET_DATA
       );
     }
   }, [pageNumber]);
+
+  const handleGetDataAxiosError = (error: unknown) => {
+    setToDos([]);
+    toast.error("No connection to database. Click here to reload", {
+      position: "top-center",
+      autoClose: false,
+      hideProgressBar: false,
+      draggable: false,
+      progress: undefined,
+      onClick: () => {
+        setPageNumber(1);
+        setReloadMarker((prevValue) => prevValue + 1);
+        toast.clearWaitingQueue();
+        toast.dismiss();
+        return;
+      },
+    });
+  };
 
   async function handleRequest<T, D = any>(
     requestPromise: (
@@ -277,7 +267,9 @@ const Container: FC = () => {
   });
 
   const entriesPlaceholders: any = (i: number) => {
-    Array(i).fill(<EntryPlaceholder />); // dlaczego tutaj nie działa Array(i).map(() => <EntryPlaceholder />) ???
+    return Array.from({ length: i }).map((_, index) => (
+      <EntryPlaceholder key={index} />
+    ));
   };
 
   async function handleAddEntry(task: string) {
@@ -366,14 +358,16 @@ const Container: FC = () => {
   let entryContent: ReactNode;
 
   if (toDosList.length === 0 && !loader) {
-    entryContent = <div className="no-entry">No entry to show</div>;
+    entryContent = (
+      <div className="app-container__todos-list-container_no-entry">
+        No entry to show
+      </div>
+    );
   } else if (loader === LoadingState.GET_DATA) {
     entryContent = (
       <>
         {toDosList}
-        <div className="is-loading">
-          {entriesPlaceholders(toDosList.length === 0 ? 3 : 1)}
-        </div>
+        <div className="is-loading">{entriesPlaceholders(3)}</div>
       </>
     );
   } else {
@@ -395,10 +389,8 @@ const Container: FC = () => {
         theme="dark"
         limit={3}
       />
-      <div className="outer-box">
-        <div className="main-header">{String(loader)}</div>
-        <div className="main-header">{String(inView)}</div>
-        <header className="main-header">
+      <div className="app-container">
+        <header className="app-container__main-header">
           TODO
           {
             <IconButton
@@ -413,7 +405,9 @@ const Container: FC = () => {
           onClickAddEntry={handleAddEntry}
           loading={loader === LoadingState.ADD_ENTRY ? true : false}
         />
-        <div className="todos-container">{entryContent}</div>
+        <div className="app-container__todos-list-container">
+          {entryContent}
+        </div>
         <Footer
           onClick={handleShowState}
           activeTodosCount={activeToDosCount}
@@ -425,4 +419,4 @@ const Container: FC = () => {
   );
 };
 
-export default Container;
+export default AppContainer;

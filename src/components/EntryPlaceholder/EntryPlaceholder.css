@@ -1,32 +1,37 @@
-.entry-loader {
+.entry-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.entry-loader-box {
   width: 100%;
   height: 3rem;
+  & .entry-placeholder__checkbox,
+  & .entry-placeholder__edit-button,
+  & .entry-placeholder__delete-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
-.entry-loader-checkbox {
+.entry-placeholder__checkbox {
   width: 70px;
 }
 
-.entry-loader-content {
+.entry-placeholder__todo-content {
   display: unset;
   flex: 1;
   padding: 5px;
 }
 
-.entry-loader-edit-button {
+.entry-placeholder__edit-button {
   width: 2rem;
   padding: 0.25rem;
   margin: 0.25rem;
 }
 
-.entry-loader-delete-button {
+.entry-placeholder__delete-button {
   width: 30px;
   padding: 10px;
   margin: 15px 5px;
+  align-items: center;
 }

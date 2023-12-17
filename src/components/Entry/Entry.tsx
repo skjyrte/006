@@ -8,7 +8,6 @@ import { default as CharCounter } from "components/CharCounter";
 import { IconButton } from "components/Buttons";
 import { TextButton } from "components/Buttons";
 import { IconDelete } from "components/Icons";
-import { Todo, Nullable } from "components/CommonTypes";
 
 interface Props {
   onSave: (id: string, edited: { task?: string; completed?: boolean }) => void;
@@ -62,9 +61,9 @@ export default forwardRef(function Entry(
   };
 
   return (
-    <div ref={ref} className="entry-box">
+    <div ref={ref} className="entry">
       {loader === LoadingState.SAVE_EDITED_ENTRY && (
-        <div className="todo-loader-box">
+        <div className="entry_loader-box">
           <BarLoader
             color={"yellow"}
             cssOverride={{
@@ -100,7 +99,7 @@ export default forwardRef(function Entry(
             id="task"
             placeholder="Type edited task..."
             name="task"
-            className="edit-input-field"
+            className="entry__todo-content_input-field"
             maxLength={70}
             minRows={1}
             onChange={(e) => {
@@ -117,7 +116,9 @@ export default forwardRef(function Entry(
         <>
           <div
             className={
-              todo.completed ? "todo-content completed" : "todo-content"
+              todo.completed
+                ? "entry__todo-content entry__todo-content_completed"
+                : "entry__todo-content"
             }
           >
             {todo.task}
@@ -125,7 +126,7 @@ export default forwardRef(function Entry(
         </>
       )}
 
-      <div className="button-edit-container">
+      <div className="entry__button-edit-wrapper">
         {editMode ? (
           <>
             <TextButton

@@ -6,8 +6,8 @@ import classNames from "classnames";
 interface Props {
   onClick: () => void;
   isChecked: boolean;
-  isLoading: boolean;
-  isDisabled: boolean;
+  isLoading?: boolean;
+  isDisabled?: boolean;
 }
 
 const Checkbox: FC<Props> = ({
@@ -26,7 +26,7 @@ const Checkbox: FC<Props> = ({
         <input
           type="checkbox"
           checked={isChecked}
-          onClick={onClick}
+          onChange={onClick}
           disabled={isDisabled}
         />
         <span className="checkbox-wrapper__input-label__checkmark"></span>

@@ -34,7 +34,7 @@ const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
         placeholder="Type new task..."
         name="task"
         autoComplete="off"
-        className="input-field"
+        className="input-bar__input-field"
         required
         minLength={1}
         maxLength={70}

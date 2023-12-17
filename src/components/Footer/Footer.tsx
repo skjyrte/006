@@ -1,11 +1,11 @@
 import "./Footer.css";
 import { TextButton } from "components/Buttons";
 import { FC } from "react";
-import { FilterState } from "components/CommonTypes";
+import { FilterState } from "types/common";
 
 interface Props {
   onClick: (parameter: FilterState) => void;
-  activeTodosCount: any;
+  activeTodosCount: number;
   onDeleteCompleted: () => void;
   filterState: FilterState;
 }
@@ -17,12 +17,12 @@ const Footer: FC<Props> = ({
   filterState,
 }) => {
   return (
-    <div className="footer-container">
-      <div className="counter-container">{`${activeTodosCount} item${
-        activeTodosCount === 1 ? "" : "s"
-      } left`}</div>
-      <span></span>
-      <div className="manage-state-container">
+    <div className="footer">
+      <div className="footer__counter-wrapper">
+        {`${activeTodosCount} item${activeTodosCount === 1 ? "" : "s"} left`}
+      </div>
+      <span className="footer__span-element"></span>
+      <div className="footer__manage-state-container">
         <TextButton
           displayedText={"All"}
           onClick={() => onClick(FilterState.ALL)}
@@ -42,11 +42,12 @@ const Footer: FC<Props> = ({
           size="small"
         />
       </div>
-      <span></span>
-      <div className="clear-container">
+      <span className="footer__span-element"></span>
+      <div className="footer__clear-wrapper">
         <TextButton
           displayedText="Clear Completed"
           onClick={onDeleteCompleted}
+          isDisabled={activeTodosCount === 0 ? true : false}
         />
       </div>
     </div>

@@ -1,12 +1,12 @@
 import "./App.css";
 import Background from "components/Background";
-import Container from "components/Container";
+import AppContainer from "components/AppContainer";
 
 function App() {
   return (
     <>
       <Background />
-      <Container />
+      <AppContainer />
     </>
   );
 }
