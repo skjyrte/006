@@ -9,15 +9,24 @@
   border: none;
   padding: 0 0;
   background: transparent;
-  fill: var(--button-enabled);
+  fill: var(--button-enabled-dark);
   border-radius: 3px;
   &:active {
     background-color: var(--button-active-background);
   }
+  &.light {
+    fill: var(--button-enabled-light);
+  }
+  &:active {
+    background-color: var(--very-light-grayish-blue);
+  }
 }
 
 .icon-button_disabled {
-  fill: var(--button-disabled);
+  fill: var(--button-disabled-dark);
+  &.light {
+    fill: var(--button-disabled-light);
+  }
 }
 
 @media (hover: hover) {
@@ -28,7 +37,11 @@
   }
   .icon-button_disabled:hover {
     filter: unset;
-    fill: var(--button-disabled);
+    fill: var(--button-disabled-dark);
+  }
+  .icon-button_disabled.light:hover {
+    filter: unset;
+    fill: var(--button-disabled-light);
   }
 }
 

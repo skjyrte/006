@@ -9,6 +9,9 @@
   background-color: var(--very-dark-desaturated-blue);
   align-items: center;
   border-top: 1px solid;
+  &.light {
+    background-color: var(--pearl-white);
+  }
 }
 
 .footer__span-element {
@@ -30,7 +33,7 @@
 
 .footer__manage-state-container {
   display: flex;
-  justify-content: center;
+  /*   justify-content: center; */
 }
 
 @media (max-width: 460px) {

@@ -1,7 +1,9 @@
 import "./Footer.css";
 import { TextButton } from "components/Buttons";
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { FilterState } from "types/common";
+import { ThemeContext } from "components/App";
+import classNames from "classnames";
 
 interface Props {
   onClick: (parameter: FilterState) => void;
@@ -16,13 +18,16 @@ const Footer: FC<Props> = ({
   onDeleteCompleted,
   filterState,
 }) => {
+  const currentTheme = useContext(ThemeContext);
   return (
-    <div className="footer">
-      <div className="footer__counter-wrapper">
+    <div className={classNames("footer", currentTheme)}>
+      <div className={classNames("footer__counter-wrapper", currentTheme)}>
         {`${activeTodosCount} item${activeTodosCount === 1 ? "" : "s"} left`}
       </div>
-      <span className="footer__span-element"></span>
-      <div className="footer__manage-state-container">
+      <span className={classNames("footer__span-element", currentTheme)}></span>
+      <div
+        className={classNames("footer__manage-state-container", currentTheme)}
+      >
         <TextButton
           displayedText={"All"}
           onClick={() => onClick(FilterState.ALL)}
@@ -42,12 +47,11 @@ const Footer: FC<Props> = ({
           size="small"
         />
       </div>
-      <span className="footer__span-element"></span>
-      <div className="footer__clear-wrapper">
+      <span className={classNames("footer__span-element", currentTheme)}></span>
+      <div className={classNames("footer__clear-wrapper", currentTheme)}>
         <TextButton
           displayedText="Clear Completed"
           onClick={onDeleteCompleted}
-          isDisabled={activeTodosCount === 0 ? true : false}
         />
       </div>
     </div>

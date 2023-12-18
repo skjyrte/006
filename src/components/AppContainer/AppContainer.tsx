@@ -1,4 +1,12 @@
-import { useEffect, useState, useRef, useCallback, ReactNode, FC } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  ReactNode,
+  FC,
+  useContext,
+} from "react";
 import { useInView } from "react-intersection-observer";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,9 +20,11 @@ import { default as InputBar } from "components/InputBar";
 import { default as Footer } from "components/Footer";
 import { default as EntryPlaceholder } from "components/EntryPlaceholder";
 import { IconButton } from "components/Buttons";
-import { IconSun } from "components/Icons";
+import { IconSun, IconMoon } from "components/Icons";
 import "./AppContainer.css";
 import { FilterState } from "types/common";
+import { ThemeContext } from "components/App";
+import classNames from "classnames";
 
 const axiosInstance = createAxiosInstance();
 const elementsPerPage = 2;
@@ -93,7 +103,9 @@ function patchAxiosWrapper<T = any, R = AxiosResponse<T>, D = any>(
   return axiosInstance.patch<T, R, D>(url, data, config);
 }
 
-const AppContainer: FC = () => {
+const AppContainer: FC<{ handleChangeTheme: () => void }> = ({
+  handleChangeTheme,
+}) => {
   const [toDos, setToDos] = useState<Todo[]>([]);
   const [filterState, setFilterState] = useState<FilterState>(FilterState.ALL);
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -108,6 +120,7 @@ const AppContainer: FC = () => {
   });
 
   const refController = useRef(new AbortController());
+  const currentTheme = useContext(ThemeContext);
 
   useEffect(() => {
     setToDos([]);
@@ -356,10 +369,14 @@ const AppContainer: FC = () => {
   }
 
   let entryContent: ReactNode;
-
   if (toDosList.length === 0 && !loader) {
     entryContent = (
-      <div className="app-container__todos-list-container_no-entry">
+      <div
+        className={classNames(
+          "app-container__todos-list-container_no-entry",
+          currentTheme
+        )}
+      >
         No entry to show
       </div>
     );
@@ -367,7 +384,14 @@ const AppContainer: FC = () => {
     entryContent = (
       <>
         {toDosList}
-        <div className="is-loading">{entriesPlaceholders(3)}</div>
+        <div
+          className={classNames(
+            "app-container__todos-list-container_is-loading",
+            currentTheme
+          )}
+        >
+          {entriesPlaceholders(3)}
+        </div>
       </>
     );
   } else {
@@ -389,23 +413,41 @@ const AppContainer: FC = () => {
         theme="dark"
         limit={3}
       />
-      <div className="app-container">
-        <header className="app-container__main-header">
+      <div className={classNames("app-container", currentTheme)}>
+        <header
+          className={classNames("app-container__main-header", currentTheme)}
+        >
           TODO
-          {
+          <span
+            className={classNames(
+              "app-container__main-header__span-element",
+              currentTheme
+            )}
+          ></span>
+          <div
+            className={classNames(
+              "app-container__main-header__theme-button-wrapper",
+              currentTheme
+            )}
+          >
             <IconButton
-              onClick={() => {}}
+              onClick={handleChangeTheme}
               isLoading={false}
               isDisabled={false}
-              IconComponent={IconSun}
+              IconComponent={currentTheme === "dark" ? IconSun : IconMoon}
             />
-          }
+          </div>
         </header>
         <InputBar
           onClickAddEntry={handleAddEntry}
           loading={loader === LoadingState.ADD_ENTRY ? true : false}
         />
-        <div className="app-container__todos-list-container">
+        <div
+          className={classNames(
+            "app-container__todos-list-container",
+            currentTheme
+          )}
+        >
           {entryContent}
         </div>
         <Footer

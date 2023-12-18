@@ -5,21 +5,30 @@
   font-size: 0.7rem;
   background-color: var(--very-dark-desaturated-blue);
   border: 0;
+  &.light {
+    background-color: white;
+  }
 }
 
 .char-counter_edit {
-  width: 3rem;
+  width: 2.5rem;
   height: 2rem;
   display: "block";
   position: absolute;
+  &.light {
+  }
 }
 
 .char-counter_input {
   position: unset;
   width: 50px;
   border-right: 2px solid;
+  &.light {
+  }
 }
 
 .char-counter_warning {
   color: yellow;
+  &.light {
+  }
 }

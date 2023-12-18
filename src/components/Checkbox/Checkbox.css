@@ -31,11 +31,12 @@
 
 .checkbox-wrapper__input-label__checkmark {
   position: absolute;
-  height: 25px;
-  width: 25px;
+  height: 30px;
+  width: 30px;
   background-color: var(--checkbox-background);
   border-radius: 50%;
   transform: translate(-50%, -50%);
+  border: 2px solid black;
 }
 
 .checkbox-wrapper__input-label:hover {
@@ -70,11 +71,11 @@
 
 .checkbox-wrapper__input-label .checkbox-wrapper__input-label__checkmark:after {
   left: 9px;
-  top: 5px;
-  width: 5px;
-  height: 10px;
+  top: 4px;
+  width: 9px;
+  height: 15px;
   border: solid var(--checkbox-background);
-  border-width: 0 3px 3px 0;
+  border-width: 0 4px 4px 0;
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);

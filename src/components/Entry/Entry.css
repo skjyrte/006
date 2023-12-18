@@ -9,8 +9,11 @@
   width: 100%;
   background-color: var(--very-dark-desaturated-blue);
   position: relative;
+  &.light {
+    background-color: var(--pearl-white);
+    color: var(--very-dark-grayish-blue);
+  }
 }
-
 .entry_loader-box {
   position: absolute;
   width: 100%;
@@ -33,9 +36,9 @@
 
 .entry__todo-content_input-field {
   font-size: 1rem;
-  font-weight: 300;
+  font-weight: 400;
   font-family: inherit;
-  color: var(--light-grayish-blue);
+  color: white;
   padding: 5px;
   background-color: transparent;
   margin: 5px;
@@ -46,6 +49,11 @@
   resize: none;
   display: flex;
   flex-direction: column;
+  /*   background-color: var(--very-dark-grayish-blue-1); */
+  border-radius: 1px;
+  &.light {
+    color: var(--very-dark-grayish-blue);
+  }
 }
 
 .entry__button-edit-wrapper {

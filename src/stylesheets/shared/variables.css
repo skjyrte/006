@@ -1,12 +1,14 @@
 :root {
   /* primary */
   --bright-blue: hsl(220, 98%, 61%);
-  --linear-gradient-1: hsl(192, 100%, 67%);
-  --linear-gradient-2: hsl(280, 87%, 65%);
+  --linear-gradient-1: hsl(250, 75%, 35%);
+  --linear-gradient-2: hsl(300, 60%, 30%);
   --pearl-white: hsl(300, 100%, 100%);
   /* buttons */
-  --button-enabled: hsl(236, 9%, 61%);
-  --button-disabled: hsl(236, 9%, 20%);
+  --button-enabled-dark: hsl(236, 9%, 61%);
+  --button-disabled-dark: hsl(236, 9%, 20%);
+  --button-disabled-light: hsl(236, 9%, 81%);
+  --button-enabled-light: hsl(236, 9%, 50%);
   --button-drop-shadow: var(--pearl-white);
   --button-active-background: var(--very-dark-grayish-blue);
   --button-hover: var(--light-grayish-blue);

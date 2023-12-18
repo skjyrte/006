@@ -1,8 +1,10 @@
-import { ChangeEventHandler, FC, useState } from "react";
+import { ChangeEventHandler, FC, useState, useContext } from "react";
 import "./InputBar.css";
 import { IconButton } from "components/Buttons";
 import { IconAdd } from "components/Icons";
 import CharCounter from "components/CharCounter";
+import classNames from "classnames";
+import { ThemeContext } from "components/App";
 
 interface Props {
   onClickAddEntry: (value: string) => void;
@@ -11,6 +13,7 @@ interface Props {
 
 const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
   const [inputValue, setInputValue] = useState("");
+  const currentTheme = useContext(ThemeContext);
 
   const handleEntryAdd = async () => {
     onClickAddEntry(inputValue);
@@ -22,7 +25,7 @@ const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
   };
 
   return (
-    <div className="input-bar">
+    <div className={classNames("input-bar", currentTheme)}>
       <CharCounter
         charCount={inputValue.length}
         maxCharCount={70}
@@ -34,7 +37,7 @@ const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
         placeholder="Type new task..."
         name="task"
         autoComplete="off"
-        className="input-bar__input-field"
+        className={classNames("input-bar__input-field", currentTheme)}
         required
         minLength={1}
         maxLength={70}

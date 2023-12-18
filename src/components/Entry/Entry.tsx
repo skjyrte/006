@@ -1,4 +1,4 @@
-import { useState, forwardRef } from "react";
+import { useState, forwardRef, useContext } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import BarLoader from "react-spinners/BarLoader";
 
@@ -8,6 +8,8 @@ import { default as CharCounter } from "components/CharCounter";
 import { IconButton } from "components/Buttons";
 import { TextButton } from "components/Buttons";
 import { IconDelete } from "components/Icons";
+import { ThemeContext } from "components/App";
+import classNames from "classnames";
 
 interface Props {
   onSave: (id: string, edited: { task?: string; completed?: boolean }) => void;
@@ -31,6 +33,8 @@ export default forwardRef(function Entry(
 
   const currentInputLength = editInput.length;
   const isEditEmpty = currentInputLength === 0;
+
+  const currentTheme = useContext(ThemeContext);
 
   const handleClickCheckbox = async () => {
     setLoader(LoadingState.SAVE_EDITED_CHECKBOX);
@@ -61,9 +65,9 @@ export default forwardRef(function Entry(
   };
 
   return (
-    <div ref={ref} className="entry">
+    <div ref={ref} className={classNames("entry", currentTheme)}>
       {loader === LoadingState.SAVE_EDITED_ENTRY && (
-        <div className="entry_loader-box">
+        <div className={classNames("entry_loader-box", currentTheme)}>
           <BarLoader
             color={"yellow"}
             cssOverride={{
@@ -99,7 +103,10 @@ export default forwardRef(function Entry(
             id="task"
             placeholder="Type edited task..."
             name="task"
-            className="entry__todo-content_input-field"
+            className={classNames(
+              "entry__todo-content_input-field",
+              currentTheme
+            )}
             maxLength={70}
             minRows={1}
             onChange={(e) => {
@@ -115,18 +122,19 @@ export default forwardRef(function Entry(
       ) : (
         <>
           <div
-            className={
+            className={classNames(
               todo.completed
                 ? "entry__todo-content entry__todo-content_completed"
-                : "entry__todo-content"
-            }
+                : "entry__todo-content",
+              currentTheme
+            )}
           >
             {todo.task}
           </div>{" "}
         </>
       )}
 
-      <div className="entry__button-edit-wrapper">
+      <div className={classNames("entry__button-edit-wrapper", currentTheme)}>
         {editMode ? (
           <>
             <TextButton

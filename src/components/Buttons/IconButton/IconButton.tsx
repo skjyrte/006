@@ -1,7 +1,8 @@
-import { FC, ElementType } from "react";
+import { FC, ElementType, useContext } from "react";
 import PuffLoader from "react-spinners/PuffLoader";
 import "./IconButton.css";
 import classNames from "classnames";
+import { ThemeContext } from "components/App";
 
 interface Props {
   onClick: () => void;
@@ -16,12 +17,18 @@ const IconButton: FC<Props> = ({
   isDisabled,
   IconComponent,
 }) => {
+  const currentTheme = useContext(ThemeContext);
   const buttonClassName = classNames(
     "icon-button",
-    isDisabled && "icon-button_disabled"
+    isDisabled && "icon-button_disabled",
+    currentTheme
   );
   return (
-    <button className={buttonClassName} onClick={onClick} disabled={isDisabled}>
+    <button
+      className={classNames(buttonClassName, currentTheme)}
+      onClick={onClick}
+      disabled={isDisabled}
+    >
       <IconComponent />
       <PuffLoader
         color="yellow"

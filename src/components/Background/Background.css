@@ -1,6 +1,14 @@
 body {
   margin: 0;
+}
+
+.background-wrapper {
+  height: 100vh;
+  width: 100vw;
   background-color: var(--very-dark-blue);
+  &.light {
+    background-color: var(--pearl-white);
+  }
 }
 
 .cover-image {

@@ -1,6 +1,7 @@
 import "./TextButton.css";
-import { FC } from "react";
+import { FC, useContext } from "react";
 import classNames from "classnames";
+import { ThemeContext } from "components/App";
 
 interface Props {
   onClick: () => void;
@@ -20,11 +21,13 @@ const TextButton: FC<Props> = ({
   isNowSelected = false,
   size = "medium",
 }) => {
+  const currentTheme = useContext(ThemeContext);
   const buttonClassName = classNames(
     "text-button",
     ` text-button_${size}`,
     isDisabled && "text-button_disabled",
-    isNowSelected && "text-button_now-selected"
+    isNowSelected && "text-button_now-selected",
+    currentTheme
   );
   return (
     <button className={buttonClassName} onClick={onClick} disabled={isDisabled}>
