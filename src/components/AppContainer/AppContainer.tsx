@@ -294,7 +294,9 @@ const AppContainer: FC<{ handleChangeTheme: () => void }> = ({
       >,
       { url: "/todos", data: { task }, config: {} },
       (data) => {
-        setToDos((toDos) => [...toDos, data.data.getCreatedTodo]);
+        if (filterState !== FilterState.COMPLETED) {
+          setToDos((toDos) => [...toDos, data.data.getCreatedTodo]);
+        }
         toast.success("Added successfully", {
           position: "top-right",
         });
@@ -334,13 +336,21 @@ const AppContainer: FC<{ handleChangeTheme: () => void }> = ({
       { url: `/todos/${id}`, data: edited, config: {} },
       (data) => {
         setToDos((toDos) => {
-          return toDos.map((todo) => {
+          let modifiedTodos = toDos.map((todo) => {
             if (todo._id !== id) {
               return todo;
             } else {
               return data.data.getModifiedTodo;
             }
           });
+          /* filter out the entry if completed is not equal to displayed filterState */
+          if (filterState === FilterState.ACTIVE) {
+            return modifiedTodos.filter((todo) => todo.completed === false);
+          } else if (filterState === FilterState.COMPLETED) {
+            return modifiedTodos.filter((todo) => todo.completed === true);
+          } else {
+            return modifiedTodos;
+          }
         });
         toast.success("Edited successfully.", {
           position: toast.POSITION.TOP_RIGHT,
