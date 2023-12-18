@@ -69,7 +69,7 @@ export default forwardRef(function Entry(
       {loader === LoadingState.SAVE_EDITED_ENTRY && (
         <div className={classNames("entry_loader-box", currentTheme)}>
           <BarLoader
-            color={"yellow"}
+            color={currentTheme === "dark" ? "yellow" : "red"}
             cssOverride={{
               display: "block",
               borderColor: "red",
