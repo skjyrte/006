@@ -1,7 +1,8 @@
 import "./Checkbox.css";
 import PuffLoader from "react-spinners/PuffLoader";
-import { FC } from "react";
+import { FC, useContext } from "react";
 import classNames from "classnames";
+import { ThemeContext } from "components/App";
 
 interface Props {
   onClick: () => void;
@@ -16,6 +17,7 @@ const Checkbox: FC<Props> = ({
   isLoading = false,
   isDisabled = false,
 }) => {
+  const currentTheme = useContext(ThemeContext);
   const checkboxWrapperClassName = classNames(
     "checkbox-wrapper",
     isDisabled && "checkbox-wrapper_disabled"
@@ -32,7 +34,7 @@ const Checkbox: FC<Props> = ({
         <span className="checkbox-wrapper__input-label__checkmark"></span>
       </label>
       <PuffLoader
-        color={"yellow"}
+        color={currentTheme === "dark" ? "yellow" : "red"}
         cssOverride={{
           display: "block",
           margin: "0 auto",

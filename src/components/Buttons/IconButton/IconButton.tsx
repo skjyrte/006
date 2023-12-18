@@ -31,7 +31,7 @@ const IconButton: FC<Props> = ({
     >
       <IconComponent />
       <PuffLoader
-        color="yellow"
+        color={currentTheme === "dark" ? "yellow" : "red"}
         cssOverride={{
           display: "block",
           margin: "0 auto",
