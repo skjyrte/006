@@ -65,7 +65,11 @@ export default forwardRef(function Entry(
   };
 
   return (
-    <div ref={ref} className={classNames("entry", currentTheme)}>
+    <div
+      ref={ref}
+      data-test-id="entry"
+      className={classNames("entry", currentTheme)}
+    >
       {loader === LoadingState.SAVE_EDITED_ENTRY && (
         <div className={classNames("entry_loader-box", currentTheme)}>
           <BarLoader
@@ -101,6 +105,7 @@ export default forwardRef(function Entry(
           />
           <TextareaAutosize
             id="task"
+            data-test-id="entry-edit-area"
             placeholder="Type edited task..."
             name="task"
             className={classNames(
@@ -138,11 +143,13 @@ export default forwardRef(function Entry(
         {editMode ? (
           <>
             <TextButton
+              dataTestId={"save-button"}
               onClick={handleClickSave}
               displayedText={"Save"}
               isDisabled={isEditEmpty || loader !== null}
             />
             <TextButton
+              dataTestId={"discard-button"}
               onClick={handleClickDiscard}
               displayedText={"Discard"}
               isDisabled={loader !== null}
@@ -150,6 +157,7 @@ export default forwardRef(function Entry(
           </>
         ) : (
           <TextButton
+            dataTestId={"edit-button"}
             onClick={handleClickEdit}
             displayedText={"Edit"}
             isDisabled={loader !== null}

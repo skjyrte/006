@@ -23,10 +23,11 @@ const Checkbox: FC<Props> = ({
     isDisabled && "checkbox-wrapper_disabled"
   );
   return (
-    <div className={checkboxWrapperClassName}>
+    <div data-test-id="checkbox" className={checkboxWrapperClassName}>
       <label className="checkbox-wrapper__input-label">
         <input
           type="checkbox"
+          data-test-id="checkbox-input"
           checked={isChecked}
           onChange={onClick}
           disabled={isDisabled}

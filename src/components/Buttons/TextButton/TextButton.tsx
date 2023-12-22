@@ -10,6 +10,7 @@ interface Props {
   isDisabled?: boolean;
   isNowSelected?: boolean;
   size?: ButtonSizes;
+  dataTestId?: string;
 }
 
 type ButtonSizes = "medium" | "small";
@@ -20,6 +21,7 @@ const TextButton: FC<Props> = ({
   isDisabled = false,
   isNowSelected = false,
   size = "medium",
+  dataTestId,
 }) => {
   const currentTheme = useContext(ThemeContext);
   const buttonClassName = classNames(
@@ -30,7 +32,12 @@ const TextButton: FC<Props> = ({
     currentTheme
   );
   return (
-    <button className={buttonClassName} onClick={onClick} disabled={isDisabled}>
+    <button
+      data-test-id={dataTestId}
+      className={buttonClassName}
+      onClick={onClick}
+      disabled={isDisabled}
+    >
       {displayedText}
     </button>
   );
