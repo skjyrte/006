@@ -165,6 +165,7 @@ export default forwardRef(function Entry(
         )}
       </div>
       <IconButton
+        dataTestId={"delete-button"}
         onClick={handleDeleteTodo}
         isLoading={loader === LoadingState.DELETE_ENTRY}
         IconComponent={IconDelete}

@@ -52,6 +52,7 @@ const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
         isLoading={loading}
         isDisabled={inputValue.length === 0 || loading}
         IconComponent={IconAdd}
+        dataTestId={"add-entry-button"}
       />
     </div>
   );

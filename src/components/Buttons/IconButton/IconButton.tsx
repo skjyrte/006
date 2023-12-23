@@ -9,6 +9,7 @@ interface Props {
   isLoading?: boolean;
   isDisabled: boolean;
   IconComponent: ElementType;
+  dataTestId?: string;
 }
 
 const IconButton: FC<Props> = ({
@@ -16,6 +17,7 @@ const IconButton: FC<Props> = ({
   isLoading,
   isDisabled,
   IconComponent,
+  dataTestId,
 }) => {
   const currentTheme = useContext(ThemeContext);
   const buttonClassName = classNames(
@@ -25,6 +27,7 @@ const IconButton: FC<Props> = ({
   );
   return (
     <button
+      data-test-id={dataTestId}
       className={classNames(buttonClassName, currentTheme)}
       onClick={onClick}
       disabled={isDisabled}
