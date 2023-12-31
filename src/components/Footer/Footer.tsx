@@ -21,7 +21,10 @@ const Footer: FC<Props> = ({
   const currentTheme = useContext(ThemeContext);
   return (
     <div className={classNames("footer", currentTheme)}>
-      <div className={classNames("footer__counter-wrapper", currentTheme)}>
+      <div
+        data-testid="active-todo-counter"
+        className={classNames("footer__counter-wrapper", currentTheme)}
+      >
         {`${activeTodosCount} item${activeTodosCount === 1 ? "" : "s"} left`}
       </div>
       <span className={classNames("footer__span-element", currentTheme)}></span>
@@ -33,18 +36,21 @@ const Footer: FC<Props> = ({
           onClick={() => onClick(FilterState.ALL)}
           isNowSelected={filterState === FilterState.ALL ? true : false}
           size="small"
+          dataTestId="all-button"
         />
         <TextButton
           displayedText={"Active"}
           onClick={() => onClick(FilterState.ACTIVE)}
           isNowSelected={filterState === FilterState.ACTIVE ? true : false}
           size="small"
+          dataTestId="active-button"
         />
         <TextButton
           displayedText={"Completed"}
           onClick={() => onClick(FilterState.COMPLETED)}
           isNowSelected={filterState === FilterState.COMPLETED ? true : false}
           size="small"
+          dataTestId="completed-button"
         />
       </div>
       <span className={classNames("footer__span-element", currentTheme)}></span>
@@ -52,6 +58,7 @@ const Footer: FC<Props> = ({
         <TextButton
           displayedText="Clear Completed"
           onClick={onDeleteCompleted}
+          dataTestId="clear-completed-button"
         />
       </div>
     </div>

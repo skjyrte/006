@@ -12,6 +12,7 @@ const IconSun: FC<Props> = ({ className }) => {
       height="100%"
       viewBox="0 0 26 26"
       className={className}
+      data-testid="icon-sun"
     >
       <path
         fill="#FFF"

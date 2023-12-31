@@ -27,7 +27,7 @@ const IconButton: FC<Props> = ({
   );
   return (
     <button
-      data-test-id={dataTestId}
+      data-testid={dataTestId}
       className={classNames(buttonClassName, currentTheme)}
       onClick={onClick}
       disabled={isDisabled}

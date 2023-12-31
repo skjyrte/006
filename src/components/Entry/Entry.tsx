@@ -67,7 +67,7 @@ export default forwardRef(function Entry(
   return (
     <div
       ref={ref}
-      data-test-id="entry"
+      data-testid="entry"
       className={classNames("entry", currentTheme)}
     >
       {loader === LoadingState.SAVE_EDITED_ENTRY && (
@@ -86,7 +86,7 @@ export default forwardRef(function Entry(
             height={4}
             width={100}
             aria-label="Loading Spinner"
-            data-testid="loader"
+            data-testid="loader_saveEdited"
           />
         </div>
       )}
@@ -95,6 +95,7 @@ export default forwardRef(function Entry(
         isChecked={todo.completed}
         isLoading={loader === LoadingState.SAVE_EDITED_CHECKBOX}
         isDisabled={loader !== null}
+        data-testid="checkbox"
       />
       {editMode ? (
         <>
@@ -105,7 +106,7 @@ export default forwardRef(function Entry(
           />
           <TextareaAutosize
             id="task"
-            data-test-id="entry-edit-area"
+            data-testid="entry-edit-area"
             placeholder="Type edited task..."
             name="task"
             className={classNames(
@@ -127,6 +128,7 @@ export default forwardRef(function Entry(
       ) : (
         <>
           <div
+            data-testid="todo-content"
             className={classNames(
               todo.completed
                 ? "entry__todo-content entry__todo-content_completed"

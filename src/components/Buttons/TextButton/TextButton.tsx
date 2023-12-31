@@ -33,7 +33,7 @@ const TextButton: FC<Props> = ({
   );
   return (
     <button
-      data-test-id={dataTestId}
+      data-testid={dataTestId}
       className={buttonClassName}
       onClick={onClick}
       disabled={isDisabled}

@@ -445,6 +445,7 @@ const AppContainer: FC<{ handleChangeTheme: () => void }> = ({
               isLoading={false}
               isDisabled={false}
               IconComponent={currentTheme === "dark" ? IconSun : IconMoon}
+              dataTestId="theme-button"
             />
           </div>
         </header>

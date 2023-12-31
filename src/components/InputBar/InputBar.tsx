@@ -27,7 +27,7 @@ const InputBar: FC<Props> = ({ onClickAddEntry, loading }) => {
   return (
     <div
       className={classNames("input-bar", currentTheme)}
-      data-test-id="input-bar"
+      data-testid="input-bar"
     >
       <CharCounter
         charCount={inputValue.length}
