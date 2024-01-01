@@ -13,12 +13,10 @@
     "@types/react-dom": "^18.2.6",
     "axios": "^1.6.0",
     "classnames": "^2.3.2",
-    "cypress-wait-until": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intersection-observer": "^9.5.2",
     "react-loading-skeleton": "^3.3.1",
-    "react-placeholder-loading": "^0.5.30",
     "react-scripts": "5.0.1",
     "react-spinners": "^0.13.8",
     "react-textarea-autosize": "^8.5.3",
@@ -30,7 +28,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cypress:open": "cypress open"
   },
   "eslintConfig": {
     "extends": [
@@ -51,6 +50,7 @@
     ]
   },
   "devDependencies": {
-    "cypress": "^13.6.2"
+    "cypress": "^13.6.2",
+    "cypress-wait-until": "^3.0.1"
   }
 }
