@@ -7,7 +7,7 @@ const useDisclaimerToast = () => {
   useEffect(() => {
     if (location === "todo-app-client-vrgo.onrender.com") {
       toast.warn(
-        "DISCLAIMER: 1. This is a live preview of todo app. 2. Todos visible here will be persisted in database unless deleted by user. 3. Entry content is not moderated.",
+        "DISCLAIMER: 1. This is a live preview of todo app. 2. Todos added will be persisted in database unless deleted by user. 3. App author is not responsible for todos contents placed by users.",
         {
           position: "bottom-center",
           autoClose: false,
