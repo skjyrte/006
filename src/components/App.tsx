@@ -1,6 +1,7 @@
 import "./App.css";
 import Background from "components/Background";
 import AppContainer from "components/AppContainer";
+import useDisclaimerToast from "./useDisclaimerToast";
 import { useState, createContext } from "react";
 
 enum ThemeMode {
@@ -18,6 +19,8 @@ function App() {
       ? setTheme(ThemeMode.DARK)
       : setTheme(ThemeMode.LIGHT);
   };
+
+  useDisclaimerToast();
 
   return (
     <>

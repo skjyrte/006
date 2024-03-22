@@ -1,7 +1,7 @@
 :root {
   --toastify-toast-width: 320px;
   --toastify-toast-min-height: 32px;
-  --toastify-toast-max-height: 100px;
+  /*   --toastify-toast-max-height: 100px; */
 }
 
 .app-container {
